@@ -1,3 +1,10 @@
+.DS_Store
+.vscode
+build
+*.elf
+*.nacp
+*.nro
+
 # Prerequisites
 *.d
 
