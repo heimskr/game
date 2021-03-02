@@ -10,13 +10,16 @@ class Region;
 
 class Area {
 	public:
-		using Name = std::string;
-
 		Region *parent;
 		Resource::Map resources;
+		size_t size;
+		std::string name;
 
 		Area() = delete;
-		Area(Region *);
+		Area(Region *, size_t = 0);
 
 		Area & set(const Resource::Map &);
+		Area & set(size_t);
+
+		size_t totalPopulation() const;
 };

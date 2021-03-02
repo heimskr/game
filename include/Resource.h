@@ -35,6 +35,9 @@ class Resource {
 
 		Resource & add(const Name &, const Conversion &);
 
+		bool hasType(const Type &) const;
+		static bool hasType(const Name &, const Type &);
+
 		bool operator==(const Resource &other) { return name == other.name; }
 		bool operator!=(const Resource &other) { return name != other.name; }
 		bool operator< (const Resource &other) { return name <  other.name; }

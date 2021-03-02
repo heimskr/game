@@ -14,10 +14,14 @@
 class Region {
 	public:
 		size_t size = 0;
-		std::set<Area> areas;
+		/** Don't directly insert Areas into this map; use operator+= instead. */
+		std::unordered_map<std::string, Area> areas;
 		size_t money = 0;
 
 		Region(size_t size_);
 
 		Resource::Map allResources() const;
+		size_t totalPopulation() const;
+
+		Region & operator+=(Area);
 };

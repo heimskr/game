@@ -3,8 +3,6 @@
 
 #include "Game.h"
 
-using namespace std::literals::string_literals;
-
 namespace Globals {
 	std::map<Resource::Name, Resource> resources;
 
