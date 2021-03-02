@@ -44,7 +44,7 @@ DATA		:=	data
 INCLUDES	:=	include
 #ROMFS	:=	romfs
 
-APP_TITLE	:= MiiManagerTest
+APP_TITLE	:= Some Game
 APP_AUTHOR	:= heimskr
 APP_VERSION	:= 0.0.1
 
@@ -224,7 +224,6 @@ $(OFILES_SRC)	: $(HFILES_BIN)
 #---------------------------------------------------------------------------------------
 endif
 #---------------------------------------------------------------------------------------
-
 
 deploy: $(OUTPUT).nro
 	nxlink -s $(OUTPUT).nro
