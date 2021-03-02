@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -9,6 +10,7 @@ class Resource {
 	public:
 		using Name = std::string;
 		using Type = std::string;
+		using Map  = std::unordered_map<Name, double>;
 
 		struct Conversion {
 			double amount; // From converting 1 unit of the source resource

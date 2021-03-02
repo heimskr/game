@@ -1,4 +1,4 @@
-#include "resource/Resource.h"
+#include "Resource.h"
 
 Resource::Resource(const Name &name_): name(name_) {}
 Resource::Resource(const char *name_): name(name_) {}

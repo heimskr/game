@@ -19,6 +19,7 @@ namespace Globals {
 		add(Resource("water").addTypes("liquid"));
 		add(Resource("ironOre").addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}));
 		add(Resource("iron").addTypes("metal", "iron"));
+		add(Resource("human").addTypes("alive", "sapient"));
 	}
 
 	void addAll() {

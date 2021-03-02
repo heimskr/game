@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "resource/Resource.h"
+#include "Resource.h"
 #include "Util.h"
 
 namespace Globals {

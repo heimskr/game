@@ -5,8 +5,8 @@
 
 #include "main.h"
 
-#include "resource/Resource.h"
-#include "region/Region.h"
+#include "Resource.h"
+#include "Region.h"
 #include "Game.h"
 #include "Util.h"
 
