@@ -5,17 +5,23 @@
 
 #include "main.h"
 
+#include "resource/Resource.h"
+#include "region/Region.h"
+#include "Game.h"
+#include "Util.h"
+
 // #define USE_NXLINK_STDIO
 
 PadState pad;
-State state = State::Initial;
+State gameState = State::Initial;
 
 int main(int argc, char *argv[]) {
 	consoleInit(nullptr);
 	socketInitializeDefault(); // Initialize sockets
-	nxlinkConnectToHost(false, false);
 #ifdef USE_NXLINK_STDIO
 	nxlinkStdio(); // Redirect stdout and stderr over the network to nxlink
+#else
+	nxlinkConnectToHost(false, false);
 #endif
 	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
 	padInitializeDefault(&pad);
@@ -24,6 +30,8 @@ int main(int argc, char *argv[]) {
 
 	// auto clearLine = [] { printf("\e[2K\e[999D"); };
 	auto clearScreen = [] { printf("\e[2J"); };
+
+	Game::init();
 
 	while (appletMainLoop()) {
 		padUpdate(&pad);

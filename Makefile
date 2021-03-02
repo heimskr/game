@@ -39,7 +39,11 @@ include $(DEVKITPRO)/libnx/switch_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	source
+ifeq ($(BUILD),$(TARGET))
+SOURCES		:=	$(shell find ../source -type d)
+else
+SOURCES		:=	$(shell find source -type d)
+endif
 DATA		:=	data
 INCLUDES	:=	include
 #ROMFS	:=	romfs
