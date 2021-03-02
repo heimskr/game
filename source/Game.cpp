@@ -4,6 +4,7 @@
 #include "Game.h"
 
 namespace Globals {
+	bool done = false;
 	std::map<Resource::Name, Resource> resources;
 
 	void add(const Resource &resource) {
@@ -21,10 +22,13 @@ namespace Globals {
 	}
 
 	void addAll() {
-		addResources();
+		if (!done) {
+			addResources();
+			done = true;
+		}
 	}
 }
 
-void Game::init() {
+Game::Game() {
 	Globals::addAll();
 }

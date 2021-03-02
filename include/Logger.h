@@ -7,6 +7,7 @@ namespace Logger {
 	void info(Args &&...args) {
 		printf("\e[36m [info] \e[39m");
 		printf(std::forward<Args>(args)...);
+		printf("\n");
 		consoleUpdate(nullptr);
 	}
 
@@ -14,6 +15,7 @@ namespace Logger {
 	void error(Args &&...args) {
 		printf("\e[31m[error] \e[39m");
 		printf(std::forward<Args>(args)...);
+		printf("\n");
 		consoleUpdate(nullptr);
 	}
 
@@ -21,6 +23,7 @@ namespace Logger {
 	void warn(Args &&...args) {
 		printf("\e[33m [warn] \e[39m");
 		printf(std::forward<Args>(args)...);
+		printf("\n");
 		consoleUpdate(nullptr);
 	}
 }

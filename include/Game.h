@@ -6,6 +6,7 @@
 #include "Util.h"
 
 namespace Globals {
+	extern bool done;
 	extern std::map<Resource::Name, Resource> resources;
 
 	void add(const Resource &);
@@ -19,5 +20,5 @@ namespace Globals {
 
 class Game {
 	public:
-		static void init();
+		Game();
 };

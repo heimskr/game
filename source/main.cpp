@@ -9,6 +9,7 @@
 #include "Region.h"
 #include "Game.h"
 #include "Util.h"
+#include "Keyboard.h"
 
 // #define USE_NXLINK_STDIO
 
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]) {
 	// auto clearLine = [] { printf("\e[2K\e[999D"); };
 	auto clearScreen = [] { printf("\e[2J"); };
 
-	Game::init();
+	Game game;
 
 	while (appletMainLoop()) {
 		padUpdate(&pad);
@@ -39,8 +40,14 @@ int main(int argc, char *argv[]) {
 		if (kDown & HidNpadButton_Plus)
 			break;
 
-		if (kDown & HidNpadButton_ZR) {
+		if (kDown & HidNpadButton_ZL) {
 			clearScreen();
+		}
+
+		if (kDown & HidNpadButton_ZR) {
+			Keyboard::openForText([](std::string str) {
+				Logger::info("You entered \"%s\"", str.c_str());
+			}, "Header", "Sub", 64, "Initial");
 		}
 
 		if (kDown & HidNpadButton_A) {
