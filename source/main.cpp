@@ -34,23 +34,33 @@ int main(int argc, char *argv[]) {
 	Game game;
 
 	auto clearLine = [] { printf("\e[2K\e[999D"); };
-	auto clearScreen = [] { printf("\e[2J"); };
+	// auto clearScreen = [] { printf("\e[2J"); };
+
+	std::function<void(const std::string &name)> chooseAction;
 
 	const Action actions[] = {
-		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); }},
-		{"Add Region", State::Initial, [&] { game.addRegion(); }},
+		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); chooseAction("List Regions"); }},
 		{"List Regions", State::Initial, [&] { game.listRegions(); }},
+		{"Add Region", State::Initial, [&] { game.addRegion(); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 		// {"Import Mii", State::SelectMiiFromSD},
 		// {"Export Mii", State::SelectMiiFromDB, displayDBMii},
 	};
 
-	constexpr size_t actionCount = sizeof(actions) / sizeof(actions[0]);
+	constexpr s32 actionCount = static_cast<s32>(sizeof(actions) / sizeof(actions[0]));
 	s32 actionIndex = 0;
 
 	auto displayAction = [&] {
 		clearLine();
 		print("Select Action: \e[33m%s\e[0m", actions[actionIndex].name);
+	};
+
+	chooseAction = [&](const std::string &name) {
+		for (s32 i = 0; i < actionCount; ++i)
+			if (actions[i].name == name) {
+				actionIndex = i;
+				break;
+			}
 	};
 
 	if (console)

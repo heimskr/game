@@ -30,5 +30,6 @@ class Area {
 		size_t totalPopulation() const;
 
 		virtual Type getType() const = 0;
+		virtual std::string description() const = 0;
 		virtual void tick() = 0;
 };

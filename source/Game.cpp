@@ -43,8 +43,13 @@ void Game::listRegions() {
 		print("No regions.\n");
 	} else {
 		print("Regions:\n");
-		for (const auto &pair: regions)
+		for (const auto &pair: regions) {
 			print("- \e[1m%s\e[22m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
+			for (const auto &area_pair: pair.second.areas) {
+				const Area &area = *area_pair.second;
+				printf("  - \e[1m%s\e[22m (%lu): %s\n", area_pair.first.c_str(), area.size, area.description().c_str());
+			}
+		}
 	}
 }
 
