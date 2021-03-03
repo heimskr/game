@@ -6,6 +6,7 @@
 #include "Keyboard.h"
 #include "Util.h"
 #include "NameGen.h"
+#include "area/Areas.h"
 
 namespace Globals {
 	bool done = false;
@@ -127,6 +128,12 @@ Region * Game::addRegion() {
 	regions.insert({{x, y}, Region(this, name, {x, y}, size)});
 	print("Created new region \e[1m%s\e[22m at position (%ld, %ld) with size %lu.\n", name.c_str(), x, y, size);
 	return &regions.at({x, y});
+}
+
+void Game::loadDefaults() {
+	Region &home = regions.insert({{0, 0}, Region(this, "Home", {0, 0}, 64)}).first->second;
+	home += std::make_shared<ForestArea>(&home, 32);
+	print("Loaded default data.\n");
 }
 
 std::string Game::toString() const {

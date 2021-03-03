@@ -37,8 +37,9 @@ int main(int argc, char *argv[]) {
 	auto clearScreen = [] { printf("\e[2J"); };
 
 	const Action actions[] = {
-		{"List Regions", State::Initial, [&] { game.listRegions(); }},
+		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); }},
 		{"Add Region", State::Initial, [&] { game.addRegion(); }},
+		{"List Regions", State::Initial, [&] { game.listRegions(); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 		// {"Import Mii", State::SelectMiiFromSD},
 		// {"Export Mii", State::SelectMiiFromDB, displayDBMii},

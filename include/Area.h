@@ -12,6 +12,8 @@ class Area {
 	public:
 		static constexpr const char *INVALID_CHARS = ";";
 
+		enum class Type {Housing, Forest};
+
 		Region *parent;
 		Resource::Map resources;
 		size_t size;
@@ -26,4 +28,7 @@ class Area {
 		Area & setPlayerOwned(bool);
 
 		size_t totalPopulation() const;
+
+		virtual Type getType() const = 0;
+		virtual void tick() = 0;
 };
