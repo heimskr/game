@@ -47,8 +47,24 @@ int main(int argc, char *argv[]) {
 		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); chooseAction("List Regions"); }},
 		{"List Regions", State::Initial, [&] { game.listRegions(); }},
 		{"List Region Resources", State::Initial, [&] { selectRegion([&] {
-			print("Selected region: %s\n", std::next(game.regions.begin(), regionIndex)->second.name.c_str());
+			Region &region = std::next(game.regions.begin(), regionIndex)->second;
+			Resource::Map resources = region.allResources();
+			if (resources.empty()) {
+				print("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
+			} else {
+				print("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
+				for (const auto &pair: resources)
+					print("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
+			}
 		}); }},
+		{"Tick Once", State::Initial, [&] { game.tick(); }},
+		{"Tick Many", State::Initial, [&] {
+			Keyboard::openForNumber([&](s64 ticks) {
+				for (s64 i = 0; i < ticks; ++i)
+					game.tick();
+				print("Ticked \e[1m%ld\e[22m times.\n", ticks);
+			}, "Tick Count");
+		}},
 		{"Add Region", State::Initial, [&] { game.addRegion(); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 	};
