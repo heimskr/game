@@ -141,6 +141,7 @@ void Game::tick() {
 }
 
 void Game::loadDefaults() {
+	regions.clear();
 	Region &home = regions.insert({{0, 0}, Region(this, "Home", {0, 0}, 64)}).first->second;
 	home += std::make_shared<ForestArea>(&home, 48);
 	home += std::make_shared<HousingArea>(&home, 16);
