@@ -26,6 +26,7 @@ class Area {
 		Area & setResources(const Resource::Map &);
 		Area & setSize(size_t);
 		Area & setPlayerOwned(bool);
+		Area & setName(const std::string &);
 
 		size_t totalPopulation() const;
 

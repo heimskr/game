@@ -44,10 +44,11 @@ void Game::listRegions() {
 	} else {
 		print("Regions:\n");
 		for (const auto &pair: regions) {
-			print("- \e[1m%s\e[22m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
+			print("- \e[36m%s\e[39m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
 			for (const auto &area_pair: pair.second.areas) {
 				const Area &area = *area_pair.second;
-				printf("  - \e[1m%s\e[22m (%lu): %s\n", area_pair.first.c_str(), area.size, area.description().c_str());
+				print("  - \e[35m%s\e[39m (%lu%s): %s\n",
+					area_pair.first.c_str(), area.size, area.playerOwned? ", owned" : "", area.description().c_str());
 			}
 		}
 	}
@@ -143,8 +144,12 @@ void Game::tick() {
 void Game::loadDefaults() {
 	regions.clear();
 	Region &home = regions.insert({{0, 0}, Region(this, "Home", {0, 0}, 64)}).first->second;
-	home += std::make_shared<ForestArea>(&home, 48);
-	home += std::make_shared<HousingArea>(&home, 16);
+	auto forest = std::make_shared<ForestArea>(&home, 48);
+	auto housing = std::make_shared<HousingArea>(&home, 16);
+	forest->setName("Forest").setPlayerOwned(true);
+	housing->setName("Small Town");
+	home += forest;
+	home += housing;
 	print("Loaded default data.\n");
 }
 

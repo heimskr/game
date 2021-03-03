@@ -18,6 +18,11 @@ Area & Area::setPlayerOwned(bool player_owned) {
 	return *this;
 }
 
+Area & Area::setName(const std::string &name_) {
+	name = name_;
+	return *this;
+}
+
 size_t Area::totalPopulation() const {
 	size_t out = 0;
 	for (const auto &pair: resources)
