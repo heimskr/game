@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 	Game game;
 
 	auto clearLine = [] { printf("\e[2K\e[999D"); };
-	// auto clearScreen = [] { printf("\e[2J"); };
+	auto clearScreen = [] { printf("\e[2J"); };
 
 	std::function<void(const std::string &name)> chooseAction;
 	std::function<void()> displayRegion;
@@ -109,6 +109,11 @@ int main(int argc, char *argv[]) {
 		u64 kDown = padGetButtonsDown(&pad);
 		if (kDown & HidNpadButton_Plus)
 			break;
+
+		if (kDown & HidNpadButton_Minus) {
+			clearScreen();
+			continue;
+		}
 
 		const bool selectNext = (kDown & HidNpadButton_AnyDown) || (kDown & HidNpadButton_AnyRight);
 		const bool selectPrev = (kDown & HidNpadButton_AnyUp)   || (kDown & HidNpadButton_AnyLeft);
