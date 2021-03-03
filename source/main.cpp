@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 	s32 regionIndex = 0;
 
 	const Action actions[] = {
-		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); chooseAction("List Regions"); }},
+		{"Add Region", State::Initial, [&] { game.addRegion(); }},
 		{"List Regions", State::Initial, [&] { game.listRegions(); }},
 		{"List Region Resources", State::Initial, [&] { selectRegion([&] {
 			Region &region = std::next(game.regions.begin(), regionIndex)->second;
@@ -57,6 +57,8 @@ int main(int argc, char *argv[]) {
 					print("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
 			}
 		}); }},
+		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); chooseAction("List Regions"); }},
+		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 		{"Tick Once", State::Initial, [&] { game.tick(); }},
 		{"Tick Many", State::Initial, [&] {
 			Keyboard::openForNumber([&](s64 ticks) {
@@ -65,8 +67,6 @@ int main(int argc, char *argv[]) {
 				print("Ticked \e[1m%ld\e[22m times.\n", ticks);
 			}, "Tick Count");
 		}},
-		{"Add Region", State::Initial, [&] { game.addRegion(); }},
-		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 	};
 
 	constexpr s32 actionCount = static_cast<s32>(sizeof(actions) / sizeof(actions[0]));
