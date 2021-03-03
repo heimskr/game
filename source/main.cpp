@@ -10,11 +10,12 @@
 #include "Game.h"
 #include "Util.h"
 #include "Keyboard.h"
+#include "NameGen.h"
 
 // #define USE_NXLINK_STDIO
 
 PadState pad;
-State gameState = State::Initial;
+State state = State::Initial;
 
 int main(int argc, char *argv[]) {
 	consoleInit(nullptr);
@@ -29,10 +30,27 @@ int main(int argc, char *argv[]) {
 
 	srand(getTime());
 
-	// auto clearLine = [] { printf("\e[2K\e[999D"); };
+	Game game;
+
+	auto clearLine = [] { printf("\e[2K\e[999D"); };
 	auto clearScreen = [] { printf("\e[2J"); };
 
-	Game game;
+	const Action actions[] = {
+		{"List Regions", State::Initial, [&] { game.listRegions(); }},
+		{"Add Region", State::Initial, [&] { game.addRegion(); }},
+		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
+		// {"Import Mii", State::SelectMiiFromSD},
+		// {"Export Mii", State::SelectMiiFromDB, displayDBMii},
+	};
+
+	constexpr size_t actionCount = sizeof(actions) / sizeof(actions[0]);
+	s32 actionIndex = 0;
+
+	auto displayAction = [&] {
+		clearLine();
+		printf("Select Action: \e[33m%s\e[0m", actions[actionIndex].name);
+		consoleUpdate(nullptr);
+	};
 
 	while (appletMainLoop()) {
 		padUpdate(&pad);
@@ -40,18 +58,37 @@ int main(int argc, char *argv[]) {
 		if (kDown & HidNpadButton_Plus)
 			break;
 
-		if (kDown & HidNpadButton_ZL) {
-			clearScreen();
-		}
+		const bool selectNext = (kDown & HidNpadButton_AnyDown) || (kDown & HidNpadButton_AnyRight);
+		const bool selectPrev = (kDown & HidNpadButton_AnyUp)   || (kDown & HidNpadButton_AnyLeft);
+		const bool aPressed = kDown & HidNpadButton_A;
 
-		if (kDown & HidNpadButton_ZR) {
-			Keyboard::openForText([](std::string str) {
-				Logger::info("You entered \"%s\"", str.c_str());
-			}, "Header", "Sub", 64, "Initial");
-		}
+		switch (state) {
+			case State::Initial:
+				displayAction();
+				state = State::SelectAction;
+				break;
 
-		if (kDown & HidNpadButton_A) {
-			printf("\e[2J\e[1;1HHello.\n");
+			case State::SelectAction: {
+				bool changed = false;
+				if (selectNext) {
+					actionIndex = (actionIndex + 1) % actionCount;
+					changed = true;
+				} else if (selectPrev) {
+					actionIndex = actionIndex == 0? actionCount - 1 : actionIndex - 1;
+					changed = true;
+				}
+				if (changed)
+					displayAction();
+				if (aPressed) {
+					clearLine();
+					state = actions[actionIndex].state;
+					actions[actionIndex].onSelect();
+				}
+				break;
+			}
+
+			default:
+				break;
 		}
 
 		consoleUpdate(nullptr);
@@ -91,4 +128,12 @@ time_t getTime() {
 		perish();
 	}
 	return current_time;
+}
+
+std::string randomString(size_t length) {
+	std::string out;
+	out.reserve(length);
+	for (size_t i = 0; i < length; ++i)
+		out += (i == 0? 'A' : 'a') + (rand() % 26);
+	return out;
 }

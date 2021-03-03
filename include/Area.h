@@ -10,16 +10,20 @@ class Region;
 
 class Area {
 	public:
+		static constexpr const char *INVALID_CHARS = ";";
+
 		Region *parent;
 		Resource::Map resources;
 		size_t size;
 		std::string name;
+		bool playerOwned = false;
 
 		Area() = delete;
 		Area(Region *, size_t = 0);
 
-		Area & set(const Resource::Map &);
-		Area & set(size_t);
+		Area & setResources(const Resource::Map &);
+		Area & setSize(size_t);
+		Area & setPlayerOwned(bool);
 
 		size_t totalPopulation() const;
 };

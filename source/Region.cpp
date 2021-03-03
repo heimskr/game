@@ -1,7 +1,10 @@
+#include <sstream>
+
 #include "Game.h"
 #include "Region.h"
 
-Region::Region(size_t size_): size(size_) {}
+Region::Region(Game *owner_, const std::string &name_, const Position &position_, size_t size_):
+	owner(owner_), name(name_), position(position_), size(size_) {}
 
 Resource::Map Region::allResources() const {
 	Resource::Map out;
@@ -19,6 +22,26 @@ size_t Region::totalPopulation() const {
 	return out;
 }
 
+Region & Region::setSize(size_t size_) {
+	size = size_;
+	return *this;
+}
+
+Region & Region::setMoney(size_t money_) {
+	money = money_;
+	return *this;
+}
+
+Region & Region::setPosition(const std::pair<s64, s64> &position_) {
+	owner->updatePosition(*this, position_);
+	return *this;
+}
+
+Region & Region::setName(const std::string &name_) {
+	name = name_;
+	return *this;
+}
+
 Region & Region::operator+=(Area area) {
 	if (area.name.empty()) {
 		size_t i;
@@ -34,4 +57,9 @@ Region & Region::operator+=(Area area) {
 
 	areas.emplace(area.name, area);
 	return *this;
+}
+
+std::string Region::toString() const {
+	std::stringstream out;
+	return out.str();
 }

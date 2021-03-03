@@ -2,23 +2,27 @@
 
 #include <map>
 
+#include "Region.h"
 #include "Resource.h"
 #include "Util.h"
 
-namespace Globals {
-	extern bool done;
-	extern std::map<Resource::Name, Resource> resources;
-
-	void add(const Resource &);
-
-	void addResources();
-	void addAll();
-
-	void addResource(const Resource::Name &);
-	
-}
-
 class Game {
 	public:
+		bool ready = false;
+		std::map<Resource::Name, Resource> resources;
+		std::map<decltype(Region::position), Region> regions;
+
 		Game();
+
+		void add(const Resource &);
+		void addResources();
+		void addResource(const Resource::Name &);
+		void addAll();
+
+		bool updatePosition(Region &, const decltype(Region::position) &);
+
+		void listRegions();
+		Region * addRegion();
+
+		std::string toString() const;
 };

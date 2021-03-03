@@ -59,7 +59,7 @@ bool Keyboard::openForText(std::function<void(std::string)> f, const std::string
 	return false;
 }
 
-bool Keyboard::openForNumber(std::function<void(int)> f, const std::string &headerText, const std::string &subText, int maxStringLength, const std::string &initialText, const std::string &leftButton, const std::string &rightButton, u32 kbdDisableBitmask) {
+bool Keyboard::openForNumber(std::function<void(s64)> f, const std::string &headerText, const std::string &subText, int maxStringLength, const std::string &initialText, const std::string &leftButton, const std::string &rightButton, u32 kbdDisableBitmask) {
 	SwkbdConfig config = createSwkbdBaseConfig(headerText, subText, maxStringLength, initialText);
 
 	swkbdConfigSetType(&config, SwkbdType_NumPad);
@@ -70,8 +70,14 @@ bool Keyboard::openForNumber(std::function<void(int)> f, const std::string &head
 	char *buffer = new char[maxStringLength + 1];
 
 	if (R_SUCCEEDED(swkbdShow(&config, buffer, maxStringLength)) && strcmp(buffer, "") != 0) {
-		f(std::stol(buffer));
 		swkbdClose(&config);
+		try {
+			f(std::stoll(buffer));
+		} catch (const std::invalid_argument &) {
+			delete[] buffer;
+			return false;
+		}
+
 		delete[] buffer;
 		return true;
 	}
