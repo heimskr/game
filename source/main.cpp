@@ -18,7 +18,8 @@ PadState pad;
 State state = State::Initial;
 
 int main(int argc, char *argv[]) {
-	consoleInit(nullptr);
+	console = consoleGetDefault();
+	consoleInit(console);
 	socketInitializeDefault(); // Initialize sockets
 #ifdef USE_NXLINK_STDIO
 	nxlinkStdio(); // Redirect stdout and stderr over the network to nxlink
@@ -48,9 +49,11 @@ int main(int argc, char *argv[]) {
 
 	auto displayAction = [&] {
 		clearLine();
-		printf("Select Action: \e[33m%s\e[0m", actions[actionIndex].name);
-		consoleUpdate(nullptr);
+		print("Select Action: \e[33m%s\e[0m", actions[actionIndex].name);
 	};
+
+	if (console)
+		print("(%d, %d)\n", console->consoleWidth, console->consoleHeight);
 
 	while (appletMainLoop()) {
 		padUpdate(&pad);
@@ -91,7 +94,7 @@ int main(int argc, char *argv[]) {
 				break;
 		}
 
-		consoleUpdate(nullptr);
+		consoleUpdate(console);
 	}
 
 	cleanup();
@@ -103,13 +106,13 @@ void cleanup() {
 
 	if (!cleaned) {
 		socketExit();
-		consoleExit(nullptr);
+		consoleExit(console);
 		cleaned = true;
 	}
 }
 
 void perish() {
-	consoleUpdate(nullptr);
+	consoleUpdate(console);
 	while (appletMainLoop()) {
 		padUpdate(&pad);
 		u64 kDown = padGetButtonsDown(&pad);

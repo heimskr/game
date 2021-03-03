@@ -39,17 +39,15 @@ void Game::addAll() {
 
 void Game::listRegions() {
 	if (regions.empty()) {
-		printf("No regions.\n");
+		print("No regions.\n");
 	} else {
-		printf("Regions:\n");
+		print("Regions:\n");
 		for (const auto &pair: regions)
-			printf("- \e[1m%s\e[22m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
+			print("- \e[1m%s\e[22m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
 	}
-
-	consoleUpdate(nullptr);
 }
 
-bool Game::updatePosition(Region &region, const decltype(Region::position) &new_position) {
+bool Game::updatePosition(Region &region, const Region::Position &new_position) {
 	if (regions.count(region.position) == 0)
 		return false;
 	auto handler = regions.extract(region.position);
@@ -59,6 +57,35 @@ bool Game::updatePosition(Region &region, const decltype(Region::position) &new_
 	handler.key() = new_position;
 	regions.insert(std::move(handler));
 	return true;
+}
+
+Region::Position Game::suggestPosition() {
+	s64 x = 0, y = 0;
+	enum Direction {Up, Right, Down, Left};
+	Direction direction = Up;
+	int max_extent = 1;
+	int extent = 0;
+	for (;;) {
+		if (regions.count({x, y}) == 0)
+			return {x, y};
+
+		switch (direction) {
+			case Up:    --y; break;
+			case Right: ++x; break;
+			case Down:  ++y; break;
+			case Left:  --x; break;
+		}
+
+		if (++extent == max_extent) {
+			extent = 0;
+			switch (direction) {
+				case Up:    direction = Right; break;
+				case Right: direction = Down; ++max_extent; break;
+				case Down:  direction = Left;  break;
+				case Left:  direction = Up;   ++max_extent; break;
+			}
+		}
+	}
 }
 
 Region * Game::addRegion() {
@@ -79,12 +106,13 @@ Region * Game::addRegion() {
 		return nullptr;
 	}
 	s64 x, y;
+	std::tie(x, y) = suggestPosition();
 	size_t size;
-	if (!Keyboard::openForNumber([&](s64 x_) { x = x_; }, "Region X Coordinate", "", 64, "", "-")) {
+	if (!Keyboard::openForNumber([&](s64 x_) { x = x_; }, "Region X Coordinate", "", 64, std::to_string(x), "-")) {
 		print("Invalid x coordinate.\n");
 		return nullptr;
 	}
-	if (!Keyboard::openForNumber([&](s64 y_) { y = y_; }, "Region Y Coordinate", "", 64, "", "-")) {
+	if (!Keyboard::openForNumber([&](s64 y_) { y = y_; }, "Region Y Coordinate", "", 64, std::to_string(y), "-")) {
 		print("Invalid y coordinate.\n");
 		return nullptr;
 	}
@@ -92,7 +120,7 @@ Region * Game::addRegion() {
 		print("A region already exists at (%ld, %ld).\n", x, y);
 		return nullptr;
 	}
-	if (!Keyboard::openForNumber([&](s64 size_) { size = static_cast<size_t>(size_); }, "Region Size")) {
+	if (!Keyboard::openForNumber([&](s64 size_) { size = static_cast<size_t>(size_); }, "Region Size", "", 64, "64")) {
 		print("Invalid size.\n");
 		return nullptr;
 	}

@@ -22,6 +22,7 @@
 #include <switch.h>
 
 #include "Keyboard.h"
+#include "Util.h"
 
 static SwkbdConfig createSwkbdBaseConfig(const std::string &headerText, const std::string &subText, int maxStringLength, const std::string &initialText) {
 	SwkbdConfig config;
