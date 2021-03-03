@@ -126,7 +126,7 @@ Region * Game::addRegion() {
 		print("A region already exists at (%ld, %ld).\n", x, y);
 		return nullptr;
 	}
-	if (!Keyboard::openForNumber([&](s64 size_) { size = static_cast<size_t>(size_); }, "Region Size", "", 64, "64")) {
+	if (!Keyboard::openForNumber([&](s64 size_) { size = static_cast<size_t>(size_); }, "Region Size", "", 64, std::to_string((rand() % 64) + 32))) {
 		print("Invalid size.\n");
 		return nullptr;
 	}

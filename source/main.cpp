@@ -101,9 +101,6 @@ int main(int argc, char *argv[]) {
 			}
 	};
 
-	if (console)
-		print("(%d, %d)\n", console->consoleWidth, console->consoleHeight);
-
 	while (appletMainLoop()) {
 		padUpdate(&pad);
 		u64 kDown = padGetButtonsDown(&pad);
