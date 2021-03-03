@@ -6,7 +6,7 @@
 
 #include "Util.h"
 
-enum class State {Invalid, Initial, SelectAction};
+enum class State {Invalid, Initial, SelectAction, SelectRegion};
 
 struct Action {
 	const char *name;

@@ -30,6 +30,8 @@ class Region {
 
 		Region(Game *, const std::string &name_, const Position &, size_t size_);
 
+		void tick();
+
 		Resource::Map allResources() const;
 		size_t totalPopulation() const;
 

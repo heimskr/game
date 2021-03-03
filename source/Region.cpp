@@ -6,6 +6,11 @@
 Region::Region(Game *owner_, const std::string &name_, const Position &position_, size_t size_):
 	owner(owner_), name(name_), position(position_), size(size_) {}
 
+void Region::tick() {
+	for (auto &pair: areas)
+		pair.second->tick();
+}
+
 Resource::Map Region::allResources() const {
 	Resource::Map out;
 	for (const auto &area_pair: areas)

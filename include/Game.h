@@ -25,6 +25,8 @@ class Game {
 		void listRegions();
 		Region * addRegion();
 
+		void tick();
+
 		void loadDefaults();
 
 		std::string toString() const;

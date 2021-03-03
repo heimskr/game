@@ -135,9 +135,15 @@ Region * Game::addRegion() {
 	return &regions.at({x, y});
 }
 
+void Game::tick() {
+	for (auto &pair: regions)
+		pair.second.tick();
+}
+
 void Game::loadDefaults() {
 	Region &home = regions.insert({{0, 0}, Region(this, "Home", {0, 0}, 64)}).first->second;
-	home += std::make_shared<ForestArea>(&home, 32);
+	home += std::make_shared<ForestArea>(&home, 48);
+	home += std::make_shared<HousingArea>(&home, 16);
 	print("Loaded default data.\n");
 }
 

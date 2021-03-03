@@ -37,14 +37,20 @@ int main(int argc, char *argv[]) {
 	// auto clearScreen = [] { printf("\e[2J"); };
 
 	std::function<void(const std::string &name)> chooseAction;
+	std::function<void()> displayRegion;
+	std::function<void(std::function<void()>)> selectRegion;
+
+	std::function<void()> onRegionSelect = [] {};
+	s32 regionIndex = 0;
 
 	const Action actions[] = {
 		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); chooseAction("List Regions"); }},
 		{"List Regions", State::Initial, [&] { game.listRegions(); }},
+		{"List Region Resources", State::Initial, [&] { selectRegion([&] {
+			print("Selected region: %s\n", std::next(game.regions.begin(), regionIndex)->second.name.c_str());
+		}); }},
 		{"Add Region", State::Initial, [&] { game.addRegion(); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
-		// {"Import Mii", State::SelectMiiFromSD},
-		// {"Export Mii", State::SelectMiiFromDB, displayDBMii},
 	};
 
 	constexpr s32 actionCount = static_cast<s32>(sizeof(actions) / sizeof(actions[0]));
@@ -52,7 +58,23 @@ int main(int argc, char *argv[]) {
 
 	auto displayAction = [&] {
 		clearLine();
-		print("Select Action: \e[33m%s\e[0m", actions[actionIndex].name);
+		print("Select action: \e[33m%s\e[0m", actions[actionIndex].name);
+	};
+
+	selectRegion = [&](std::function<void()> selectfn) {
+		if (game.regions.empty()) {
+			print("No regions.\n");
+		} else {
+			regionIndex = 0;
+			onRegionSelect = selectfn;
+			displayRegion();
+			state = State::SelectRegion;
+		}
+	};
+
+	displayRegion = [&] {
+		clearLine();
+		print("Select region: \e[33m%s\e[0m", std::next(game.regions.begin(), regionIndex)->second.name.c_str());
 	};
 
 	chooseAction = [&](const std::string &name) {
@@ -97,6 +119,28 @@ int main(int argc, char *argv[]) {
 					clearLine();
 					state = actions[actionIndex].state;
 					actions[actionIndex].onSelect();
+				}
+				break;
+			}
+
+			case State::SelectRegion: {
+				if (game.regions.empty())
+					break;
+				bool changed = false;
+				if (selectNext) {
+					regionIndex = (regionIndex + 1) % game.regions.size();
+					changed = true;
+				} else if (selectPrev) {
+					regionIndex = regionIndex == 0? game.regions.size() - 1 : regionIndex - 1;
+					changed = true;
+				}
+				if (changed)
+					displayRegion();
+				if (aPressed) {
+					clearLine();
+					onRegionSelect();
+					if (state == State::SelectRegion)
+						state = State::Initial;
 				}
 				break;
 			}
