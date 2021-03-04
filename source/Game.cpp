@@ -144,12 +144,18 @@ void Game::tick() {
 void Game::loadDefaults() {
 	regions.clear();
 	Region &home = regions.insert({{0, 0}, Region(this, "Home", {0, 0}, 64)}).first->second;
-	auto forest = std::make_shared<ForestArea>(&home, 48);
+	auto forest = std::make_shared<ForestArea>(&home, 20);
 	auto housing = std::make_shared<HousingArea>(&home, 16);
+	auto mountain = std::make_shared<MountainArea>(&home, 24);
+	auto lake = std::make_shared<LakeArea>(&home, 4);
 	forest->setName("Forest").setPlayerOwned(true);
 	housing->setName("Small Town");
+	mountain->setName("Mountain").setPlayerOwned(true);
+	lake->setName("Lake").setPlayerOwned(true);
 	home += forest;
 	home += housing;
+	home += mountain;
+	home += lake;
 	print("Loaded default data.\n");
 }
 

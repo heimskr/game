@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "Area.h"
 #include "Region.h"
 
@@ -19,6 +21,8 @@ Area & Area::setPlayerOwned(bool player_owned) {
 }
 
 Area & Area::setName(const std::string &name_) {
+	if (name_.find_first_of(INVALID_CHARS) != std::string::npos)
+		throw std::invalid_argument("Invalid area name");
 	name = name_;
 	return *this;
 }

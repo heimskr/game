@@ -17,7 +17,7 @@ class Game;
  */
 class Region {
 	public:
-		static constexpr const char *INVALID_CHARS = ";";
+		static constexpr const char *INVALID_CHARS = ":;";
 		using Position = std::pair<s64, s64>;
 
 		Game *owner;
@@ -34,6 +34,8 @@ class Region {
 
 		Resource::Map allResources() const;
 		size_t totalPopulation() const;
+
+		bool updateName(Area &, const std::string &);
 
 		Region & setSize(size_t);
 		Region & setMoney(size_t);

@@ -10,9 +10,9 @@ class Region;
 
 class Area {
 	public:
-		static constexpr const char *INVALID_CHARS = ";";
+		static constexpr const char *INVALID_CHARS = ";:";
 
-		enum class Type {Housing, Forest};
+		enum class Type {Housing, Forest, Mountain, Lake};
 
 		Region *parent;
 		Resource::Map resources;

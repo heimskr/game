@@ -27,6 +27,18 @@ size_t Region::totalPopulation() const {
 	return out;
 }
 
+bool Region::updateName(Area &area, const std::string &new_name) {
+	if (areas.count(area.name) == 0)
+		return false;
+	auto handler = areas.extract(area.name);
+	handler.mapped()->name = new_name;
+	if (&area != handler.mapped().get())
+		area.name = new_name;
+	handler.key() = new_name;
+	areas.insert(std::move(handler));
+	return true;
+}
+
 Region & Region::setSize(size_t size_) {
 	size = size_;
 	return *this;
@@ -66,5 +78,7 @@ Region & Region::operator+=(std::shared_ptr<Area> area) {
 
 std::string Region::toString() const {
 	std::stringstream out;
+	out << name << ":" << position.first << ":" << position.second << ":" << size << ":" << money;
+	// for (const auto 
 	return out.str();
 }
