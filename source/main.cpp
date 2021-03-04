@@ -56,9 +56,7 @@ int main(int argc, char *argv[]) {
 		{"Add Region", State::Initial, [&] { game.addRegion(); }},
 		{"Extract Resource", State::Initial, [&] {
 			selectRegion([&](Region &region) {
-				// print("Selected region: %s\n", region.name.c_str());
 				selectArea(region, [&](Area &area) {
-					// print("Selected area: %s\n", area.name.c_str());
 					selectResource(area, [&](const Resource::Name &resource, double amount) {
 						print("Amount of \e[36m%s\e[39m available: \e[1m%f\e[22m\n", resource.c_str(), amount);
 						svcSleepThread(1'000'000'000);
@@ -176,6 +174,8 @@ int main(int argc, char *argv[]) {
 			}
 	};
 
+	time_t last_time = getTime();
+
 	while (appletMainLoop()) {
 		padUpdate(&pad);
 		u64 kDown = padGetButtonsDown(&pad);
@@ -287,6 +287,10 @@ int main(int argc, char *argv[]) {
 				break;
 		}
 
+		time_t new_time = getTime();
+		for (s64 i = 0; i < new_time - last_time; ++i)
+			game.tick();
+		last_time = new_time;
 		consoleUpdate(console);
 	}
 
