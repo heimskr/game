@@ -10,6 +10,7 @@ class Game {
 	public:
 		bool ready = false;
 		std::map<Resource::Name, Resource> resources;
+		std::map<Resource::Name, double> inventory;
 		std::map<Region::Position, Region> regions;
 
 		Game();

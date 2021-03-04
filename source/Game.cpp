@@ -143,7 +143,7 @@ void Game::tick() {
 
 void Game::loadDefaults() {
 	regions.clear();
-	Region &home = regions.insert({{0, 0}, Region(this, "Home", {0, 0}, 64)}).first->second;
+	Region &home = regions.insert({{0, 0}, Region(this, NameGen::makeRandomLanguage().makeName(), {0, 0}, 64)}).first->second;
 	auto forest = std::make_shared<ForestArea>(&home, 20);
 	auto housing = std::make_shared<HousingArea>(&home, 16);
 	auto mountain = std::make_shared<MountainArea>(&home, 24);

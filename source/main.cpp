@@ -15,7 +15,7 @@
 // #define USE_NXLINK_STDIO
 
 PadState pad;
-State state = State::Initial;
+std::vector<State> states {State::Initial};
 
 int main(int argc, char *argv[]) {
 	console = consoleGetDefault();
@@ -31,32 +31,65 @@ int main(int argc, char *argv[]) {
 
 	srand(getTime());
 
+	states.reserve(10);
 	Game game;
 
 	auto clearLine = [] { printf("\e[2K\e[999D"); };
 	auto clearScreen = [] { printf("\e[2J"); };
 
 	std::function<void(const std::string &name)> chooseAction;
-	std::function<void()> displayRegion;
-	std::function<void(std::function<void()>)> selectRegion;
+	std::function<void()> displayRegion, displayArea, displayResource;
+	std::function<void(std::function<void(Region &)>)> selectRegion;
+	std::function<void(Region &, std::function<void(Area &)>)> selectArea;
+	std::function<void(Area &, std::function<void(const Resource::Name &, double)>)> selectResource;
 
-	std::function<void()> onRegionSelect = [] {};
-	s32 regionIndex = 0;
+	std::function<void(Region &)> onRegionSelect = [](Region &) {};
+	std::function<void(Area &)> onAreaSelect = [](Area &) {};
+	std::function<void(const Resource::Name &, double)> onResourceSelect = [](const Resource::Name &, double) {};
+	s32 regionIndex = 0, areaIndex = 0, resourceIndex = 0;
+
+	Region *selectedRegion = nullptr;
+	Area *selectedArea = nullptr;
+	Resource::Name selectedResource;
 
 	const Action actions[] = {
 		{"Add Region", State::Initial, [&] { game.addRegion(); }},
+		{"Extract Resource", State::Initial, [&] {
+			selectRegion([&](Region &region) {
+				// print("Selected region: %s\n", region.name.c_str());
+				selectArea(region, [&](Area &area) {
+					// print("Selected area: %s\n", area.name.c_str());
+					selectResource(area, [&](const Resource::Name &resource, double amount) {
+						print("Amount of \e[36m%s\e[39m available: \e[1m%f\e[22m\n", resource.c_str(), amount);
+						svcSleepThread(1'000'000'000);
+						if (!Keyboard::openForDouble([&](double chosen) {
+							if (amount < chosen) {
+								print("Not enough of that resource is available.\n");
+							} else {
+								area.resources[resource] -= chosen;
+								game.inventory[resource] += chosen;
+								print("Extracted \e[1m%f\e[22m x \e[36m%s\e[39m.\n", chosen, resource.c_str());
+							}
+						}, "Resource Amount")) {
+							print("Invalid amount.\n");
+						}
+					});
+				});
+			});
+		}},
 		{"List Regions", State::Initial, [&] { game.listRegions(); }},
-		{"List Region Resources", State::Initial, [&] { selectRegion([&] {
-			Region &region = std::next(game.regions.begin(), regionIndex)->second;
-			Resource::Map resources = region.allResources();
-			if (resources.empty()) {
-				print("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
-			} else {
-				print("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
-				for (const auto &pair: resources)
-					print("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
-			}
-		}); }},
+		{"List Region Resources", State::Initial, [&] {
+			selectRegion([&](Region &region) {
+				Resource::Map resources = region.allResources();
+				if (resources.empty()) {
+					print("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
+				} else {
+					print("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
+					for (const auto &pair: resources)
+						print("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
+				}
+			});
+		}},
 		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); chooseAction("List Regions"); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 		{"Tick Once", State::Initial, [&] { game.tick(); }},
@@ -77,20 +110,62 @@ int main(int argc, char *argv[]) {
 		print("Select action: \e[33m%s\e[0m", actions[actionIndex].name);
 	};
 
-	selectRegion = [&](std::function<void()> selectfn) {
+	selectRegion = [&](std::function<void(Region &)> selectfn) {
 		if (game.regions.empty()) {
 			print("No regions.\n");
 		} else {
 			regionIndex = 0;
 			onRegionSelect = selectfn;
 			displayRegion();
-			state = State::SelectRegion;
+			states.push_back(State::SelectRegion);
+		}
+	};
+
+	selectArea = [&](Region &region, std::function<void(Area &)> selectfn) {
+		if (region.areas.empty()) {
+			print("No areas.\n");
+		} else {
+			areaIndex = 0;
+			onAreaSelect = selectfn;
+			selectedRegion = &region;
+			displayArea();
+			states.push_back(State::SelectArea);
+		}
+	};
+
+	selectResource = [&](Area &area, std::function<void(const Resource::Name &, double)> selectfn) {
+		if (area.resources.empty()) {
+			print("No resources.\n");
+		} else {
+			resourceIndex = 0;
+			onResourceSelect = selectfn;
+			selectedArea = &area;
+			displayResource();
+			states.push_back(State::SelectResource);
 		}
 	};
 
 	displayRegion = [&] {
 		clearLine();
 		print("Select region: \e[33m%s\e[0m", std::next(game.regions.begin(), regionIndex)->second.name.c_str());
+	};
+
+	displayArea = [&] {
+		clearLine();
+		if (!selectedRegion) {
+			print("No region selected.");
+			return;
+		}
+		print("Select area: \e[33m%s\e[0m", std::next(selectedRegion->areas.begin(), areaIndex)->second->name.c_str());
+	};
+
+	displayResource = [&] {
+		clearLine();
+		if (!selectedArea) {
+			print("No area selected.\n");
+			return;
+		}
+		print("Select resource: \e[33m%s\e[0m", std::next(selectedArea->resources.begin(), resourceIndex)->first.c_str());
 	};
 
 	chooseAction = [&](const std::string &name) {
@@ -116,10 +191,10 @@ int main(int argc, char *argv[]) {
 		const bool selectPrev = (kDown & HidNpadButton_AnyUp)   || (kDown & HidNpadButton_AnyLeft);
 		const bool aPressed = kDown & HidNpadButton_A;
 
-		switch (state) {
+		switch (states.back()) {
 			case State::Initial:
 				displayAction();
-				state = State::SelectAction;
+				states.back() = State::SelectAction;
 				break;
 
 			case State::SelectAction: {
@@ -135,7 +210,7 @@ int main(int argc, char *argv[]) {
 					displayAction();
 				if (aPressed) {
 					clearLine();
-					state = actions[actionIndex].state;
+					states.back() = actions[actionIndex].state;
 					actions[actionIndex].onSelect();
 				}
 				break;
@@ -156,9 +231,54 @@ int main(int argc, char *argv[]) {
 					displayRegion();
 				if (aPressed) {
 					clearLine();
-					onRegionSelect();
-					if (state == State::SelectRegion)
-						state = State::Initial;
+					selectedRegion = &std::next(game.regions.begin(), regionIndex)->second;
+					states.pop_back();
+					onRegionSelect(*selectedRegion);
+				}
+				break;
+			}
+
+			case State::SelectArea: {
+				if (!selectedRegion || selectedRegion->areas.empty())
+					break;
+				bool changed = false;
+				if (selectNext) {
+					areaIndex = (areaIndex + 1) % selectedRegion->areas.size();
+					changed = true;
+				} else if (selectPrev) {
+					areaIndex = areaIndex == 0? selectedRegion->areas.size() - 1 : areaIndex - 1;
+					changed = true;
+				}
+				if (changed)
+					displayArea();
+				if (aPressed) {
+					clearLine();
+					selectedArea = std::next(selectedRegion->areas.begin(), areaIndex)->second.get();
+					states.pop_back();
+					onAreaSelect(*selectedArea);
+				}
+				break;
+			}
+
+			case State::SelectResource: {
+				if (!selectedArea || selectedArea->resources.empty())
+					break;
+				bool changed = false;
+				if (selectNext) {
+					resourceIndex = (resourceIndex + 1) % selectedArea->resources.size();
+					changed = true;
+				} else if (selectPrev) {
+					resourceIndex = resourceIndex == 0? selectedArea->resources.size() - 1 : resourceIndex - 1;
+					changed = true;
+				}
+				if (changed)
+					displayResource();
+				if (aPressed) {
+					clearLine();
+					auto iter = std::next(selectedArea->resources.begin(), resourceIndex);
+					selectedResource = iter->first;
+					states.pop_back();
+					onResourceSelect(selectedResource, iter->second);
 				}
 				break;
 			}

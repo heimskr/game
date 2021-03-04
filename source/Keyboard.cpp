@@ -87,3 +87,31 @@ bool Keyboard::openForNumber(std::function<void(s64)> f, const std::string &head
 	delete[] buffer;
 	return false;
 }
+
+bool Keyboard::openForDouble(std::function<void(double)> f, const std::string &headerText, const std::string &subText, int maxStringLength, const std::string &initialText, const std::string &leftButton, u32 kbdDisableBitmask) {
+	SwkbdConfig config = createSwkbdBaseConfig(headerText, subText, maxStringLength, initialText);
+
+	swkbdConfigSetType(&config, SwkbdType_NumPad);
+	swkbdConfigSetLeftOptionalSymbolKey(&config, leftButton.c_str());
+	swkbdConfigSetRightOptionalSymbolKey(&config, ".");
+	swkbdConfigSetKeySetDisableBitmask(&config, kbdDisableBitmask);
+
+	char *buffer = new char[maxStringLength + 1];
+
+	if (R_SUCCEEDED(swkbdShow(&config, buffer, maxStringLength)) && strcmp(buffer, "") != 0) {
+		swkbdClose(&config);
+		try {
+			f(std::stod(buffer));
+		} catch (const std::invalid_argument &) {
+			delete[] buffer;
+			return false;
+		}
+
+		delete[] buffer;
+		return true;
+	}
+
+	swkbdClose(&config);
+	delete[] buffer;
+	return false;
+}
