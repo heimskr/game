@@ -80,16 +80,23 @@ int main(int argc, char *argv[]) {
 			selectRegion([&](Region &region) {
 				Resource::Map resources = region.allResources();
 				if (resources.empty()) {
-					print("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
+					printf("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
 				} else {
-					print("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
+					printf("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
 					for (const auto &pair: resources)
-						print("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
+						printf("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
 				}
 			});
 		}},
 		{"Load Defaults", State::Initial, [&] { game.loadDefaults(); chooseAction("List Regions"); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
+		{"Show Inventory", State::Initial, [&] {
+			if (game.inventory.empty())
+				printf("No resources in inventory.\n");
+			else
+				for (const auto &pair: game.inventory)
+					printf("- \e[36m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
+		}},
 		{"Tick Once", State::Initial, [&] { game.tick(); }},
 		{"Tick Many", State::Initial, [&] {
 			Keyboard::openForNumber([&](s64 ticks) {
