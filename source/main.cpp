@@ -38,14 +38,7 @@ int main(int argc, char *argv[]) {
 	Context context;
 	context.game = std::make_shared<Game>();
 
-	auto clearLine = [] { printf("\e[2K\e[999D"); };
-	auto clearScreen = [] { printf("\e[2J"); };
-
 	std::function<void(const std::string &name)> chooseAction;
-	// std::function<void()> displayRegion, displayArea, displayResource;
-	// std::function<void(std::function<void(Region &)>)> selectRegion;
-	std::function<void(Region &, std::function<void(Area &)>)> selectArea;
-	std::function<void(Area &, std::function<void(const Resource::Name &, double)>)> selectResource;
 
 	const Action actions[] = {
 		{"Add Region", State::Initial, [&] { context->addRegion(); }},
