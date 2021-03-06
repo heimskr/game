@@ -35,52 +35,24 @@ int main(int argc, char *argv[]) {
 	srand(getTime());
 
 	states.reserve(10);
-	std::shared_ptr<Game> game = std::make_shared<Game>();
+	Context context;
+	context.game = std::make_shared<Game>();
 
 	auto clearLine = [] { printf("\e[2K\e[999D"); };
 	auto clearScreen = [] { printf("\e[2J"); };
 
 	std::function<void(const std::string &name)> chooseAction;
-	std::function<void()> displayRegion, displayArea, displayResource;
-	std::function<void(std::function<void(Region &)>)> selectRegion;
+	// std::function<void()> displayRegion, displayArea, displayResource;
+	// std::function<void(std::function<void(Region &)>)> selectRegion;
 	std::function<void(Region &, std::function<void(Area &)>)> selectArea;
 	std::function<void(Area &, std::function<void(const Resource::Name &, double)>)> selectResource;
 
-	std::function<void(Region &)> onRegionSelect = [](Region &) {};
-	std::function<void(Area &)> onAreaSelect = [](Area &) {};
-	std::function<void(const Resource::Name &, double)> onResourceSelect = [](const Resource::Name &, double) {};
-	s32 regionIndex = 0, areaIndex = 0, resourceIndex = 0;
-
-	Region *selectedRegion = nullptr;
-	Area *selectedArea = nullptr;
-	Resource::Name selectedResource;
-
 	const Action actions[] = {
-		{"Add Region", State::Initial, [&] { game->addRegion(); }},
-		{"Extract Resource", State::Initial, [&] {
-			selectRegion([&](Region &region) {
-				selectArea(region, [&](Area &area) {
-					selectResource(area, [&](const Resource::Name &resource, double amount) {
-						print("Amount of \e[36m%s\e[39m available: \e[1m%f\e[22m\n", resource.c_str(), amount);
-						svcSleepThread(1'000'000'000);
-						if (!Keyboard::openForDouble([&](double chosen) {
-							if (amount < chosen) {
-								print("Not enough of that resource is available.\n");
-							} else {
-								area.resources[resource] -= chosen;
-								game->inventory[resource] += chosen;
-								print("Extracted \e[1m%f\e[22m x \e[36m%s\e[39m.\n", chosen, resource.c_str());
-							}
-						}, "Resource Amount")) {
-							print("Invalid amount.\n");
-						}
-					});
-				});
-			});
-		}},
-		{"List Regions", State::Initial, [&] { game->listRegions(); }},
+		{"Add Region", State::Initial, [&] { context->addRegion(); }},
+		{"Extract Resource", State::Initial, [&] { extractResource(context); }},
+		{"List Regions", State::Initial, [&] { context->listRegions(); }},
 		{"List Region Resources", State::Initial, [&] {
-			selectRegion([&](Region &region) {
+			selectRegion(context, [&](Region &region) {
 				Resource::Map resources = region.allResources();
 				if (resources.empty()) {
 					printf("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
@@ -93,35 +65,35 @@ int main(int argc, char *argv[]) {
 		}},
 		{"Load", State::Initial, [&] {
 			try {
-				game = game->load();
+				context.game = Game::load();
 				print("Game loaded successfully.\n");
 			} catch (const std::exception &err) {
 				print("Couldn't load game: %s\n", err.what());
 			}
 		}},
-		{"Load Defaults", State::Initial, [&] { game->loadDefaults(); chooseAction("List Regions"); }},
+		{"Load Defaults", State::Initial, [&] { context->loadDefaults(); chooseAction("List Regions"); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 		{"Save", State::Initial, [&] {
 			try {
-				game->save();
+				context->save();
 				print("Game saved successfully.\n");
 			} catch (const std::exception &err) {
 				print("Couldn't save game: %s\n", err.what());
 			}
 		}},
 		{"Show Inventory", State::Initial, [&] {
-			if (game->inventory.empty())
+			if (context->inventory.empty())
 				printf("No resources in inventory.\n");
 			else
-				for (const auto &pair: game->inventory)
+				for (const auto &pair: context->inventory)
 					printf("- \e[36m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
 		}},
-		{"Stringify", State::Initial, [&] { print("%s\n", game->toString().c_str()); }},
-		{"Tick Once", State::Initial, [&] { game->tick(); }},
+		{"Stringify", State::Initial, [&] { print("%s\n", context->toString().c_str()); }},
+		{"Tick Once", State::Initial, [&] { context->tick(); }},
 		{"Tick Many", State::Initial, [&] {
 			Keyboard::openForNumber([&](s64 ticks) {
 				for (s64 i = 0; i < ticks; ++i)
-					game->tick();
+					context->tick();
 				print("Ticked \e[1m%ld\e[22m times.\n", ticks);
 			}, "Tick Count");
 		}},
@@ -133,64 +105,6 @@ int main(int argc, char *argv[]) {
 	auto displayAction = [&] {
 		clearLine();
 		print("Select action: \e[33m%s\e[0m", actions[actionIndex].name);
-	};
-
-	selectRegion = [&](std::function<void(Region &)> selectfn) {
-		if (game->regions.empty()) {
-			print("No regions.\n");
-		} else {
-			regionIndex = 0;
-			onRegionSelect = selectfn;
-			displayRegion();
-			states.push_back(State::SelectRegion);
-		}
-	};
-
-	selectArea = [&](Region &region, std::function<void(Area &)> selectfn) {
-		if (region.areas.empty()) {
-			print("No areas.\n");
-		} else {
-			areaIndex = 0;
-			onAreaSelect = selectfn;
-			selectedRegion = &region;
-			displayArea();
-			states.push_back(State::SelectArea);
-		}
-	};
-
-	selectResource = [&](Area &area, std::function<void(const Resource::Name &, double)> selectfn) {
-		if (area.resources.empty()) {
-			print("No resources.\n");
-		} else {
-			resourceIndex = 0;
-			onResourceSelect = selectfn;
-			selectedArea = &area;
-			displayResource();
-			states.push_back(State::SelectResource);
-		}
-	};
-
-	displayRegion = [&] {
-		clearLine();
-		print("Select region: \e[33m%s\e[0m", std::next(game->regions.begin(), regionIndex)->second.name.c_str());
-	};
-
-	displayArea = [&] {
-		clearLine();
-		if (!selectedRegion) {
-			print("No region selected.");
-			return;
-		}
-		print("Select area: \e[33m%s\e[0m", std::next(selectedRegion->areas.begin(), areaIndex)->second->name.c_str());
-	};
-
-	displayResource = [&] {
-		clearLine();
-		if (!selectedArea) {
-			print("No area selected.\n");
-			return;
-		}
-		print("Select resource: \e[33m%s\e[0m", std::next(selectedArea->resources.begin(), resourceIndex)->first.c_str());
 	};
 
 	chooseAction = [&](const std::string &name) {
@@ -244,68 +158,68 @@ int main(int argc, char *argv[]) {
 			}
 
 			case State::SelectRegion: {
-				if (game->regions.empty())
+				if (context->regions.empty())
 					break;
 				bool changed = false;
 				if (selectNext) {
-					regionIndex = (regionIndex + 1) % game->regions.size();
+					context.regionIndex = (context.regionIndex + 1) % context->regions.size();
 					changed = true;
 				} else if (selectPrev) {
-					regionIndex = regionIndex == 0? game->regions.size() - 1 : regionIndex - 1;
+					context.regionIndex = context.regionIndex == 0? context->regions.size() - 1 : context.regionIndex - 1;
 					changed = true;
 				}
 				if (changed)
-					displayRegion();
+					displayRegion(context);
 				if (aPressed) {
 					clearLine();
-					selectedRegion = &std::next(game->regions.begin(), regionIndex)->second;
+					context.selectedRegion = &std::next(context->regions.begin(), context.regionIndex)->second;
 					states.pop_back();
-					onRegionSelect(*selectedRegion);
+					context.onRegionSelect(*context.selectedRegion);
 				}
 				break;
 			}
 
 			case State::SelectArea: {
-				if (!selectedRegion || selectedRegion->areas.empty())
+				if (!context.selectedRegion || context.selectedRegion->areas.empty())
 					break;
 				bool changed = false;
 				if (selectNext) {
-					areaIndex = (areaIndex + 1) % selectedRegion->areas.size();
+					context.areaIndex = (context.areaIndex + 1) % context.selectedRegion->areas.size();
 					changed = true;
 				} else if (selectPrev) {
-					areaIndex = areaIndex == 0? selectedRegion->areas.size() - 1 : areaIndex - 1;
+					context.areaIndex = context.areaIndex == 0? context.selectedRegion->areas.size() - 1 : context.areaIndex - 1;
 					changed = true;
 				}
 				if (changed)
-					displayArea();
+					displayArea(context);
 				if (aPressed) {
 					clearLine();
-					selectedArea = std::next(selectedRegion->areas.begin(), areaIndex)->second.get();
+					context.selectedArea = std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second.get();
 					states.pop_back();
-					onAreaSelect(*selectedArea);
+					context.onAreaSelect(*context.selectedArea);
 				}
 				break;
 			}
 
 			case State::SelectResource: {
-				if (!selectedArea || selectedArea->resources.empty())
+				if (!context.selectedArea || context.selectedArea->resources.empty())
 					break;
 				bool changed = false;
 				if (selectNext) {
-					resourceIndex = (resourceIndex + 1) % selectedArea->resources.size();
+					context.resourceIndex = (context.resourceIndex + 1) % context.selectedArea->resources.size();
 					changed = true;
 				} else if (selectPrev) {
-					resourceIndex = resourceIndex == 0? selectedArea->resources.size() - 1 : resourceIndex - 1;
+					context.resourceIndex = context.resourceIndex == 0? context.selectedArea->resources.size() - 1 : context.resourceIndex - 1;
 					changed = true;
 				}
 				if (changed)
-					displayResource();
+					displayResource(context);
 				if (aPressed) {
 					clearLine();
-					auto iter = std::next(selectedArea->resources.begin(), resourceIndex);
-					selectedResource = iter->first;
+					auto iter = std::next(context.selectedArea->resources.begin(), context.resourceIndex);
+					context.selectedResource = iter->first;
 					states.pop_back();
-					onResourceSelect(selectedResource, iter->second);
+					context.onResourceSelect(context.selectedResource, iter->second);
 				}
 				break;
 			}
@@ -316,7 +230,7 @@ int main(int argc, char *argv[]) {
 
 		time_t new_time = getTime();
 		for (s64 i = 0; i < new_time - last_time; ++i)
-			game->tick();
+			context->tick();
 		last_time = new_time;
 		consoleUpdate(console);
 	}
@@ -363,4 +277,92 @@ std::string randomString(size_t length) {
 	for (size_t i = 0; i < length; ++i)
 		out += (i == 0? 'A' : 'a') + (rand() % 26);
 	return out;
+}
+
+void extractResource(Context &context) {
+	selectRegion(context, [&](Region &region) {
+		selectArea(context, region, [&](Area &area) {
+			selectResource(context, area, [&](const Resource::Name &resource, double amount) {
+				print("Amount of \e[36m%s\e[39m available: \e[1m%f\e[22m\n", resource.c_str(), amount);
+				svcSleepThread(1'000'000'000);
+				if (!Keyboard::openForDouble([&](double chosen) {
+					if (amount < chosen) {
+						print("Not enough of that resource is available.\n");
+					} else {
+						area.resources[resource] -= chosen;
+						context->inventory[resource] += chosen;
+						print("Extracted \e[1m%f\e[22m x \e[36m%s\e[39m.\n", chosen, resource.c_str());
+					}
+				}, "Resource Amount")) {
+					print("Invalid amount.\n");
+				}
+			});
+		});
+	});
+}
+
+void selectRegion(Context &context, std::function<void(Region &)> selectfn) {
+	if (context->regions.empty()) {
+		print("No regions.\n");
+	} else {
+		context.regionIndex = 0;
+		context.onRegionSelect = selectfn;
+		displayRegion(context);
+		states.push_back(State::SelectRegion);
+	}
+}
+
+void selectArea(Context &context, Region &region, std::function<void(Area &)> selectfn) {
+	if (region.areas.empty()) {
+		print("No areas.\n");
+	} else {
+		context.areaIndex = 0;
+		context.onAreaSelect = selectfn;
+		context.selectedRegion = &region;
+		displayArea(context);
+		states.push_back(State::SelectArea);
+	}
+}
+
+void selectResource(Context &context, Area &area, std::function<void(const Resource::Name &, double)> selectfn) {
+	if (area.resources.empty()) {
+		print("No resources.\n");
+	} else {
+		context.resourceIndex = 0;
+		context.onResourceSelect = selectfn;
+		context.selectedArea = &area;
+		displayResource(context);
+		states.push_back(State::SelectResource);
+	}
+}
+
+void displayRegion(const Context &context) {
+	clearLine();
+	print("Select region: \e[33m%s\e[0m", std::next(context->regions.begin(), context.regionIndex)->second.name.c_str());
+}
+
+void displayArea(const Context &context) {
+	clearLine();
+	if (!context.selectedRegion) {
+		print("No region selected.");
+		return;
+	}
+	print("Select area: \e[33m%s\e[0m", std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second->name.c_str());
+}
+
+void displayResource(const Context &context) {
+	clearLine();
+	if (!context.selectedArea) {
+		print("No area selected.\n");
+		return;
+	}
+	print("Select resource: \e[33m%s\e[0m", std::next(context.selectedArea->resources.begin(), context.resourceIndex)->first.c_str());
+}
+
+void clearLine() {
+	print("\e[2K\e[999D");
+}
+
+void clearScreen() {
+	print("\e[2J");
 }
