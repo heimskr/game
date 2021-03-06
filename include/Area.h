@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -10,9 +11,9 @@ class Region;
 
 class Area {
 	public:
-		static constexpr const char *INVALID_CHARS = ";:";
+		static constexpr const char *INVALID_CHARS = ";:/";
 
-		enum class Type {Housing, Forest, Mountain, Lake};
+		enum class Type: unsigned {Housing, Forest, Mountain, Lake};
 
 		Region *parent;
 		Resource::Map resources;
@@ -29,6 +30,9 @@ class Area {
 		Area & setName(const std::string &);
 
 		size_t totalPopulation() const;
+
+		std::string toString() const;
+		static std::shared_ptr<Area> fromString(Region &, const std::string &);
 
 		virtual Type getType() const = 0;
 		virtual std::string description() const = 0;

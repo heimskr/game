@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "Region.h"
+#include "Util.h"
 
 Region::Region(Game *owner_, const std::string &name_, const Position &position_, size_t size_):
 	owner(owner_), name(name_), position(position_), size(size_) {}
@@ -78,7 +79,28 @@ Region & Region::operator+=(std::shared_ptr<Area> area) {
 
 std::string Region::toString() const {
 	std::stringstream out;
-	out << name << ":" << position.first << ":" << position.second << ":" << size << ":" << money;
-	// for (const auto 
+	out << name << ":" << position.first << ":" << position.second << ":" << size << ":" << money << ";";
+	for (const auto &pair: areas)
+		out << pair.second->toString() << ";";
 	return out.str();
+}
+
+std::shared_ptr<Region> Region::fromString(Game &game, const std::string &str) {
+	const std::vector<std::string> by_semicolon = split(str, ";", false);
+	const std::vector<std::string> by_colon = split(by_semicolon[0], ":", false);
+	const std::string &name = by_colon[0];
+	const s64 x = parseLong(by_colon[1]);
+	const s64 y = parseLong(by_colon[2]);
+	const size_t size = parseUlong(by_colon[3]);
+	const size_t money = parseUlong(by_colon[4]);
+	std::shared_ptr<Region> region = std::make_shared<Region>(&game, name, std::make_pair(x, y), size);
+	region->money = money;
+	region->areas.clear();
+	for (size_t i = 1; i < by_semicolon.size(); ++i) {
+		if (by_semicolon[i].empty())
+			continue;
+		std::shared_ptr<Area> area = Area::fromString(*region, by_semicolon[i]);
+		region->areas.emplace(area->name, area);
+	}
+	return region;
 }

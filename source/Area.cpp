@@ -1,7 +1,10 @@
+#include <sstream>
 #include <stdexcept>
 
 #include "Area.h"
 #include "Region.h"
+#include "area/Areas.h"
+#include "Util.h"
 
 Area::Area(Region *parent_, size_t size_): parent(parent_), size(size_) {}
 
@@ -33,4 +36,39 @@ size_t Area::totalPopulation() const {
 		if (Resource::hasType(*parent->owner, pair.first, "sapient"))
 			out += static_cast<size_t>(pair.second);
 	return out;
+}
+
+std::string Area::toString() const {
+	std::stringstream out;
+	out << name << ":" << size << ":" << (playerOwned? "1" : "0") << ":" << static_cast<unsigned>(getType());
+	for (const auto &pair: resources)
+		out << ":" << pair.first << "/" << pair.second;
+	return out.str();
+}
+
+std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
+	const std::vector<std::string> pieces = split(str, ":", false);
+	print("[\e[1m%s\e[0m]\n", str.c_str());
+	if (pieces.size() < 4) {
+		throw std::runtime_error("Invalid Area string");
+	}
+	const std::string &name = pieces[0];
+	const size_t size = parseLong(pieces[1]);
+	const bool player_owned = pieces[2] == "1";
+	const Type type = static_cast<Type>(parseLong(pieces[3]));
+	Resource::Map resources;
+	for (size_t i = 4; i < pieces.size(); ++i) {
+		const std::vector<std::string> resource_pieces = split(pieces[i], "/");
+		resources.emplace(resource_pieces[0], parseDouble(resource_pieces[1]));
+	}
+	std::shared_ptr<Area> area;
+	switch (type) {
+		case Type::Housing:  area = std::make_shared<HousingArea>(&region);  break;
+		case Type::Forest:   area = std::make_shared<ForestArea>(&region);   break;
+		case Type::Mountain: area = std::make_shared<MountainArea>(&region); break;
+		case Type::Lake:     area = std::make_shared<LakeArea>(&region);     break;
+		default: throw std::invalid_argument("Unknown Area type: " + std::to_string(static_cast<unsigned>(type)));
+	}
+	area->setName(name).setSize(size).setPlayerOwned(player_owned).setResources(resources);
+	return area;
 }

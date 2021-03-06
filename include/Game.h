@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <memory>
 
 #include "Region.h"
 #include "Resource.h"
@@ -31,4 +32,7 @@ class Game {
 		void loadDefaults();
 
 		std::string toString() const;
+		static std::shared_ptr<Game> fromString(const std::string &);
+		static std::shared_ptr<Game> load();
+		void save();
 };

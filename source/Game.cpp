@@ -1,11 +1,13 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <switch.h>
 
+#include "FS.h"
 #include "Game.h"
 #include "Keyboard.h"
-#include "Util.h"
 #include "NameGen.h"
+#include "Util.h"
 #include "area/Areas.h"
 
 namespace Globals {
@@ -164,6 +166,60 @@ std::string Game::toString() const {
 	out << "[Regions]\n";
 	for (const auto &pair: regions)
 		out << pair.first.first << "," << pair.first.second << "=" << pair.second.toString() << "\n";
-	out << "\n";
+	out << "\n[Inventory]\n";
+	for (const auto &pair: inventory)
+		out << pair.first << "=" << pair.second << "\n";
 	return out.str();
+}
+
+std::shared_ptr<Game> Game::fromString(const std::string &str) {
+	const std::vector<std::string> lines = split(str, "\n", true);
+	enum class Mode {None, Regions, Inventory};
+	Mode mode = Mode::None;
+
+	std::shared_ptr<Game> out = std::make_shared<Game>();
+
+	for (const std::string &line: lines) {
+		if (line.empty())
+			continue;
+		if (line[0] == '[') {
+			if (line == "[Regions]")
+				mode = Mode::Regions;
+			else if (line == "[Inventory]")
+				mode = Mode::Inventory;
+			else
+				throw std::invalid_argument("Invalid line");
+		} else if (mode == Mode::Regions) {
+			auto region = Region::fromString(*out, line);
+			out->regions.emplace(region->position, *region);
+		} else if (mode == Mode::Inventory) {
+			size_t equals = line.find('=');
+			if (equals == std::string::npos)
+				throw std::invalid_argument("Invalid inventory line");
+			out->inventory.emplace(line.substr(0, equals), parseDouble(line.substr(equals + 1)));
+		}
+	}
+
+	return out;
+}
+
+std::shared_ptr<Game> Game::load() {
+	if (!FS::fileExists("/switch/TradeGame/save.txt"))
+		throw std::runtime_error("Save data doesn't exist");
+	return fromString(FS::readFile("/switch/TradeGame/save.txt"));
+}
+
+void Game::save() {
+	Result result = 0;
+	if (!FS::dirExists("/switch")) {
+		if (R_FAILED(result = fsFsCreateDirectory(&fs, "/switch")))
+			throw std::runtime_error("fsFsCreateDirectory(/switch) failed: 0x" + hex(result));
+	}
+
+	if (!FS::dirExists("/switch/TradeGame")) {
+		if (R_FAILED(result = fsFsCreateDirectory(&fs, "/switch/TradeGame")))
+			throw std::runtime_error("fsFsCreateDirectory(/switch/TradeGame) failed: 0x" + hex(result));
+	}
+
+	FS::writeFile("/switch/TradeGame/save.txt", toString());
 }
