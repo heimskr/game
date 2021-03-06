@@ -169,12 +169,14 @@ std::string Game::toString() const {
 	out << "\n[Inventory]\n";
 	for (const auto &pair: inventory)
 		out << pair.first << "=" << pair.second << "\n";
+	out << "\n[Position]\n";
+	out << position.first << "," << position.second << "\n";
 	return out.str();
 }
 
 std::shared_ptr<Game> Game::fromString(const std::string &str) {
 	const std::vector<std::string> lines = split(str, "\n", true);
-	enum class Mode {None, Regions, Inventory};
+	enum class Mode {None, Regions, Inventory, Position};
 	Mode mode = Mode::None;
 
 	std::shared_ptr<Game> out = std::make_shared<Game>();
@@ -187,16 +189,33 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				mode = Mode::Regions;
 			else if (line == "[Inventory]")
 				mode = Mode::Inventory;
+			else if (line == "[Position]")
+				mode = Mode::Position;
 			else
 				throw std::invalid_argument("Invalid line");
-		} else if (mode == Mode::Regions) {
-			auto region = Region::fromString(*out, line);
-			out->regions.emplace(region->position, *region);
-		} else if (mode == Mode::Inventory) {
-			size_t equals = line.find('=');
-			if (equals == std::string::npos)
-				throw std::invalid_argument("Invalid Inventory line");
-			out->inventory.emplace(line.substr(0, equals), parseDouble(line.substr(equals + 1)));
+		} else {
+			switch (mode) {
+				case Mode::Regions: {
+					auto region = Region::fromString(*out, line);
+					out->regions.emplace(region->position, *region);
+					break;
+				}
+				case Mode::Inventory: {
+					size_t equals = line.find('=');
+					if (equals == std::string::npos)
+						throw std::invalid_argument("Invalid Inventory line");
+					out->inventory.emplace(line.substr(0, equals), parseDouble(line.substr(equals + 1)));
+					break;
+				}
+				case Mode::Position: {
+					size_t comma = line.find(',');
+					if (comma == std::string::npos)
+						throw std::invalid_argument("Invalid Position line");
+					out->position = {parseLong(line.substr(0, comma)), parseLong(line.substr(comma + 1))};
+					break;
+				}
+				default: throw std::runtime_error("Invalid mode: " + std::to_string(static_cast<int>(mode)));
+			}
 		}
 	}
 

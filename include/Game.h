@@ -13,6 +13,7 @@ class Game {
 		std::map<Resource::Name, Resource> resources;
 		std::map<Resource::Name, double> inventory;
 		std::map<Region::Position, Region> regions;
+		Region::Position position;
 
 		Game();
 
