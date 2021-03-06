@@ -44,18 +44,7 @@ int main(int argc, char *argv[]) {
 		{"Add Region", State::Initial, [&] { context->addRegion(); }},
 		{"Extract Resource", State::Initial, [&] { extractResource(context); }},
 		{"List Regions", State::Initial, [&] { context->listRegions(); }},
-		{"List Region Resources", State::Initial, [&] {
-			selectRegion(context, [&](Region &region) {
-				Resource::Map resources = region.allResources();
-				if (resources.empty()) {
-					printf("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
-				} else {
-					printf("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
-					for (const auto &pair: resources)
-						printf("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
-				}
-			});
-		}},
+		{"List Region Resources", State::Initial, [&] { listRegionResources(context); }},
 		{"Load", State::Initial, [&] {
 			try {
 				context.game = Game::load();
@@ -67,7 +56,21 @@ int main(int argc, char *argv[]) {
 		{"Load Defaults", State::Initial, [&] { context->loadDefaults(); chooseAction("List Regions"); }},
 		{"Move", State::Initial, [&] {
 			selectDirection(context, [&](Direction direction) {
-				print("Direction: %d\n", direction);
+				s64 offset_x = 0, offset_y = 0;
+				switch (direction) {
+					case Direction::North: offset_y = -1; break;
+					case Direction::East:  offset_x =  1; break;
+					case Direction::South: offset_y =  1; break;
+					case Direction::West:  offset_x = -1; break;
+					default: throw std::runtime_error("Invalid direction: " + std::to_string(static_cast<int>(direction)));
+				}
+				Region::Position new_position = {context->position.first + offset_x, context->position.second + offset_y};
+				if (context->regions.count(new_position) == 0) {
+					Logger::error("No region exists in that direction.");
+				} else {
+					context->position = new_position;
+					Logger::info("Moved to \e[36m%s\e[39m.", context->regions.at(new_position).name.c_str());
+				}
 			});
 		}},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
@@ -129,6 +132,7 @@ int main(int argc, char *argv[]) {
 		const bool selectNext = (kDown & HidNpadButton_AnyDown) || (kDown & HidNpadButton_AnyRight);
 		const bool selectPrev = (kDown & HidNpadButton_AnyUp)   || (kDown & HidNpadButton_AnyLeft);
 		const bool aPressed = kDown & HidNpadButton_A;
+		const bool bPressed = kDown & HidNpadButton_B;
 
 		switch (states.back()) {
 			case State::Initial:
@@ -168,7 +172,9 @@ int main(int argc, char *argv[]) {
 				}
 				if (changed)
 					displayRegion(context);
-				if (aPressed) {
+				if (bPressed) {
+					states.pop_back();
+				} else if (aPressed) {
 					clearLine();
 					context.selectedRegion = &std::next(context->regions.begin(), context.regionIndex)->second;
 					states.pop_back();
@@ -190,7 +196,9 @@ int main(int argc, char *argv[]) {
 				}
 				if (changed)
 					displayArea(context);
-				if (aPressed) {
+				if (bPressed) {
+					states.pop_back();
+				} else if (aPressed) {
 					clearLine();
 					context.selectedArea = std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second.get();
 					states.pop_back();
@@ -212,7 +220,9 @@ int main(int argc, char *argv[]) {
 				}
 				if (changed)
 					displayResource(context);
-				if (aPressed) {
+				if (bPressed) {
+					states.pop_back();
+				} else if (aPressed) {
 					clearLine();
 					auto iter = std::next(context.selectedArea->resources.begin(), context.resourceIndex);
 					context.selectedResource = iter->first;
@@ -236,7 +246,9 @@ int main(int argc, char *argv[]) {
 				}
 				if (changed)
 					displayDirection(context);
-				if (aPressed) {
+				if (bPressed) {
+					states.pop_back();
+				} else if (aPressed) {
 					clearLine();
 					states.pop_back();
 					context.onDirectionSelect(context.selectedDirection);
@@ -409,4 +421,17 @@ void clearLine() {
 
 void clearScreen() {
 	print("\e[2J");
+}
+
+void listRegionResources(Context &context) {
+	selectRegion(context, [&](Region &region) {
+		Resource::Map resources = region.allResources();
+		if (resources.empty()) {
+			printf("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
+		} else {
+			printf("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
+			for (const auto &pair: resources)
+				printf("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
+		}
+	});
 }

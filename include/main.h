@@ -60,3 +60,4 @@ void displayResource(const Context &);
 void displayDirection(const Context &);
 void clearLine();
 void clearScreen();
+void listRegionResources(Context &);
