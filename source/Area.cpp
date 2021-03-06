@@ -48,10 +48,8 @@ std::string Area::toString() const {
 
 std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);
-	print("[\e[1m%s\e[0m]\n", str.c_str());
-	if (pieces.size() < 4) {
+	if (pieces.size() < 4)
 		throw std::runtime_error("Invalid Area string");
-	}
 	const std::string &name = pieces[0];
 	const size_t size = parseLong(pieces[1]);
 	const bool player_owned = pieces[2] == "1";

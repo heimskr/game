@@ -165,7 +165,7 @@ std::string Game::toString() const {
 	std::stringstream out;
 	out << "[Regions]\n";
 	for (const auto &pair: regions)
-		out << pair.first.first << "," << pair.first.second << "=" << pair.second.toString() << "\n";
+		out << pair.second.toString() << "\n";
 	out << "\n[Inventory]\n";
 	for (const auto &pair: inventory)
 		out << pair.first << "=" << pair.second << "\n";
@@ -195,7 +195,7 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 		} else if (mode == Mode::Inventory) {
 			size_t equals = line.find('=');
 			if (equals == std::string::npos)
-				throw std::invalid_argument("Invalid inventory line");
+				throw std::invalid_argument("Invalid Inventory line");
 			out->inventory.emplace(line.substr(0, equals), parseDouble(line.substr(equals + 1)));
 		}
 	}
