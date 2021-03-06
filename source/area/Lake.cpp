@@ -11,6 +11,6 @@ std::string LakeArea::description() const {
 }
 
 void LakeArea::tick() {
-	if ((resources["water"] *= 1.03) > static_cast<double>(size) * WATER_MAX)
+	if ((resources["water"] += static_cast<double>(size) * 0.1) > static_cast<double>(size) * WATER_MAX)
 		resources["water"] = static_cast<double>(size) * WATER_MAX;
 }
