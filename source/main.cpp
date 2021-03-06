@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 					Logger::error("No region exists in that direction.");
 				} else {
 					context->position = new_position;
-					Logger::info("Moved to \e[36m%s\e[39m.", context->regions.at(new_position).name.c_str());
+					Logger::success("Moved to \e[33m%s\e[39m.", context->regions.at(new_position).name.c_str());
 				}
 			});
 		}},
@@ -90,12 +90,18 @@ int main(int argc, char *argv[]) {
 					printf("- \e[36m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
 		}},
 		{"Stringify", State::Initial, [&] { print("%s\n", context->toString().c_str()); }},
+		{"Teleport", State::Initial, [&] {
+			selectRegion(context, [&](Region &region) {
+				context->position = region.position;
+				Logger::success("Moved to \e[33m%s\e[39m.", region.name.c_str());
+			});
+		}},
 		{"Tick Once", State::Initial, [&] { context->tick(); }},
 		{"Tick Many", State::Initial, [&] {
 			Keyboard::openForNumber([&](s64 ticks) {
 				for (s64 i = 0; i < ticks; ++i)
 					context->tick();
-				print("Ticked \e[1m%ld\e[22m times.\n", ticks);
+				Logger::success("Ticked \e[1m%ld\e[22m times.\n", ticks);
 			}, "Tick Count");
 		}},
 	};
@@ -123,6 +129,11 @@ int main(int argc, char *argv[]) {
 		u64 kDown = padGetButtonsDown(&pad);
 		if (kDown & HidNpadButton_Plus)
 			break;
+
+		if (kDown & HidNpadButton_Y) {
+			for (int i = 0; i < 10; ++i)
+				printf("%d %c\n", i, i);
+		}
 
 		if (kDown & HidNpadButton_Minus) {
 			clearScreen();
@@ -312,10 +323,10 @@ std::string randomString(size_t length) {
 }
 
 void extractResource(Context &context) {
-	selectRegion(context, [&](Region &region) {
-		selectArea(context, region, [&](Area &area) {
+	try {
+		selectArea(context, context->currentRegion(), [&](Area &area) {
 			if (!area.playerOwned) {
-				print("You are not allowed to extract resources from that area.\n");
+				Logger::error("You are not allowed to extract resources from that area.");
 				return;
 			}
 			selectResource(context, area, [&](const Resource::Name &resource, double amount) {
@@ -323,23 +334,25 @@ void extractResource(Context &context) {
 				svcSleepThread(1'000'000'000);
 				if (!Keyboard::openForDouble([&](double chosen) {
 					if (amount < chosen) {
-						print("Not enough of that resource is available.\n");
+						Logger::error("Not enough of that resource is available.");
 					} else {
 						area.resources[resource] -= chosen;
 						context->inventory[resource] += chosen;
-						print("Extracted \e[1m%f\e[22m x \e[36m%s\e[39m.\n", chosen, resource.c_str());
+						Logger::success("Extracted \e[1m%f\e[22m x \e[36m%s\e[39m.", chosen, resource.c_str());
 					}
 				}, "Resource Amount")) {
-					print("Invalid amount.\n");
+					Logger::error("Invalid amount.");
 				}
 			});
 		});
-	});
+	} catch (const std::out_of_range &) {
+		Logger::error("No region is selected.");
+	}
 }
 
 void selectRegion(Context &context, std::function<void(Region &)> selectfn) {
 	if (context->regions.empty()) {
-		print("No regions.\n");
+		Logger::warn("No regions.");
 	} else {
 		context.regionIndex = 0;
 		context.onRegionSelect = selectfn;
@@ -350,7 +363,7 @@ void selectRegion(Context &context, std::function<void(Region &)> selectfn) {
 
 void selectArea(Context &context, Region &region, std::function<void(Area &)> selectfn) {
 	if (region.areas.empty()) {
-		print("No areas.\n");
+		Logger::warn("No areas.");
 	} else {
 		context.areaIndex = 0;
 		context.onAreaSelect = selectfn;
@@ -362,7 +375,7 @@ void selectArea(Context &context, Region &region, std::function<void(Area &)> se
 
 void selectResource(Context &context, Area &area, std::function<void(const Resource::Name &, double)> selectfn) {
 	if (area.resources.empty()) {
-		print("No resources.\n");
+		Logger::warn("No resources.");
 	} else {
 		context.resourceIndex = 0;
 		context.onResourceSelect = selectfn;
@@ -387,7 +400,7 @@ void displayRegion(const Context &context) {
 void displayArea(const Context &context) {
 	clearLine();
 	if (!context.selectedRegion) {
-		print("No region selected.");
+		Logger::warn("No region selected.");
 		return;
 	}
 	print("Select area: \e[33m%s\e[0m", std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second->name.c_str());
@@ -396,7 +409,7 @@ void displayArea(const Context &context) {
 void displayResource(const Context &context) {
 	clearLine();
 	if (!context.selectedArea) {
-		print("No area selected.\n");
+		Logger::warn("No area selected.");
 		return;
 	}
 	print("Select resource: \e[33m%s\e[0m", std::next(context.selectedArea->resources.begin(), context.resourceIndex)->first.c_str());
@@ -424,14 +437,19 @@ void clearScreen() {
 }
 
 void listRegionResources(Context &context) {
-	selectRegion(context, [&](Region &region) {
-		Resource::Map resources = region.allResources();
-		if (resources.empty()) {
-			printf("\e[1m%s\e[22m has no resources.\n", region.name.c_str());
-		} else {
-			printf("Resources for \e[1m%s\e[22m:\n", region.name.c_str());
-			for (const auto &pair: resources)
-				printf("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
-		}
-	});
+	Region *region;
+	try {
+		region = &context->currentRegion();
+	} catch (const std::out_of_range &) {
+		Logger::error("No region is selected.");
+		return;
+	}
+	Resource::Map resources = region->allResources();
+	if (resources.empty()) {
+		printf("\e[1m%s\e[22m has no resources.\n", region->name.c_str());
+	} else {
+		printf("Resources for \e[1m%s\e[22m:\n", region->name.c_str());
+		for (const auto &pair: resources)
+			printf("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
+	}
 }

@@ -27,6 +27,7 @@ class Game {
 
 		void listRegions();
 		Region * addRegion();
+		Region & currentRegion();
 
 		void tick();
 

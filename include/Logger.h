@@ -29,4 +29,12 @@ namespace Logger {
 		printf("\n");
 		consoleUpdate(console);
 	}
+
+	template <typename ...Args>
+	void success(Args &&...args) {
+		printf("\e[2m[\e[22;32m\x02\e[39;2m]\e[22m \e[39m");
+		printf(std::forward<Args>(args)...);
+		printf("\n");
+		consoleUpdate(console);
+	}
 }

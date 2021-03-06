@@ -138,6 +138,10 @@ Region * Game::addRegion() {
 	return &regions.at({x, y});
 }
 
+Region & Game::currentRegion() {
+	return regions.at(position);
+}
+
 void Game::tick() {
 	for (auto &pair: regions)
 		pair.second.tick();
