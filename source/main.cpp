@@ -275,6 +275,10 @@ std::string randomString(size_t length) {
 void extractResource(Context &context) {
 	selectRegion(context, [&](Region &region) {
 		selectArea(context, region, [&](Area &area) {
+			if (!area.playerOwned) {
+				print("You are not allowed to extract resources from that area.\n");
+				return;
+			}
 			selectResource(context, area, [&](const Resource::Name &resource, double amount) {
 				print("Amount of \e[36m%s\e[39m available: \e[1m%f\e[22m\n", resource.c_str(), amount);
 				svcSleepThread(1'000'000'000);
