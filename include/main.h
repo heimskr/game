@@ -8,7 +8,8 @@
 #include "Resource.h"
 #include "Util.h"
 
-enum class State {Invalid, Initial, SelectAction, SelectRegion, SelectArea, SelectResource, Extract};
+enum class State {Invalid, Initial, SelectAction, SelectRegion, SelectArea, SelectResource, SelectDirection, Extract};
+enum class Direction: int {North = 0, East, South, West};
 
 class Area;
 class Game;
@@ -34,9 +35,11 @@ struct Context {
 	Region *selectedRegion = nullptr;
 	Area *selectedArea = nullptr;
 	Resource::Name selectedResource;
+	Direction selectedDirection = Direction::North;
 	std::function<void(Region &)> onRegionSelect = [](Region &) {};
 	std::function<void(Area &)> onAreaSelect = [](Area &) {};
 	std::function<void(const Resource::Name &, double)> onResourceSelect = [](const Resource::Name &, double) {};
+	std::function<void(Direction)> onDirectionSelect = [](Direction) {};
 	Game * operator->() const {
 		return game.get();
 	}
@@ -50,8 +53,10 @@ void extractResource(Context &);
 void selectRegion(Context &, std::function<void(Region &)>);
 void selectArea(Context &, Region &, std::function<void(Area &)>);
 void selectResource(Context &, Area &, std::function<void(const Resource::Name &, double)>);
+void selectDirection(Context &, std::function<void(Direction)>);
 void displayRegion(const Context &);
 void displayArea(const Context &);
 void displayResource(const Context &);
+void displayDirection(const Context &);
 void clearLine();
 void clearScreen();

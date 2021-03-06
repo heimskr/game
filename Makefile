@@ -48,7 +48,7 @@ DATA		:=	data
 INCLUDES	:=	include
 #ROMFS	:=	romfs
 
-APP_TITLE	:= Some Game
+APP_TITLE	:= TradeGame
 APP_AUTHOR	:= heimskr
 APP_VERSION	:= 0.0.1
 

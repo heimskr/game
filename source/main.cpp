@@ -21,9 +21,9 @@ std::vector<State> states {State::Initial};
 int main(int argc, char *argv[]) {
 	console = consoleGetDefault();
 	consoleInit(console);
-	socketInitializeDefault(); // Initialize sockets
+	socketInitializeDefault();
 #ifdef USE_NXLINK_STDIO
-	nxlinkStdio(); // Redirect stdout and stderr over the network to nxlink
+	nxlinkStdio();
 #else
 	nxlinkConnectToHost(false, false);
 #endif
@@ -65,6 +65,11 @@ int main(int argc, char *argv[]) {
 			}
 		}},
 		{"Load Defaults", State::Initial, [&] { context->loadDefaults(); chooseAction("List Regions"); }},
+		{"Move", State::Initial, [&] {
+			selectDirection(context, [&](Direction direction) {
+				print("Direction: %d\n", direction);
+			});
+		}},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 		{"Save", State::Initial, [&] {
 			try {
@@ -217,6 +222,28 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 
+			case State::SelectDirection: {
+				bool changed = false;
+				if (selectNext) {
+					context.selectedDirection = static_cast<Direction>((static_cast<int>(context.selectedDirection) + 1) % 4);
+					changed = true;
+				} else if (selectPrev) {
+					if (context.selectedDirection == Direction::North)
+						context.selectedDirection = Direction::West;
+					else
+						context.selectedDirection = static_cast<Direction>(static_cast<int>(context.selectedDirection) - 1);
+					changed = true;
+				}
+				if (changed)
+					displayDirection(context);
+				if (aPressed) {
+					clearLine();
+					states.pop_back();
+					context.onDirectionSelect(context.selectedDirection);
+				}
+				break;
+			}
+
 			default:
 				break;
 		}
@@ -333,6 +360,13 @@ void selectResource(Context &context, Area &area, std::function<void(const Resou
 	}
 }
 
+void selectDirection(Context &context, std::function<void(Direction)> selectfn) {
+	context.selectedDirection = Direction::North;
+	context.onDirectionSelect = selectfn;
+	displayDirection(context);
+	states.push_back(State::SelectDirection);
+}
+
 void displayRegion(const Context &context) {
 	clearLine();
 	print("Select region: \e[33m%s\e[0m", std::next(context->regions.begin(), context.regionIndex)->second.name.c_str());
@@ -354,6 +388,19 @@ void displayResource(const Context &context) {
 		return;
 	}
 	print("Select resource: \e[33m%s\e[0m", std::next(context.selectedArea->resources.begin(), context.resourceIndex)->first.c_str());
+}
+
+void displayDirection(const Context &context) {
+	clearLine();
+	const char *dir;
+	switch (context.selectedDirection) {
+		case Direction::North: dir = "North"; break;
+		case Direction::East:  dir = "East";  break;
+		case Direction::South: dir = "South"; break;
+		case Direction::West:  dir = "West";  break;
+		default: dir = "???";
+	}
+	printf("Select direction: \e[33m%s\e[0m", dir);
 }
 
 void clearLine() {
