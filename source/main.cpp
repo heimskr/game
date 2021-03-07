@@ -55,6 +55,17 @@ int main(int argc, char *argv[]) {
 		}},
 		{"Load Defaults", State::Initial, [&] { context->loadDefaults(); chooseAction("List Regions"); }},
 		{"Move", State::Initial, [&] {
+			Region *region;
+			try {
+				Logger::info("You are at \e[33m%s\e[39m.", (region = &context->currentRegion())->name.c_str());
+			} catch (const std::out_of_range &) {
+				return;
+			}
+			if (!region->hasNeighbor()) {
+				Logger::warn("No regions are adjacent.");
+				return;
+			}
+			context.validDirections = region->validDirections();
 			selectDirection(context, [&](Direction direction) {
 				s64 offset_x = 0, offset_y = 0;
 				switch (direction) {
@@ -245,15 +256,21 @@ int main(int argc, char *argv[]) {
 
 			case State::SelectDirection: {
 				bool changed = false;
-				if (selectNext) {
-					context.selectedDirection = static_cast<Direction>((static_cast<int>(context.selectedDirection) + 1) % 4);
-					changed = true;
-				} else if (selectPrev) {
-					if (context.selectedDirection == Direction::North)
-						context.selectedDirection = Direction::West;
-					else
-						context.selectedDirection = static_cast<Direction>(static_cast<int>(context.selectedDirection) - 1);
-					changed = true;
+				if (!context.validDirections.empty()) {
+					if (selectNext) {
+						do {
+							context.selectedDirection = static_cast<Direction>((static_cast<int>(context.selectedDirection) + 1) % 4);
+						} while (context.validDirections.count(context.selectedDirection) == 0);
+						changed = true;
+					} else if (selectPrev) {
+						do {
+							if (context.selectedDirection == Direction::North)
+								context.selectedDirection = Direction::West;
+							else
+								context.selectedDirection = static_cast<Direction>(static_cast<int>(context.selectedDirection) - 1);
+						} while (context.validDirections.count(context.selectedDirection) == 0);
+						changed = true;
+					}
 				}
 				if (changed)
 					displayDirection(context);
@@ -387,6 +404,9 @@ void selectResource(Context &context, Area &area, std::function<void(const Resou
 
 void selectDirection(Context &context, std::function<void(Direction)> selectfn) {
 	context.selectedDirection = Direction::North;
+	if (!context.validDirections.empty())
+		while (context.validDirections.count(context.selectedDirection) == 0)
+			context.selectedDirection = static_cast<Direction>((static_cast<int>(context.selectedDirection) + 1) % 4);
 	context.onDirectionSelect = selectfn;
 	displayDirection(context);
 	states.push_back(State::SelectDirection);
@@ -417,15 +437,7 @@ void displayResource(const Context &context) {
 
 void displayDirection(const Context &context) {
 	clearLine();
-	const char *dir;
-	switch (context.selectedDirection) {
-		case Direction::North: dir = "North"; break;
-		case Direction::East:  dir = "East";  break;
-		case Direction::South: dir = "South"; break;
-		case Direction::West:  dir = "West";  break;
-		default: dir = "???";
-	}
-	printf("Select direction: \e[33m%s\e[0m", dir);
+	printf("Select direction: \e[33m%s\e[0m", toString(context.selectedDirection));
 }
 
 void clearLine() {

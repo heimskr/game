@@ -5,9 +5,11 @@
 #include <stddef.h>
 #include <string>
 #include <switch/types.h>
+#include <unordered_set>
 #include <utility>
 
 #include "Area.h"
+#include "Direction.h"
 #include "Resource.h"
 
 class Game;
@@ -34,6 +36,8 @@ class Region {
 
 		Resource::Map allResources() const;
 		size_t totalPopulation() const;
+		bool hasNeighbor() const;
+		std::unordered_set<Direction> validDirections() const;
 
 		bool updateName(Area &, const std::string &);
 
@@ -47,3 +51,5 @@ class Region {
 		std::string toString() const;
 		static std::shared_ptr<Region> fromString(Game &, const std::string &);
 };
+
+Region::Position operator+(const Region::Position &, const Region::Position &);

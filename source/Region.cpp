@@ -28,6 +28,27 @@ size_t Region::totalPopulation() const {
 	return out;
 }
 
+bool Region::hasNeighbor() const {
+	return owner->regions.count(position + Position( 0, -1)) != 0
+	    || owner->regions.count(position + Position( 1,  0)) != 0
+	    || owner->regions.count(position + Position( 0,  1)) != 0
+	    || owner->regions.count(position + Position(-1,  0)) != 0;
+}
+
+std::unordered_set<Direction> Region::validDirections() const {
+	std::unordered_set<Direction> out;
+	out.reserve(4);
+	if (owner->regions.count(position + Position( 0, -1)) != 0)
+		out.insert(Direction::North);
+	if (owner->regions.count(position + Position( 1,  0)) != 0)
+		out.insert(Direction::East);
+	if (owner->regions.count(position + Position( 0,  1)) != 0)
+		out.insert(Direction::South);
+	if (owner->regions.count(position + Position(-1,  0)) != 0)
+		out.insert(Direction::West);
+	return out;
+}
+
 bool Region::updateName(Area &area, const std::string &new_name) {
 	if (areas.count(area.name) == 0)
 		return false;
@@ -103,4 +124,8 @@ std::shared_ptr<Region> Region::fromString(Game &game, const std::string &str) {
 		region->areas.emplace(area->name, area);
 	}
 	return region;
+}
+
+Region::Position operator+(const Region::Position &left, const Region::Position &right) {
+	return {left.first + right.first, left.second + right.second};
 }

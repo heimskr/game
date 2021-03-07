@@ -4,12 +4,13 @@
 #include <memory>
 #include <string>
 #include <sys/types.h>
+#include <unordered_set>
 
+#include "Direction.h"
 #include "Resource.h"
 #include "Util.h"
 
 enum class State {Invalid, Initial, SelectAction, SelectRegion, SelectArea, SelectResource, SelectDirection, Extract};
-enum class Direction: int {North = 0, East, South, West};
 
 class Area;
 class Game;
@@ -36,12 +37,16 @@ struct Context {
 	Area *selectedArea = nullptr;
 	Resource::Name selectedResource;
 	Direction selectedDirection = Direction::North;
+	std::unordered_set<Direction> validDirections = {Direction::North, Direction::East, Direction::South, Direction::West};
 	std::function<void(Region &)> onRegionSelect = [](Region &) {};
 	std::function<void(Area &)> onAreaSelect = [](Area &) {};
 	std::function<void(const Resource::Name &, double)> onResourceSelect = [](const Resource::Name &, double) {};
 	std::function<void(Direction)> onDirectionSelect = [](Direction) {};
 	Game * operator->() const {
 		return game.get();
+	}
+	void resetValidDirections() {
+		validDirections = {Direction::North, Direction::East, Direction::South, Direction::West};
 	}
 };
 
