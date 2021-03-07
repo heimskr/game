@@ -54,43 +54,33 @@ int main(int argc, char *argv[]) {
 			}
 		}},
 		{"Load Defaults", State::Initial, [&] { context->loadDefaults(); chooseAction("List Regions"); }},
-		{"Move", State::Initial, [&] {
+		{"Move", State::Initial, [&] { move(context); }},
+		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
+		{"Rename Region", State::Initial, [&] {
 			Region *region;
 			try {
-				Logger::info("You are at \e[33m%s\e[39m.", (region = &context->currentRegion())->name.c_str());
-			} catch (const std::out_of_range &) {
+				region = &context->currentRegion();
+			} catch (const std::exception &err) {
+				Logger::error("Couldn't get current region.");
 				return;
 			}
-			if (!region->hasNeighbor()) {
-				Logger::warn("No regions are adjacent.");
-				return;
-			}
-			context.validDirections = region->validDirections();
-			selectDirection(context, [&](Direction direction) {
-				s64 offset_x = 0, offset_y = 0;
-				switch (direction) {
-					case Direction::North: offset_y = -1; break;
-					case Direction::East:  offset_x =  1; break;
-					case Direction::South: offset_y =  1; break;
-					case Direction::West:  offset_x = -1; break;
-					default: throw std::runtime_error("Invalid direction: " + std::to_string(static_cast<int>(direction)));
-				}
-				Region::Position new_position = {context->position.first + offset_x, context->position.second + offset_y};
-				if (context->regions.count(new_position) == 0) {
-					Logger::error("No region exists in that direction.");
+			if (!Keyboard::openForText([&](std::string new_name) {
+				if (new_name == region->name) {
+					Logger::warn("Region name not updated.");
 				} else {
-					context->position = new_position;
-					Logger::success("Moved to \e[33m%s\e[39m.", context->regions.at(new_position).name.c_str());
+					Logger::success("Renamed \e[33m%s\e[39m to \e[33m%s\e[39m.", region->name.c_str(), new_name.c_str());
+					context->updateName(*region, new_name);
 				}
-			});
+			}, "New Region Name", "", 64, NameGen::makeRandomLanguage().makeName())) {
+				Logger::error("Invalid name.");
+			}
 		}},
-		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
 		{"Save", State::Initial, [&] {
 			try {
 				context->save();
-				print("Game saved successfully.\n");
+				Logger::success("Game saved successfully.");
 			} catch (const std::exception &err) {
-				print("Couldn't save game: %s\n", err.what());
+				Logger::error("Couldn't save game: %s", err.what());
 			}
 		}},
 		{"Show Inventory", State::Initial, [&] {
@@ -464,4 +454,35 @@ void listRegionResources(Context &context) {
 		for (const auto &pair: resources)
 			printf("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
 	}
+}
+
+void move(Context &context) {
+	Region *region;
+	try {
+		Logger::info("You are at \e[33m%s\e[39m.", (region = &context->currentRegion())->name.c_str());
+	} catch (const std::out_of_range &) {
+		return;
+	}
+	if (!region->hasNeighbor()) {
+		Logger::warn("No regions are adjacent.");
+		return;
+	}
+	context.validDirections = region->validDirections();
+	selectDirection(context, [&](Direction direction) {
+		s64 offset_x = 0, offset_y = 0;
+		switch (direction) {
+			case Direction::North: offset_y = -1; break;
+			case Direction::East:  offset_x =  1; break;
+			case Direction::South: offset_y =  1; break;
+			case Direction::West:  offset_x = -1; break;
+			default: throw std::runtime_error("Invalid direction: " + std::to_string(static_cast<int>(direction)));
+		}
+		Region::Position new_position = {context->position.first + offset_x, context->position.second + offset_y};
+		if (context->regions.count(new_position) == 0) {
+			Logger::error("No region exists in that direction.");
+		} else {
+			context->position = new_position;
+			Logger::success("Moved to \e[33m%s\e[39m.", context->regions.at(new_position).name.c_str());
+		}
+	});
 }

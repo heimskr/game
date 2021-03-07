@@ -24,6 +24,7 @@ class Game {
 
 		bool updatePosition(Region &, const Region::Position &);
 		Region::Position suggestPosition();
+		bool updateName(Region &, const std::string &);
 
 		void listRegions();
 		Region * addRegion();

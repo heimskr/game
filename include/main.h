@@ -66,3 +66,4 @@ void displayDirection(const Context &);
 void clearLine();
 void clearScreen();
 void listRegionResources(Context &);
+void move(Context &);

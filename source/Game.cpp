@@ -97,6 +97,11 @@ Region::Position Game::suggestPosition() {
 	}
 }
 
+bool Game::updateName(Region &region, const std::string &new_name) {
+	region.name = new_name;
+	return true;
+}
+
 Region * Game::addRegion() {
 	std::string name;
 	if (!Keyboard::openForText([&](std::string entered_name) {
