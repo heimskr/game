@@ -10,11 +10,6 @@
 #include "Util.h"
 #include "area/Areas.h"
 
-namespace Globals {
-	bool done = false;
-	std::map<Resource::Name, Resource> resources;
-}
-
 Game::Game() {
 	addAll();
 }
@@ -44,9 +39,16 @@ void Game::listRegions() {
 	if (regions.empty()) {
 		print("No regions.\n");
 	} else {
+		Region *current = nullptr;
+		try {
+			current = &currentRegion();
+		} catch (const std::exception &) {}
 		print("Regions:\n");
 		for (const auto &pair: regions) {
-			print("- \e[36m%s\e[39m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
+			if (&pair.second == current)
+				print("- \e[33;4m%s\e[39;24m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
+			else
+				print("- \e[36m%s\e[39m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
 			for (const auto &area_pair: pair.second.areas) {
 				const Area &area = *area_pair.second;
 				print("  - \e[35m%s\e[39m (%lu%s): %s\n",
@@ -150,6 +152,17 @@ Region & Game::currentRegion() {
 void Game::tick() {
 	for (auto &pair: regions)
 		pair.second.tick();
+	for (auto iter = extractions.begin(); iter != extractions.end();) {
+		Extraction &extraction = *iter;
+		if (extraction.area->resources[extraction.resourceName] < extraction.rate) {
+			inventory[extraction.resourceName] += extraction.area->resources[extraction.resourceName];
+			extractions.erase(iter++);
+		} else {
+			--extraction.area->resources[extraction.resourceName];
+			inventory[extraction.resourceName] += extraction.rate;
+			++iter;
+		}
+	}
 }
 
 void Game::loadDefaults() {

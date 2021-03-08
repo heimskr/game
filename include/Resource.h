@@ -10,9 +10,8 @@ class Game;
 
 class Resource {
 	public:
-		using Name = std::string;
 		using Type = std::string;
-		using Map  = std::unordered_map<Name, double>;
+		using Map  = std::unordered_map<std::string, double>;
 
 		struct Conversion {
 			double amount; // From converting 1 unit of the source resource
@@ -23,11 +22,12 @@ class Resource {
 		};
 
 		Game *owner;
-		Name name;
+		std::string name;
 		std::set<Type> types;
-		std::unordered_multimap<Name, Conversion> conversions;
+		std::unordered_multimap<std::string, Conversion> conversions;
+		bool discrete = false;
 
-		Resource(Game *, const Name &);
+		Resource(Game *, const std::string &);
 		Resource(Game *, const char *);
 
 		template <typename... Args>
@@ -36,10 +36,12 @@ class Resource {
 			return *this;
 		}
 
-		Resource & add(const Name &, const Conversion &);
+		Resource & add(const std::string &, const Conversion &);
 
 		bool hasType(const Type &) const;
-		static bool hasType(Game &, const Name &, const Type &);
+		static bool hasType(Game &, const std::string &, const Type &);
+
+		Resource & setDiscrete(bool);
 
 		bool operator==(const Resource &other) { return name == other.name; }
 		bool operator!=(const Resource &other) { return name != other.name; }

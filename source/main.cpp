@@ -12,11 +12,35 @@
 #include "Keyboard.h"
 #include "NameGen.h"
 #include "FS.h"
+#include "UI.h"
 
 // #define USE_NXLINK_STDIO
 
 PadState pad;
 std::vector<State> states {State::Initial};
+
+void drawUI() {
+	constexpr int SIZE = 4;
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	rightPanel(console, 30);
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	topPanel(console, SIZE);
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	print("\e[43m\e[2J");
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	bottomPanel(console, SIZE);
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	print("\e[44m\e[2J");
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	verticalPanel(console, SIZE, 45 - 2 * SIZE);
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	print("\e[42m\e[2J");
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	print("\e[0m");
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+	resetWindow(console);
+	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
+}
 
 int main(int argc, char *argv[]) {
 	console = consoleGetDefault();
@@ -25,10 +49,11 @@ int main(int argc, char *argv[]) {
 #ifdef USE_NXLINK_STDIO
 	nxlinkStdio();
 #else
-	nxlinkConnectToHost(false, false);
+	nxlinkConnectToHost(false, true);
 #endif
 	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
 	padInitializeDefault(&pad);
+	hidInitializeTouchScreen();
 
 	FS::init();
 
@@ -43,6 +68,17 @@ int main(int argc, char *argv[]) {
 	const Action actions[] = {
 		{"Add Region", State::Initial, [&] { context->addRegion(); }},
 		{"Extract Resource", State::Initial, [&] { extractResource(context); }},
+		{"List Extractions", State::Initial, [&] {
+			if (context->extractions.empty()) {
+				Logger::warn("No extractions are occurring.");
+			} else {
+				print("Extractions:\n");
+				for (const Extraction &extraction: context->extractions)
+					print("- \e[32m%s\e[0m from \e[36m%s\e[0m in \e[33m%s\e[0m @ \e[1m%.2f\e[22;2m/\e[22ms\n",
+						extraction.resourceName.c_str(), extraction.area->name.c_str(),
+						extraction.area->parent->name.c_str(), extraction.rate);
+			}
+		}},
 		{"List Regions", State::Initial, [&] { context->listRegions(); }},
 		{"List Region Resources", State::Initial, [&] { listRegionResources(context); }},
 		{"Load", State::Initial, [&] {
@@ -111,7 +147,7 @@ int main(int argc, char *argv[]) {
 	s32 actionIndex = 0;
 
 	auto displayAction = [&] {
-		print("\e[999DSelect action: \e[33m%s\e[0m\e[0K", actions[actionIndex].name);
+		print("\e[999DSelect action: \e[33m%s\e[39m\e[0K", actions[actionIndex].name);
 	};
 
 	chooseAction = [&](const std::string &name) {
@@ -124,15 +160,21 @@ int main(int argc, char *argv[]) {
 
 	time_t last_time = getTime();
 
+	HidTouchScreenState ts_state;
+
 	while (appletMainLoop()) {
 		padUpdate(&pad);
 		u64 kDown = padGetButtonsDown(&pad);
 		if (kDown & HidNpadButton_Plus)
 			break;
 
+		if (hidGetTouchScreenStates(&ts_state, 1) == 1) {
+			for (int i = 0; i < ts_state.count; ++i)
+				onTouch(ts_state.touches[i].x / 16, ts_state.touches[i].y / 16);
+		}
+
 		if (kDown & HidNpadButton_Y) {
-			for (int i = 0; i < 10; ++i)
-				printf("%d %c\n", i, i);
+			drawUI();
 		}
 
 		if (kDown & HidNpadButton_Minus) {
@@ -335,7 +377,7 @@ void extractResource(Context &context) {
 				Logger::error("You are not allowed to extract resources from that area.");
 				return;
 			}
-			selectResource(context, area, [&](const Resource::Name &resource, double amount) {
+			selectResource(context, area, [&](const std::string &resource, double amount) {
 				print("Amount of \e[36m%s\e[39m available: \e[1m%f\e[22m\n", resource.c_str(), amount);
 				svcSleepThread(1'000'000'000);
 				if (!Keyboard::openForDouble([&](double chosen) {
@@ -379,7 +421,7 @@ void selectArea(Context &context, Region &region, std::function<void(Area &)> se
 	}
 }
 
-void selectResource(Context &context, Area &area, std::function<void(const Resource::Name &, double)> selectfn) {
+void selectResource(Context &context, Area &area, std::function<void(const std::string &, double)> selectfn) {
 	if (area.resources.empty()) {
 		Logger::warn("No resources.");
 	} else {
@@ -403,7 +445,7 @@ void selectDirection(Context &context, std::function<void(Direction)> selectfn) 
 
 void displayRegion(const Context &context) {
 	// clearLine();
-	print("\e[999DSelect region: \e[33m%s\e[0m\e[0K", std::next(context->regions.begin(), context.regionIndex)->second.name.c_str());
+	print("\e[999DSelect region: \e[33m%s\e[39m\e[0K", std::next(context->regions.begin(), context.regionIndex)->second.name.c_str());
 }
 
 void displayArea(const Context &context) {
@@ -412,7 +454,7 @@ void displayArea(const Context &context) {
 		Logger::warn("No region selected.");
 		return;
 	}
-	print("\e[999DSelect area: \e[33m%s\e[0m\e[0K", std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second->name.c_str());
+	print("\e[999DSelect area: \e[33m%s\e[39m\e[0K", std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second->name.c_str());
 }
 
 void displayResource(const Context &context) {
@@ -421,11 +463,11 @@ void displayResource(const Context &context) {
 		Logger::warn("No area selected.");
 		return;
 	}
-	print("\e[999DSelect resource: \e[33m%s\e[0m\e[0K", std::next(context.selectedArea->resources.begin(), context.resourceIndex)->first.c_str());
+	print("\e[999DSelect resource: \e[33m%s\e[39m\e[0K", std::next(context.selectedArea->resources.begin(), context.resourceIndex)->first.c_str());
 }
 
 void displayDirection(const Context &context) {
-	printf("\e[999DSelect direction: \e[33m%s\e[0m\e[0K", toString(context.selectedDirection));
+	printf("\e[999DSelect direction: \e[33m%s\e[39m\e[0K", toString(context.selectedDirection));
 }
 
 void clearLine() {

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <list>
 #include <map>
 #include <memory>
 
+#include "Extraction.h"
 #include "Region.h"
 #include "Resource.h"
 #include "Util.h"
@@ -10,16 +12,17 @@
 class Game {
 	public:
 		bool ready = false;
-		std::map<Resource::Name, Resource> resources;
-		std::map<Resource::Name, double> inventory;
+		std::map<std::string, Resource> resources;
+		std::map<std::string, double> inventory;
 		std::map<Region::Position, Region> regions;
+		std::list<Extraction> extractions;
 		Region::Position position;
 
 		Game();
 
 		void add(const Resource &);
 		void addResources();
-		void addResource(const Resource::Name &);
+		void addResource(const std::string &);
 		void addAll();
 
 		bool updatePosition(Region &, const Region::Position &);
