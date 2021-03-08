@@ -19,31 +19,6 @@
 PadState pad;
 std::vector<State> states {State::Initial};
 
-void drawUI() {
-	constexpr int SIZE = 4;
-	constexpr int WIDTH = 30;
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	rightPanel(console, WIDTH);
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	topPanel(console, SIZE);
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	print("\e[43m\e[2J");
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	bottomPanel(console, SIZE);
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	print("\e[44m\e[2J");
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	verticalPanel(console, SIZE, 45 - 2 * SIZE);
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	print("\e[42m\e[2J");
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	print("\e[0m");
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	resetWindow(console);
-	leftPanel(console, console->consoleWidth - WIDTH);
-	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-}
-
 int main(int argc, char *argv[]) {
 	console = consoleGetDefault();
 	consoleInit(console);
@@ -144,7 +119,9 @@ int main(int argc, char *argv[]) {
 
 	time_t last_time = getTime();
 
-	HidTouchScreenState ts_state;
+	HidTouchScreenState ts_screen_state;
+	HidTouchState ts_state = {};
+	bool ts_has_state = false;
 
 	while (appletMainLoop()) {
 		padUpdate(&pad);
@@ -152,9 +129,19 @@ int main(int argc, char *argv[]) {
 		if (kDown & HidNpadButton_Plus)
 			break;
 
-		if (hidGetTouchScreenStates(&ts_state, 1) == 1) {
-			for (int i = 0; i < ts_state.count; ++i)
-				onTouch(ts_state.touches[i].x / 16, ts_state.touches[i].y / 16);
+		if (hidGetTouchScreenStates(&ts_screen_state, 1) == 1) {
+			if (ts_screen_state.count == 0) {
+				if (ts_has_state) {
+					onTouchUp(ts_state.x / 16, ts_state.y / 16);
+					ts_has_state = false;
+				}
+			} else if (ts_screen_state.count == 1) {
+				ts_state = ts_screen_state.touches[0];
+				ts_has_state = true;
+			} else
+				ts_has_state = false;
+			for (int i = 0; i < ts_screen_state.count; ++i)
+				onTouch(ts_screen_state.touches[i].x / 16, ts_screen_state.touches[i].y / 16);
 		}
 
 		if (kDown & HidNpadButton_Y) {

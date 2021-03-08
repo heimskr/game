@@ -11,3 +11,5 @@ void verticalPanel(PrintConsole *, int y, int height);
 void resetWindow(PrintConsole *);
 
 void onTouch(int x, int y);
+void onTouchUp(int x, int y);
+void drawUI();

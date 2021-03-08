@@ -49,4 +49,3 @@ class Resource {
 		bool operator!=(const Resource &other) { return name != other.name; }
 		bool operator< (const Resource &other) { return name <  other.name; }
 };
-

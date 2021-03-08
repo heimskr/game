@@ -36,3 +36,22 @@ void resetWindow(PrintConsole *pc) {
 void onTouch(int x, int y) {
 	print("\e[%d;%dH\e[42;31mx\e[39;40m", y + 1, x + 1);
 }
+
+void onTouchUp(int x, int y) {
+	print("\e[%d;%dH\e[41;32m!\e[39;40m", y + 1, x + 1);
+}
+
+void drawUI() {
+	constexpr int SIZE = 4;
+	constexpr int WIDTH = 30;
+	rightPanel(console, WIDTH);
+	topPanel(console, SIZE);
+	console->bg = 23;
+	print("\e[2J");
+	bottomPanel(console, SIZE);
+	print("\e[2J");
+	verticalPanel(console, SIZE, 45 - 2 * SIZE);
+	print("\e[47m\e[2J\e[0m");
+	resetWindow(console);
+	leftPanel(console, console->consoleWidth - WIDTH);
+}
