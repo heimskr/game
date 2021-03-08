@@ -74,9 +74,9 @@ int main(int argc, char *argv[]) {
 			} else {
 				print("Extractions:\n");
 				for (const Extraction &extraction: context->extractions)
-					print("- \e[32m%s\e[0m from \e[36m%s\e[0m in \e[33m%s\e[0m @ \e[1m%.2f\e[22;2m/\e[22ms\n",
+					print("- \e[32m%s\e[0m from \e[36m%s\e[0m in \e[33m%s\e[0m @ \e[1m%.2f\e[22;2m/\e[22ms (\e[1m%.2f\e[22m left)\n",
 						extraction.resourceName.c_str(), extraction.area->name.c_str(),
-						extraction.area->parent->name.c_str(), extraction.rate);
+						extraction.area->parent->name.c_str(), extraction.rate, extraction.amount);
 			}
 		}},
 		{"List Regions", State::Initial, [&] { context->listRegions(); }},
@@ -92,25 +92,7 @@ int main(int argc, char *argv[]) {
 		{"Load Defaults", State::Initial, [&] { context->loadDefaults(); chooseAction("List Regions"); }},
 		{"Move", State::Initial, [&] { move(context); }},
 		{"NameGen", State::Initial, [&] { printf("Name: %s\n", NameGen::makeRandomLanguage().makeName().c_str()); }},
-		{"Rename Region", State::Initial, [&] {
-			Region *region;
-			try {
-				region = &context->currentRegion();
-			} catch (const std::exception &err) {
-				Logger::error("Couldn't get current region.");
-				return;
-			}
-			if (!Keyboard::openForText([&](std::string new_name) {
-				if (new_name == region->name) {
-					Logger::warn("Region name not updated.");
-				} else {
-					Logger::success("Renamed \e[33m%s\e[39m to \e[33m%s\e[39m.", region->name.c_str(), new_name.c_str());
-					context->updateName(*region, new_name);
-				}
-			}, "New Region Name", "", 64, NameGen::makeRandomLanguage().makeName())) {
-				Logger::error("Invalid name.");
-			}
-		}},
+		{"Rename Region", State::Initial, [&] { renameRegion(context); }},
 		{"Save", State::Initial, [&] {
 			try {
 				context->save();
@@ -384,9 +366,10 @@ void extractResource(Context &context) {
 					if (amount < chosen) {
 						Logger::error("Not enough of that resource is available.");
 					} else {
-						area.resources[resource] -= chosen;
-						context->inventory[resource] += chosen;
-						Logger::success("Extracted \e[1m%f\e[22m x \e[36m%s\e[39m.", chosen, resource.c_str());
+						context->extractions.emplace_back(&area, resource, chosen, context->resources.at(resource).defaultExtractionRate);
+						// area.resources[resource] -= chosen;
+						// context->inventory[resource] += chosen;
+						Logger::success("Extracting \e[1m%f\e[22m x \e[36m%s\e[39m.", chosen, resource.c_str());
 					}
 				}, "Resource Amount")) {
 					Logger::error("Invalid amount.");
@@ -525,4 +508,24 @@ void move(Context &context) {
 			Logger::success("Moved to \e[33m%s\e[39m.", context->regions.at(new_position).name.c_str());
 		}
 	});
+}
+
+void renameRegion(Context &context) {
+	Region *region;
+	try {
+		region = &context->currentRegion();
+	} catch (const std::exception &err) {
+		Logger::error("Couldn't get current region.");
+		return;
+	}
+	if (!Keyboard::openForText([&](std::string new_name) {
+		if (new_name == region->name) {
+			Logger::warn("Region name not updated.");
+		} else {
+			Logger::success("Renamed \e[33m%s\e[39m to \e[33m%s\e[39m.", region->name.c_str(), new_name.c_str());
+			context->updateName(*region, new_name);
+		}
+	}, "New Region Name", "", 64, NameGen::makeRandomLanguage().makeName())) {
+		Logger::error("Invalid name.");
+	}
 }

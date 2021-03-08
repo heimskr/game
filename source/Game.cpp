@@ -154,13 +154,18 @@ void Game::tick() {
 		pair.second.tick();
 	for (auto iter = extractions.begin(); iter != extractions.end();) {
 		Extraction &extraction = *iter;
-		if (extraction.area->resources[extraction.resourceName] < extraction.rate) {
+		double to_extract = std::min(extraction.rate, extraction.amount);
+		if (extraction.area->resources[extraction.resourceName] < to_extract) {
 			inventory[extraction.resourceName] += extraction.area->resources[extraction.resourceName];
 			extractions.erase(iter++);
 		} else {
 			--extraction.area->resources[extraction.resourceName];
-			inventory[extraction.resourceName] += extraction.rate;
-			++iter;
+			inventory[extraction.resourceName] += to_extract;
+			extraction.amount -= to_extract;
+			if (extraction.amount < 0.0001)
+				extractions.erase(iter++);
+			else
+				++iter;
 		}
 	}
 }

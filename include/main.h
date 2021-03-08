@@ -67,3 +67,4 @@ void clearLine();
 void clearScreen();
 void listRegionResources(Context &);
 void move(Context &);
+void renameRegion(Context &);

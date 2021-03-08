@@ -21,3 +21,8 @@ Resource & Resource::setDiscrete(bool discrete_) {
 	discrete = discrete_;
 	return *this;
 }
+
+Resource & Resource::setDefaultExtractionRate(double rate) {
+	defaultExtractionRate = rate;
+	return *this;
+}

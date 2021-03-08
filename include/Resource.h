@@ -26,6 +26,7 @@ class Resource {
 		std::set<Type> types;
 		std::unordered_multimap<std::string, Conversion> conversions;
 		bool discrete = false;
+		double defaultExtractionRate = 1.0;
 
 		Resource(Game *, const std::string &);
 		Resource(Game *, const char *);
@@ -42,6 +43,7 @@ class Resource {
 		static bool hasType(Game &, const std::string &, const Type &);
 
 		Resource & setDiscrete(bool);
+		Resource & setDefaultExtractionRate(double);
 
 		bool operator==(const Resource &other) { return name == other.name; }
 		bool operator!=(const Resource &other) { return name != other.name; }
