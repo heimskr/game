@@ -111,8 +111,7 @@ int main(int argc, char *argv[]) {
 	s32 actionIndex = 0;
 
 	auto displayAction = [&] {
-		clearLine();
-		print("Select action: \e[33m%s\e[0m", actions[actionIndex].name);
+		print("\e[999DSelect action: \e[33m%s\e[0m\e[0K", actions[actionIndex].name);
 	};
 
 	chooseAction = [&](const std::string &name) {
@@ -448,9 +447,9 @@ void listRegionResources(Context &context) {
 	}
 	Resource::Map resources = region->allResources();
 	if (resources.empty()) {
-		printf("\e[1m%s\e[22m has no resources.\n", region->name.c_str());
+		printf("\e[33m%s\e[39m has no resources.\n", region->name.c_str());
 	} else {
-		printf("Resources for \e[1m%s\e[22m:\n", region->name.c_str());
+		printf("Resources for \e[33m%s\e[39m:\n", region->name.c_str());
 		for (const auto &pair: resources)
 			printf("- \e[32m%s\e[39m x \e[1m%f\e[22m\n", pair.first.c_str(), pair.second);
 	}
