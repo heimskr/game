@@ -59,6 +59,7 @@ namespace FS {
 			throw std::runtime_error("fsFileRead failed: 0x" + hex(result));
 		}
 
+		text[bytes_read] = '\0';
 		fsFileClose(&file);
 		std::string out = text;
 		delete[] text;
