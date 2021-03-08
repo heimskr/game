@@ -145,7 +145,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		if (kDown & HidNpadButton_Y) {
-			drawUI();
+			sidebar.draw();
 		}
 
 		if (kDown & HidNpadButton_Minus) {

@@ -1,23 +1,20 @@
 #include <stdexcept>
+#include <vector>
 
 #include "Util.h"
 
 PrintConsole *console = nullptr;
-int oldConsoleWidth = 80;
-int oldConsoleHeight = 45;
+std::vector<PrintConsole> savedConsoles;
 
 void saveConsole() {
-	if (console) {
-		oldConsoleWidth = console->consoleWidth;
-		oldConsoleHeight = console->consoleHeight;
-	}
+	if (console)
+		savedConsoles.push_back(*console);
 }
 
 void restoreConsole() {
-	if (console) {
-		console->consoleWidth = oldConsoleWidth;
-		console->consoleHeight = oldConsoleHeight;
-		consoleInit(console);
+	if (console && !savedConsoles.empty()) {
+		*console = savedConsoles.back();
+		savedConsoles.pop_back();
 	}
 }
 

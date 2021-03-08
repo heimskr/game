@@ -8,6 +8,8 @@
 
 #include "Logger.h"
 
+#define PRINTPOS do { fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr); } while(0)
+
 extern PrintConsole *console;
 extern int oldConsoleWidth, oldConsoleHeight;
 
