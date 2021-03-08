@@ -402,31 +402,30 @@ void selectDirection(Context &context, std::function<void(Direction)> selectfn) 
 }
 
 void displayRegion(const Context &context) {
-	clearLine();
-	print("Select region: \e[33m%s\e[0m", std::next(context->regions.begin(), context.regionIndex)->second.name.c_str());
+	// clearLine();
+	print("\e[999DSelect region: \e[33m%s\e[0m\e[0K", std::next(context->regions.begin(), context.regionIndex)->second.name.c_str());
 }
 
 void displayArea(const Context &context) {
-	clearLine();
 	if (!context.selectedRegion) {
+		clearLine();
 		Logger::warn("No region selected.");
 		return;
 	}
-	print("Select area: \e[33m%s\e[0m", std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second->name.c_str());
+	print("\e[999DSelect area: \e[33m%s\e[0m\e[0K", std::next(context.selectedRegion->areas.begin(), context.areaIndex)->second->name.c_str());
 }
 
 void displayResource(const Context &context) {
-	clearLine();
 	if (!context.selectedArea) {
+		clearLine();
 		Logger::warn("No area selected.");
 		return;
 	}
-	print("Select resource: \e[33m%s\e[0m", std::next(context.selectedArea->resources.begin(), context.resourceIndex)->first.c_str());
+	print("\e[999DSelect resource: \e[33m%s\e[0m\e[0K", std::next(context.selectedArea->resources.begin(), context.resourceIndex)->first.c_str());
 }
 
 void displayDirection(const Context &context) {
-	clearLine();
-	printf("Select direction: \e[33m%s\e[0m", toString(context.selectedDirection));
+	printf("\e[999DSelect direction: \e[33m%s\e[0m\e[0K", toString(context.selectedDirection));
 }
 
 void clearLine() {
