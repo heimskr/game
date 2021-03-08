@@ -21,8 +21,9 @@ std::vector<State> states {State::Initial};
 
 void drawUI() {
 	constexpr int SIZE = 4;
+	constexpr int WIDTH = 30;
 	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
-	rightPanel(console, 30);
+	rightPanel(console, WIDTH);
 	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
 	topPanel(console, SIZE);
 	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
@@ -39,6 +40,7 @@ void drawUI() {
 	print("\e[0m");
 	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
 	resetWindow(console);
+	leftPanel(console, console->consoleWidth - WIDTH);
 	fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr);
 }
 
@@ -120,7 +122,7 @@ int main(int argc, char *argv[]) {
 			Keyboard::openForNumber([&](s64 ticks) {
 				for (s64 i = 0; i < ticks; ++i)
 					context->tick();
-				Logger::success("Ticked \e[1m%ld\e[22m times.\n", ticks);
+				Logger::success("Ticked \e[1m%ld\e[22m times.", ticks);
 			}, "Tick Count");
 		}},
 	};
@@ -367,8 +369,6 @@ void extractResource(Context &context) {
 						Logger::error("Not enough of that resource is available.");
 					} else {
 						context->extractions.emplace_back(&area, resource, chosen, context->resources.at(resource).defaultExtractionRate);
-						// area.resources[resource] -= chosen;
-						// context->inventory[resource] += chosen;
 						Logger::success("Extracting \e[1m%f\e[22m x \e[36m%s\e[39m.", chosen, resource.c_str());
 					}
 				}, "Resource Amount")) {

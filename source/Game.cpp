@@ -198,12 +198,15 @@ std::string Game::toString() const {
 		out << pair.first << "=" << pair.second << "\n";
 	out << "\n[Position]\n";
 	out << position.first << "," << position.second << "\n";
+	out << "\n[Extractions]\n";
+	for (const Extraction &extraction: extractions)
+		out << extraction.toString() << "\n";
 	return out.str();
 }
 
 std::shared_ptr<Game> Game::fromString(const std::string &str) {
 	const std::vector<std::string> lines = split(str, "\n", true);
-	enum class Mode {None, Regions, Inventory, Position};
+	enum class Mode {None, Regions, Inventory, Position, Extractions};
 	Mode mode = Mode::None;
 
 	std::shared_ptr<Game> out = std::make_shared<Game>();
@@ -218,6 +221,8 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				mode = Mode::Inventory;
 			else if (line == "[Position]")
 				mode = Mode::Position;
+			else if (line == "[Extractions]")
+				mode = Mode::Extractions;
 			else
 				throw std::invalid_argument("Invalid line");
 		} else {
@@ -239,6 +244,10 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 					if (comma == std::string::npos)
 						throw std::invalid_argument("Invalid Position line");
 					out->position = {parseLong(line.substr(0, comma)), parseLong(line.substr(comma + 1))};
+					break;
+				}
+				case Mode::Extractions: {
+					out->extractions.push_back(Extraction::fromString(*out, line));
 					break;
 				}
 				default: throw std::runtime_error("Invalid mode: " + std::to_string(static_cast<int>(mode)));
