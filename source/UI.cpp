@@ -36,7 +36,9 @@ void resetWindow(PrintConsole *pc) {
 }	
 
 void onTouch(int x, int y) {
+	saveConsole();
 	print("\e[%d;%dH\e[42;31mx\e[39;40m", y + 1, x + 1);
+	restoreConsole();
 }
 
 void onTouchUp(int x, int y) {

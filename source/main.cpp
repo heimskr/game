@@ -49,11 +49,27 @@ int main(int argc, char *argv[]) {
 			if (context->extractions.empty()) {
 				Logger::warn("No extractions are occurring.");
 			} else {
+				// There's a crash somewhere around here.
+				constexpr bool pp = true;
+				if (pp) PRINTPOS;
 				print("Extractions:\n");
-				for (const Extraction &extraction: context->extractions)
-					print("- \e[32m%s\e[0m from \e[36m%s\e[0m in \e[33m%s\e[0m @ \e[1m%.2f\e[22;2m/\e[22ms (\e[1m%.2f\e[22m left)\n",
-						extraction.resourceName.c_str(), extraction.area->name.c_str(),
-						extraction.area->parent->name.c_str(), extraction.rate, extraction.amount);
+				if (pp) PRINTPOS;
+				for (const Extraction &extraction: context->extractions) {
+					// print("- \e[32m%s\e[0m from \e[36m%s\e[0m in \e[33m%s\e[0m @ \e[1m%.2f\e[22;2m/\e[22ms (\e[1m%.2f\e[22m left)\n",
+					// 	extraction.resourceName.c_str(), extraction.area->name.c_str(),
+					// 	extraction.area->parent->name.c_str(), extraction.rate, extraction.amount);
+					if (pp) PRINTPOS;
+					print("- \e[32m%s\e[0m from ", extraction.resourceName.c_str());
+					if (pp) PRINTPOS;
+					print("\e[36m%s\e[0m in ", extraction.area? extraction.area->name.c_str() : "???");
+					if (pp) PRINTPOS;
+					print("\e[33m%s\e[0m @ ", extraction.area? extraction.area->parent->name.c_str() : "???");
+					if (pp) PRINTPOS;
+					print("\e[1m%.2f\e[22;2m/\e[22ms ", extraction.rate);
+					if (pp) PRINTPOS;
+					print("(\e[1m%.2f\e[22m left)\n", extraction.amount);
+					if (pp) PRINTPOS;
+				}
 			}
 		}},
 		{"List Regions", State::Initial, [&] { context->listRegions(); }},
