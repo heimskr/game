@@ -9,7 +9,6 @@ void MainWindow(Context &context, bool *open) {
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 
 	if (ImGui::Begin("Trade Game", open, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
-	// if (ImGui::Begin("Trade Game", open, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("Menu")) {
 				if (ImGui::MenuItem("Load")) context.showLoadWindow = true;

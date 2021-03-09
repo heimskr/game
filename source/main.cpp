@@ -1,24 +1,17 @@
 #undef __APPLE__
 
+#include <SDL2/SDL.h>
 #include <switch.h>
 
 #include "imgui.h"
-#include "imgui_impl_glfw_switch.h"
+#include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
 
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 #define GLM_FORCE_PURE
 #define GLM_ENABLE_EXPERIMENTAL
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/rotate_vector.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
 
 #include "Game.h"
 #include "main.h"
@@ -36,32 +29,40 @@ int main() {
 	socketInitializeDefault();
 	nxlinkStdio();
 	std::srand(std::time(nullptr));
-	glfwSetErrorCallback(+[](int error_code, const char *description) {
-		fprintf(stderr, "GLFW error %d: %s\n", error_code, description);
-	});
 
-	if (!glfwInit()) {
-		fprintf(stderr, "glfwInit returned 0\n");
-		return EXIT_FAILURE;
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0) {
+		throw std::runtime_error(SDL_GetError());
 	}
 
-	const char *glsl_version = "#version 430 core";
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "test", nullptr, nullptr);
-	if (!window) {
-		fprintf(stderr, "window is nullptr\n");
-		glfwTerminate();
-		return EXIT_FAILURE;
-	}
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
-	glfwMakeContextCurrent(window);
+	int w = 1280, h = 720;
+	SDL_Window *window = SDL_CreateWindow("TradeGame", 0, 0, w, h, SDL_WINDOW_OPENGL);
+	if (!window)
+		throw std::runtime_error(SDL_GetError());
 
-	// Load OpenGL routines using glad
-	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	glfwSwapInterval(1);
+	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+	SDL_SetWindowSize(window, w, h);
+	SDL_GL_MakeCurrent(window, gl_context);
+	SDL_GL_SetSwapInterval(1);
+
+	if (gladLoadGL() == 0)
+		throw std::runtime_error("gladLoadGL failed");
+
+	if (SDL_GameControllerOpen(0) == nullptr)
+		throw std::runtime_error(SDL_GetError());
+
+
+	SDL_Event event;
+	bool done = false;
+	// u64 time = 0ul;
+	// u64 frequency = SDL_GetPerformanceFrequency();
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -70,17 +71,20 @@ int main() {
 	io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+	// io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+	io.MouseDrawCursor = true;
 
-	// Setup Dear ImGui style
+	if (!ImGui_ImplSDL2_InitForOpenGL(window, gl_context, true)) {
+		throw std::runtime_error("ImGui_ImplSDL2_InitForOpenGL failed");
+	}
+
+	if (!ImGui_ImplOpenGL3_Init("#version 330 core")) {
+		throw std::runtime_error("ImGui_ImplOpenGL3_Init failed");
+	}
+
 	ImGui::StyleColorsDark();
 	// ImGui::StyleColorsClassic();
 
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	// Load Fonts
 	io.Fonts->AddFontDefault();
 	{
 		plInitialize(PlServiceType_System);
@@ -137,10 +141,26 @@ int main() {
 	Context context;
 	context.game = std::make_shared<Game>();
 
-	while (!glfwWindowShouldClose(window) && show_main_window) {
-		glfwPollEvents();
+	while (show_main_window && !done) {
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_QUIT) {
+				done = true;
+			} else if (event.type == SDL_CONTROLLERBUTTONDOWN) {
+				if (event.cbutton.which == 0) {
+					if (event.cbutton.button == SDL_CONTROLLER_BUTTON_START) {
+						SDL_Event quitEvent;
+						quitEvent.type = SDL_QUIT;
+						SDL_PushEvent(&quitEvent);
+					}
+				}
+				ImGui_ImplSDL2_ProcessEvent(&event);
+			} else {
+				ImGui_ImplSDL2_ProcessEvent(&event);
+			}
+		}
+
 		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplSDL2_NewFrame(window);
 		ImGui::NewFrame();
 
 		MainWindow(context, &show_main_window);
@@ -162,22 +182,15 @@ int main() {
 		}
 
 		ImGui::Render();
-		int display_w, display_h;
-		glfwGetFramebufferSize(window, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
-		glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-		glClear(GL_COLOR_BUFFER_BIT);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		glfwSwapBuffers(window);
+		SDL_GL_SwapWindow(window);
 	}
 
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
-	glfwDestroyWindow(window);
-	glfwTerminate();
+	SDL_GL_DeleteContext(gl_context);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 
 	socketExit();
 	return EXIT_SUCCESS;
