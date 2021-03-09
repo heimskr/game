@@ -115,7 +115,8 @@ void MainWindow(Context &context, bool *open) {
 						ImGui::PopStyleVar();
 					}
 					ImGui::NextColumn();
-					ImGui::Text("Region %d", i + 1);
+					if (Region *neighbor = region->getNeighbor(direction))
+						ImGui::Text("%s", neighbor->name.c_str());
 					ImGui::NextColumn();
 				}
 

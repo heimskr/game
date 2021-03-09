@@ -38,6 +38,7 @@ class Region {
 		size_t totalPopulation() const;
 		bool hasNeighbor() const;
 		bool hasNeighbor(Direction) const;
+		Region * getNeighbor(Direction) const;
 		std::unordered_set<Direction> validDirections() const;
 
 		bool updateName(Area &, const std::string &);

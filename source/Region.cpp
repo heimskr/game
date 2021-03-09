@@ -36,13 +36,13 @@ bool Region::hasNeighbor() const {
 }
 
 bool Region::hasNeighbor(Direction direction) const {
-	switch (direction) {
-		case Direction::North: return owner->regions.count(position + Position( 0, -1)) != 0;
-		case Direction::East:  return owner->regions.count(position + Position( 1,  0)) != 0;
-		case Direction::South: return owner->regions.count(position + Position( 0,  1)) != 0;
-		case Direction::West:  return owner->regions.count(position + Position(-1,  0)) != 0;
-		default: return false;
-	}
+	const Position offset = getOffset(direction);
+	return owner->regions.count(position + offset) != 0;
+}
+
+Region * Region::getNeighbor(Direction direction) const {
+	const Position offset = getOffset(direction);
+	return owner->regions.count(position + offset) == 0? nullptr : owner->regions.at(position + offset).get();
 }
 
 std::unordered_set<Direction> Region::validDirections() const {
