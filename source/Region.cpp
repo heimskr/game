@@ -147,12 +147,17 @@ Region::Position operator+(const Region::Position &left, const Region::Position 
 }
 
 std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t size) {
-	std::unique_ptr<Region> region = std::make_unique<Region>(&game, NameGen::makeRandomLanguage().makeName(), pos, size);
+	NameGen::Language language = NameGen::makeRandomLanguage();
+	std::unique_ptr<Region> region = std::make_unique<Region>(&game, language.makeName(), pos, size);
 	size_t remaining_size = size;
 
+	bool populated = false;
+
 	if (chance(0.25)) {
+		populated = true;
 		const size_t housing_size = randomRange(std::min(5ul, remaining_size), remaining_size / 2);
 		auto housing = std::make_shared<HousingArea>(region.get(), housing_size);
+		housing->setName("Town").setPlayerOwned(false);
 		*region += housing;
 		remaining_size -= housing_size;
 	}
@@ -160,6 +165,9 @@ std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t
 	if (remaining_size && chance(0.8)) {
 		const size_t forest_size = randomRange(std::min(4ul, remaining_size), remaining_size / 2);
 		auto forest = std::make_shared<ForestArea>(region.get(), forest_size);
+		const char *types[] = {"Forest", "Woods", "Weald"};
+		forest->setName(language.makeName() + " " + types[randomRange(0, sizeof(types) / sizeof(types[0]) - 1)]);
+		forest->setPlayerOwned(!populated);
 		*region += forest;
 		remaining_size -= forest_size;
 	}
@@ -167,6 +175,7 @@ std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t
 	if (remaining_size && chance(0.5)) {
 		const size_t mountain_size = randomRange(std::min(5ul, remaining_size), remaining_size * 3 / 4);
 		auto mountain = std::make_shared<MountainArea>(region.get(), mountain_size);
+		mountain->setName("Mountain").setPlayerOwned(!populated);
 		*region += mountain;
 		remaining_size -= mountain_size;
 	}
@@ -174,12 +183,16 @@ std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t
 	if (remaining_size && chance(0.4)) {
 		const size_t lake_size = randomRange(1, remaining_size / 2);
 		auto lake = std::make_shared<LakeArea>(region.get(), lake_size);
+		lake->setName("Lake").setPlayerOwned(!populated);
 		*region += lake;
 		remaining_size -= lake_size;
 	}
 
-	if (remaining_size)
-		*region += std::make_shared<EmptyArea>(region.get(), remaining_size);
+	if (remaining_size) {
+		auto empty = std::make_shared<EmptyArea>(region.get(), remaining_size);
+		empty->setName("Empty Land").setPlayerOwned(!populated);
+		*region += empty;
+	}
 
 	return region;
 }

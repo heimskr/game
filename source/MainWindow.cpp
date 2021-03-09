@@ -105,21 +105,21 @@ void MainWindow(Context &context, bool *open) {
 
 				for (int i = 0; i < 4; ++i) {
 					Direction direction = static_cast<Direction>(i);
-					const bool disabled = !region->hasNeighbor(direction);
-					if (disabled) {
-						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-					}
+					const bool exists = region->hasNeighbor(direction);
 					if (ImGui::Button(toString(direction), ImVec2(100.f, 0.f))) {
 						const auto &offset = getOffset(direction);
-						context->position = {context->position.first + offset.first, context->position.second + offset.second};
-					}
-					if (disabled) {
-						ImGui::PopItemFlag();
-						ImGui::PopStyleVar();
+						Region::Position pos(context->position.first + offset.first, context->position.second + offset.second);
+						if (exists) {
+							context->position = pos;
+						} else {
+							std::unique_ptr<Region> new_region = Region::generate(*context.game, pos);
+							*context.game += std::move(new_region);
+						}
 					}
 					ImGui::NextColumn();
-					if (Region *neighbor = region->getNeighbor(direction))
+					if (!exists)
+						ImGui::Text("?");
+					else if (Region *neighbor = region->getNeighbor(direction))
 						ImGui::Text("%s", neighbor->name.c_str());
 					ImGui::NextColumn();
 				}

@@ -41,4 +41,6 @@ class Game {
 		static std::shared_ptr<Game> fromString(const std::string &);
 		static std::shared_ptr<Game> load();
 		void save();
+
+		Game & operator+=(std::unique_ptr<Region> &&);
 };

@@ -192,7 +192,7 @@ int main() {
 			ImGui::OpenPopup("Message");
 		}
 
-		constexpr float MODAL_WIDTH = 500.f, MODAL_HEIGHT = 200.f;
+		constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 250.f;
 		ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
 		ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Always);
 		if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_HorizontalScrollbar)) {

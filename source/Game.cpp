@@ -284,3 +284,11 @@ void Game::save() {
 
 	FS::writeFile("/switch/TradeGame/save.txt", toString());
 }
+
+Game & Game::operator+=(std::unique_ptr<Region> &&ptr) {
+	if (regions.count(ptr->position) != 0)
+		throw std::runtime_error("A region already exists at (" + std::to_string(ptr->position.first) + ", "
+			+ std::to_string(ptr->position.first) + ")");
+	regions.emplace(ptr->position, std::move(ptr));
+	return *this;
+}
