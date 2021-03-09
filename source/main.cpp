@@ -212,8 +212,12 @@ int main() {
 		ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
 		ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Always);
 		if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_HorizontalScrollbar)) {
+			auto &style = ImGui::GetStyle();
+			ImGui::BeginChild("message contents",
+				{600.f - style.WindowPadding.x * 2 - style.FrameBorderSize, 220.f - (style.WindowPadding.y + style.IndentSpacing) * 2},
+				false, ImGuiWindowFlags_HorizontalScrollbar);
 			ImGui::Text("%s", context.message.c_str());
-			ImGui::Dummy({0.f, 10.f});
+			ImGui::EndChild();
 			if (ImGui::Button("Close")) {
 				context.message.clear();
 				ImGui::CloseCurrentPopup();
