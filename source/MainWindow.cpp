@@ -57,6 +57,12 @@ void MainWindow::render(bool *open) {
 						}
 					}, "New Region Name", "", 64, NameGen::makeRandomLanguage().makeName());
 				}
+
+				ImGui::Dummy({0, 20.f});
+				ImGui::Text("Position: (%ld, %ld)", region->position.first, region->position.second);
+				ImGui::Text("Size: %lu", region->size);
+				ImGui::Dummy({0, 20.f});
+
 				if (region->areas.empty()) {
 					ImGui::Dummy(ImVec2(20.f, 0.f));
 					ImGui::SameLine();
@@ -64,7 +70,7 @@ void MainWindow::render(bool *open) {
 				} else {
 					for (const auto &[name, area]: region->areas) {
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						if (ImGui::TreeNode(name.c_str())) {
+						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
 							for (const auto &[rname, amount]: area->resources) {
 								ImGui::Dummy(ImVec2(20.f, 0.f));
 								ImGui::SameLine();
