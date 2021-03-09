@@ -2,8 +2,11 @@
 
 #include <memory>
 #include <string>
+#include <sys/types.h>
 
 class Game;
+
+time_t getTime();
 
 struct Context {
 	std::shared_ptr<Game> game;
@@ -15,4 +18,12 @@ struct Context {
 
 	void load();
 	void save();
+
+	Game * operator->() {
+		return game.get();
+	}
+
+	const Game * operator->() const {
+		return game.get();
+	}
 };

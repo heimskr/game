@@ -157,6 +157,7 @@ int main() {
 	context.game = std::make_shared<Game>();
 
 	bool show_main_window = true;
+	time_t last_time = getTime();
 	while (show_main_window && !done) {
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
@@ -174,6 +175,11 @@ int main() {
 				ImGui_ImplSDL2_ProcessEvent(&event);
 			}
 		}
+
+		time_t new_time = getTime();
+		for (s64 i = 0; i < new_time - last_time; ++i)
+			context->tick();
+		last_time = new_time;
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame(window);
@@ -210,6 +216,16 @@ int main() {
 
 	socketExit();
 	return EXIT_SUCCESS;
+}
+
+time_t getTime() {
+	time_t current_time;
+	Result result = timeGetCurrentTime(TimeType_UserSystemClock, (u64 *) &current_time);
+	if (R_FAILED(result)) {
+		fprintf(stderr, "Couldn't get current time.\n");
+		exit(EXIT_FAILURE);
+	}
+	return current_time;
 }
 
 void Context::load() {
