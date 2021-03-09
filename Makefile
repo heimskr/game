@@ -40,12 +40,12 @@ include $(DEVKITPRO)/libnx/switch_rules
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 ifeq ($(BUILD),$(TARGET))
-SOURCES		:=	$(shell find ../source -type d)
+SOURCES		:=	$(shell find ../source -type d) libs/imgui
 else
-SOURCES		:=	$(shell find source -type d)
+SOURCES		:=	$(shell find source -type d) libs/imgui
 endif
 DATA		:=	data
-INCLUDES	:=	include
+INCLUDES	:=	include libs/imgui
 #ROMFS	:=	romfs
 
 APP_TITLE	:= TradeGame
@@ -57,17 +57,16 @@ APP_VERSION	:= 0.0.1
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 
-CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
-			$(ARCH) $(DEFINES)
-
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__
+CFLAGS	:=	-g -Wall -O2 -ffunction-sections $(ARCH) $(DEFINES) $(INCLUDE) -D__SWITCH__
+CFLAGS	+=	`sdl2-config --cflags`
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -std=c++17
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lnx
+LIBS	:= `curl-config --libs` -lzzip -ljansson -lturbojpeg -ljpeg -lpng -lwebp \
+		   `sdl2-config --libs` -lglad -lEGL -lglapi -ldrm_nouveau -lnx -lm -lz
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
