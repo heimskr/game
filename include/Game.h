@@ -43,4 +43,6 @@ class Game {
 		void save();
 
 		Game & operator+=(std::unique_ptr<Region> &&);
+		Extraction * getExtraction(const Area &, const std::string &);
+		const Extraction * getExtraction(const Area &, const std::string &) const;
 };

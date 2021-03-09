@@ -98,6 +98,14 @@ void MainWindow::render(bool *open) {
 								ImGui::PopID();
 								ImGui::SameLine();
 								ImGui::Text("%s x %.2f", rname.c_str(), amount);
+								if (Extraction *extraction = context->getExtraction(*area, rname)) {
+									ImGui::SameLine();
+									ImGui::Dummy({10.f, 0.f});
+									ImGui::SameLine();
+									ImGui::PushStyleColor(ImGuiCol_Text, {1.0f, 0.f, 0.f, 1.0f});
+									ImGui::Text("- %.2f/s", extraction->rate);
+									ImGui::PopStyleColor();
+								}
 							}
 							ImGui::TreePop();
 						}

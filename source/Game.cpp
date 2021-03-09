@@ -293,3 +293,17 @@ Game & Game::operator+=(std::unique_ptr<Region> &&ptr) {
 	regions.emplace(ptr->position, std::move(ptr));
 	return *this;
 }
+
+Extraction * Game::getExtraction(const Area &area, const std::string &name) {
+	for (Extraction &extraction: extractions)
+		if (extraction.area == &area && extraction.resourceName == name)
+			return &extraction;
+	return nullptr;
+}
+
+const Extraction * Game::getExtraction(const Area &area, const std::string &name) const {
+	for (const Extraction &extraction: extractions)
+		if (extraction.area == &area && extraction.resourceName == name)
+			return &extraction;
+	return nullptr;
+}
