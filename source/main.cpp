@@ -118,7 +118,7 @@ int main() {
 		config.FontDataOwnedByAtlas = false;
 
 		strcpy(config.Name, "Nintendo Standard");
-		UI::addFont(fonts_std.address, fonts_std.size, 24.0f, &config, io.Fonts->GetGlyphRangesCyrillic());
+		UI::addFont(fonts_std.address, fonts_std.size, 27.0f, &config, io.Fonts->GetGlyphRangesCyrillic());
 		strcpy(config.Name, "Nintendo Standard Big");
 		UI::addFont(fonts_std.address, fonts_std.size, 36.0f, &config, io.Fonts->GetGlyphRangesCyrillic());
 
