@@ -157,10 +157,11 @@ void Game::tick() {
 		double to_extract = std::min(extraction.rate, extraction.amount);
 		if (extraction.area->resources[extraction.resourceName] < to_extract) {
 			inventory[extraction.resourceName] += extraction.area->resources[extraction.resourceName];
+			extraction.area->resources[extraction.resourceName] = 0;
 			extractions.erase(iter++);
 		} else {
-			--extraction.area->resources[extraction.resourceName];
 			inventory[extraction.resourceName] += to_extract;
+			extraction.area->resources[extraction.resourceName] -= to_extract;
 			extraction.amount -= to_extract;
 			if (extraction.amount < 0.0001)
 				extractions.erase(iter++);
