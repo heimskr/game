@@ -1,29 +1,11 @@
 #pragma once
 
-#include <stdio.h>
-#include <switch/runtime/devices/console.h>
+#include "ImGui.h"
+#include <unordered_map>
 
-constexpr int SIDEBAR_WIDTH = 30;
-constexpr int BUTTON_HEIGHT = 4;
+namespace UI {
+	extern std::unordered_map<const char *, ImFont *> fontMap;
 
-void leftPanel(PrintConsole *, int width);
-void rightPanel(PrintConsole *, int width);
-void topPanel(PrintConsole *, int height);
-void bottomPanel(PrintConsole *, int height);
-void verticalPanel(PrintConsole *, int y, int height);
-void resetWindow(PrintConsole *);
-
-void onTouch(int x, int y);
-void onTouchUp(int x, int y);
-
-struct Sidebar {
-	int width = 30;
-	int buttonHeight = 4;
-	bool visible = true;
-	Sidebar(int width_, int button_height);
-	void draw();
-	void up();
-	void down();
-};
-
-extern Sidebar sidebar;
+	ImFont * addFont(void *ttf_data, int ttf_size, float size_pixels, const ImFontConfig *config, const ImWchar *glyph_ranges);
+	ImFont * getFont(const char *);
+}
