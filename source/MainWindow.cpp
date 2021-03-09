@@ -15,6 +15,12 @@ void MainWindow(Context &context, bool *open) {
 			if (ImGui::BeginMenu("Menu")) {
 				if (ImGui::MenuItem("Load"))
 					context.load();
+				if (context.loaded && ImGui::MenuItem("Stringify")) {
+					if (context.game)
+						context.message = context.game->toString();
+					else
+						context.message = "Game is null";
+				}
 				if (context.loaded && ImGui::MenuItem("Save"))
 					context.save();
 				ImGui::EndMenu();
@@ -40,6 +46,7 @@ void MainWindow(Context &context, bool *open) {
 					ImGui::Text("Region has no areas.");
 				} else {
 					for (const auto &[name, area]: region.areas) {
+						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 						if (ImGui::TreeNode(name.c_str())) {
 							for (const auto &[rname, amount]: area->resources) {
 								ImGui::Dummy(ImVec2(20.f, 0.f));

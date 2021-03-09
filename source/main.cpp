@@ -194,8 +194,9 @@ int main() {
 		constexpr float MODAL_WIDTH = 500.f, MODAL_HEIGHT = 200.f;
 		ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
 		ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Always);
-		if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+		if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_HorizontalScrollbar)) {
 			ImGui::Text("%s", context.message.c_str());
+			ImGui::Dummy({0.f, 10.f});
 			if (ImGui::Button("Close")) {
 				context.message.clear();
 				ImGui::CloseCurrentPopup();
@@ -232,7 +233,7 @@ void Context::load() {
 	try {
 		game = Game::load();
 		print("Game loaded successfully.\n");
-		message = "Game loaded successfully.";
+		// message = "Game loaded successfully.";
 		loaded = true;
 	} catch (const std::exception &err) {
 		print("Couldn't load game: %s\n", err.what());

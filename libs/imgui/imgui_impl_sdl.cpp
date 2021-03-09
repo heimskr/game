@@ -414,6 +414,7 @@ static void ImGui_ImplSDL2_UpdateGamepads()
             int joy_l_y = SDL_GameControllerGetAxis(sub_controller, SDL_CONTROLLER_AXIS_LEFTY);
             int joy_l_x = SDL_GameControllerGetAxis(sub_controller, SDL_CONTROLLER_AXIS_LEFTX);
             float mouse_wheel = SDL_GameControllerGetAxis(sub_controller, SDL_CONTROLLER_AXIS_RIGHTY);
+            float horiz_mouse_wheel = SDL_GameControllerGetAxis(sub_controller, SDL_CONTROLLER_AXIS_RIGHTX);
 
             if (l_down)
                 mouse_speed = 0.25f;
@@ -436,6 +437,11 @@ static void ImGui_ImplSDL2_UpdateGamepads()
                 io.MouseWheel -= (mouse_wheel * 0.00001f) * mouse_speed;
             if (mouse_wheel < 1024)
                 io.MouseWheel += (abs(mouse_wheel) * 0.00001f) * mouse_speed;
+
+            if (horiz_mouse_wheel > -1024)
+                io.MouseWheelH -= (horiz_mouse_wheel * 0.00001f) * mouse_speed;
+            if (horiz_mouse_wheel < 1024)
+                io.MouseWheelH += (abs(horiz_mouse_wheel) * 0.00001f) * mouse_speed;
 
             if (io.MousePos.x < 0)
                 io.MousePos.x = 0;
