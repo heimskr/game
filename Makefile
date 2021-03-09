@@ -46,9 +46,10 @@ SOURCES		:=	$(shell find source -type d) libs/imgui
 endif
 DATA		:=	data
 INCLUDES	:=	include libs/imgui
+ICON		:=	resources/tradegame.jpg
 #ROMFS	:=	romfs
 
-APP_TITLE	:= TradeGame
+APP_TITLE	:= Trade Game
 APP_AUTHOR	:= heimskr
 APP_VERSION	:= 0.0.1
 
