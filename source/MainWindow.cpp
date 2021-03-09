@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "main.h"
 #include "MainWindow.h"
+#include "Keyboard.h"
 
 void MainWindow(Context &context, bool *open) {
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Once);
@@ -28,11 +29,31 @@ void MainWindow(Context &context, bool *open) {
 		for (const auto &[pos, region]: context.game->regions) {
 			const std::string label = region.name + " (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")";
 			if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_None)) {
+				if (ImGui::Button("Rename")) {
+					Keyboard::openForText([&](std::string new_name) {
+						context.message = "-> " + new_name;
+					}, "New Region Name", "", 64, region.name);
+				}
 				if (region.areas.empty()) {
+					ImGui::Dummy(ImVec2(20.f, 0.f));
+					ImGui::SameLine();
 					ImGui::Text("Region has no areas.");
 				} else {
 					for (const auto &[name, area]: region.areas) {
-						ImGui::Text(name.c_str());
+						if (ImGui::TreeNode(name.c_str())) {
+							for (const auto &[rname, amount]: area->resources) {
+								ImGui::Dummy(ImVec2(20.f, 0.f));
+								ImGui::SameLine();
+								ImGui::PushID(rname.c_str());
+								if (ImGui::Button("Extract")) {
+									context.message = rname + " x " + std::to_string(amount) + " :)";
+								}
+								ImGui::PopID();
+								ImGui::SameLine();
+								ImGui::Text("%s x %.2f", rname.c_str(), amount);
+							}
+							ImGui::TreePop();
+						}
 					}
 				}
 			}
