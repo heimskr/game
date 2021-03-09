@@ -183,9 +183,12 @@ int main() {
 		ImGui_ImplSDL2_NewFrame(window);
 		ImGui::NewFrame();
 
-		MainWindow(context, &show_main_window);
-
-		if (!context.message.empty()) {
+		try {
+			MainWindow(context, &show_main_window);
+			if (!context.message.empty())
+				ImGui::OpenPopup("Message");
+		} catch (const std::exception &err) {
+			context.message = "Error: " + std::string(err.what());
 			ImGui::OpenPopup("Message");
 		}
 
