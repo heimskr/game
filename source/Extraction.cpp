@@ -6,7 +6,8 @@
 #include "main.h"
 
 std::string Extraction::toString() const {
-	return area->parent->name + ":" + area->name + ":" + resourceName + ":" + std::to_string(amount) + ":" + std::to_string(rate);
+	return area->parent->name + ":" + area->name + ":" + resourceName + ":" + std::to_string(amount) + ":"
+		+ std::to_string(rate) + ":" + std::to_string(startAmount);
 }
 
 Extraction Extraction::fromString(const Game &game, const std::string &str) {
@@ -20,5 +21,7 @@ Extraction Extraction::fromString(const Game &game, const std::string &str) {
 	if (region->areas.count(pieces[1]) == 0)
 		throw std::runtime_error("Couldn't find Area for extraction");
 	const Area *area = region->areas.at(pieces[1]).get();
-	return {const_cast<Area *>(area), pieces[2], parseDouble(pieces[3]), parseDouble(pieces[4])};
+	const double amount = parseDouble(pieces[3]);
+	const double start_amount = 5 < pieces.size()? parseDouble(pieces[5]) : amount;
+	return {const_cast<Area *>(area), pieces[2], start_amount, amount, parseDouble(pieces[4])};
 }
