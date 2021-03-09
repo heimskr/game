@@ -155,9 +155,9 @@ void Game::tick() {
 	for (auto iter = extractions.begin(); iter != extractions.end();) {
 		Extraction &extraction = *iter;
 		double to_extract = std::min(extraction.rate, extraction.amount);
-		if (extraction.area->resources[extraction.resourceName] < to_extract) {
+		if (extraction.area->resources[extraction.resourceName] <= to_extract) {
 			inventory[extraction.resourceName] += extraction.area->resources[extraction.resourceName];
-			extraction.area->resources[extraction.resourceName] = 0;
+			extraction.area->resources.erase(extraction.resourceName);
 			extractions.erase(iter++);
 		} else {
 			inventory[extraction.resourceName] += to_extract;
