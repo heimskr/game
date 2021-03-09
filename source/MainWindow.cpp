@@ -184,12 +184,21 @@ void MainWindow::render(bool *open) {
 				ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed, 50.f);
 				ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthFixed, 240.f);
 				ImGui::TableSetupColumn("Amount", ImGuiTableColumnFlags_WidthAlwaysAutoResize);
+				std::vector<const std::string *> to_erase;
+				to_erase.reserve(context->inventory.size());
 				for (const auto &[name, amount]: context->inventory) {
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
-					if (ImGui::Button(("-##" + name).c_str(), {40.f, 0.f})) {
-						context.message = "Delete " + name;
-					}
+					if (ImGui::Button(("-##" + name).c_str(), {40.f, 0.f}))
+						Keyboard::openForDouble([this, &name, &to_erase](double chosen) {
+							double &amount = context->inventory[name];
+							if (chosen <= 0)
+								context.message = "Error: Invalid amount.";
+							else if (amount <= chosen)
+								to_erase.push_back(&name);
+							else
+								amount -= chosen;
+						}, "Amount to Discard");
 					ImGui::TableNextColumn();
 					ImGui::TableSetColumnIndex(1);
 					ImGui::Text("%s", name.c_str());
@@ -198,6 +207,8 @@ void MainWindow::render(bool *open) {
 					ImGui::Text("%.2f", amount);
 					ImGui::TableNextColumn();
 				}
+				for (const std::string *name: to_erase)
+					context->inventory.erase(*name);
 				ImGui::EndTable();
 			}
 			ImGui::EndTabItem();
