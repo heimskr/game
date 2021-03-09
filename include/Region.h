@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <set>
 #include <stddef.h>
@@ -27,7 +28,7 @@ class Region {
 		Position position;
 		size_t size = 0;
 		/** Don't directly insert Areas into this map; use operator+= instead. */
-		std::unordered_map<std::string, std::shared_ptr<Area>> areas;
+		std::map<std::string, std::shared_ptr<Area>> areas;
 		size_t money = 0;
 
 		Region(Game *, const std::string &name_, const Position &, size_t size_);
