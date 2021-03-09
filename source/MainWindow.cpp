@@ -39,9 +39,6 @@ void MainWindow::render(bool *open) {
 	} catch (const std::out_of_range &) {}
 
 	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None)) {
-		if (selectedTab != -1)
-			Logger::info("selectedTab = %d", selectedTab);
-
 		if (ImGui::BeginTabItem("Region", nullptr, selectedTab == 0? ImGuiTabItemFlags_SetSelected : 0)) {
 			lastTab = 0;
 			if (!context.game || !context.loaded) {
@@ -160,9 +157,17 @@ void MainWindow::render(bool *open) {
 				ImGui::Text("No game is loaded.");
 			else if (context->inventory.empty())
 				ImGui::Text("You are bereft of resources.");
-			else
-				for (const auto &[name, amount]: context->inventory)
-					ImGui::Text("%s x %.2f", name.c_str(), amount);
+			else {
+				ImGui::Columns(2, nullptr, false);
+				ImGui::SetColumnWidth(-1, 256.f);
+				for (const auto &[name, amount]: context->inventory) {
+					ImGui::Text("%s", name.c_str());
+					ImGui::NextColumn();
+					ImGui::Text("%.2f", amount);
+					ImGui::NextColumn();
+				}
+				ImGui::Columns(1);
+			}
 			ImGui::EndTabItem();
 		}
 
