@@ -45,11 +45,11 @@ void Game::listRegions() {
 		} catch (const std::exception &) {}
 		print("Regions:\n");
 		for (const auto &pair: regions) {
-			if (&pair.second == current)
-				print("- \e[33;4m%s\e[39;24m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
+			if (pair.second.get() == current)
+				print("- \e[33;4m%s\e[39;24m at (%ld, %ld)\n", pair.second->name.c_str(), pair.first.first, pair.first.second);
 			else
-				print("- \e[36m%s\e[39m at (%ld, %ld)\n", pair.second.name.c_str(), pair.first.first, pair.first.second);
-			for (const auto &area_pair: pair.second.areas) {
+				print("- \e[36m%s\e[39m at (%ld, %ld)\n", pair.second->name.c_str(), pair.first.first, pair.first.second);
+			for (const auto &area_pair: pair.second->areas) {
 				const Area &area = *area_pair.second;
 				print("  - \e[35m%s\e[39m (%lu%s): %s\n",
 					area_pair.first.c_str(), area.size, area.playerOwned? ", owned" : "", area.description().c_str());
@@ -62,8 +62,8 @@ bool Game::updatePosition(Region &region, const Region::Position &new_position) 
 	if (regions.count(region.position) == 0)
 		return false;
 	auto handler = regions.extract(region.position);
-	handler.mapped().position = new_position;
-	if (&region != &handler.mapped())
+	handler.mapped()->position = new_position;
+	if (&region != handler.mapped().get())
 		region.position = new_position;
 	handler.key() = new_position;
 	regions.insert(std::move(handler));
@@ -113,7 +113,7 @@ Region * Game::addRegion() {
 		return nullptr;
 	}
 	for (const auto &pair: regions)
-		if (pair.second.name == name) {
+		if (pair.second->name == name) {
 			print("A region with that name already exists.\n");
 			return nullptr;
 		}
@@ -140,18 +140,18 @@ Region * Game::addRegion() {
 		print("Invalid size.\n");
 		return nullptr;
 	}
-	regions.insert({{x, y}, Region(this, name, {x, y}, size)});
+	regions.insert({{x, y}, std::make_unique<Region>(this, name, Region::Position(x, y), size)});
 	print("Created new region \e[1m%s\e[22m at position (%ld, %ld) with size %lu.\n", name.c_str(), x, y, size);
-	return &regions.at({x, y});
+	return regions.at({x, y}).get();
 }
 
 Region & Game::currentRegion() {
-	return regions.at(position);
+	return *regions.at(position);
 }
 
 void Game::tick() {
 	for (auto &pair: regions)
-		pair.second.tick();
+		pair.second->tick();
 	for (auto iter = extractions.begin(); iter != extractions.end();) {
 		Extraction &extraction = *iter;
 		double to_extract = std::min(extraction.rate, extraction.amount);
@@ -172,7 +172,7 @@ void Game::tick() {
 
 void Game::loadDefaults() {
 	regions.clear();
-	Region &home = regions.insert({{0, 0}, Region(this, NameGen::makeRandomLanguage().makeName(), {0, 0}, 64)}).first->second;
+	Region &home = *regions.insert({{0, 0}, std::make_unique<Region>(this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 64)}).first->second;
 	auto forest = std::make_shared<ForestArea>(&home, 20);
 	auto housing = std::make_shared<HousingArea>(&home, 16);
 	auto mountain = std::make_shared<MountainArea>(&home, 24);
@@ -192,7 +192,7 @@ std::string Game::toString() const {
 	std::stringstream out;
 	out << "[Regions]\n";
 	for (const auto &pair: regions)
-		out << pair.second.toString() << "\n";
+		out << pair.second->toString() << "\n";
 	out << "\n[Inventory]\n";
 	for (const auto &pair: inventory)
 		out << pair.first << "=" << pair.second << "\n";
@@ -235,7 +235,7 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 			switch (mode) {
 				case Mode::Regions: {
 					auto region = Region::fromString(*out, line);
-					out->regions.emplace(region->position, *region);
+					out->regions.emplace(region->position, std::move(region));
 					break;
 				}
 				case Mode::Inventory: {

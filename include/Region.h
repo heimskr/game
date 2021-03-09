@@ -49,7 +49,7 @@ class Region {
 		Region & operator+=(std::shared_ptr<Area>);
 
 		std::string toString() const;
-		static std::shared_ptr<Region> fromString(Game &, const std::string &);
+		static std::unique_ptr<Region> fromString(Game &, const std::string &);
 };
 
 Region::Position operator+(const Region::Position &, const Region::Position &);

@@ -33,19 +33,19 @@ void MainWindow(Context &context, bool *open) {
 		ImGui::Text("No game is loaded.");
 	} else {
 		for (const auto &[pos, region]: context.game->regions) {
-			const std::string label = region.name + " (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")";
+			const std::string label = region->name + " (" + std::to_string(pos.first) + ", " + std::to_string(pos.second) + ")";
 			if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_None)) {
 				if (ImGui::Button("Rename")) {
 					Keyboard::openForText([&](std::string new_name) {
 						context.message = "-> " + new_name;
-					}, "New Region Name", "", 64, region.name);
+					}, "New Region Name", "", 64, region->name);
 				}
-				if (region.areas.empty()) {
+				if (region->areas.empty()) {
 					ImGui::Dummy(ImVec2(20.f, 0.f));
 					ImGui::SameLine();
 					ImGui::Text("Region has no areas.");
 				} else {
-					for (const auto &[name, area]: region.areas) {
+					for (const auto &[name, area]: region->areas) {
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 						if (ImGui::TreeNode(name.c_str())) {
 							for (const auto &[rname, amount]: area->resources) {

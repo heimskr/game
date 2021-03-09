@@ -106,7 +106,7 @@ std::string Region::toString() const {
 	return out.str();
 }
 
-std::shared_ptr<Region> Region::fromString(Game &game, const std::string &str) {
+std::unique_ptr<Region> Region::fromString(Game &game, const std::string &str) {
 	const std::vector<std::string> by_semicolon = split(str, ";", false);
 	const std::vector<std::string> by_colon = split(by_semicolon[0], ":", false);
 	const std::string &name = by_colon[0];
@@ -114,7 +114,7 @@ std::shared_ptr<Region> Region::fromString(Game &game, const std::string &str) {
 	const s64 y = parseLong(by_colon[2]);
 	const size_t size = parseUlong(by_colon[3]);
 	const size_t money = parseUlong(by_colon[4]);
-	std::shared_ptr<Region> region = std::make_shared<Region>(&game, name, std::make_pair(x, y), size);
+	std::unique_ptr<Region> region = std::make_unique<Region>(&game, name, std::make_pair(x, y), size);
 	region->money = money;
 	region->areas.clear();
 	for (size_t i = 1; i < by_semicolon.size(); ++i) {

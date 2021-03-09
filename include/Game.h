@@ -14,7 +14,7 @@ class Game {
 		bool ready = false;
 		std::map<std::string, Resource> resources;
 		std::map<std::string, double> inventory;
-		std::map<Region::Position, Region> regions;
+		std::map<Region::Position, std::unique_ptr<Region>> regions;
 		std::list<Extraction> extractions;
 		Region::Position position;
 

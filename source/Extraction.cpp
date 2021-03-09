@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Region.h"
 #include "Util.h"
+#include "main.h"
 
 std::string Extraction::toString() const {
 	return area->parent->name + ":" + area->name + ":" + resourceName + ":" + std::to_string(amount) + ":" + std::to_string(rate);
@@ -12,8 +13,8 @@ Extraction Extraction::fromString(const Game &game, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);
 	const Region *region = nullptr;
 	for (const auto &pair: game.regions)
-		if (pair.second.name == pieces[0])
-			region = &pair.second;
+		if (pair.second->name == pieces[0])
+			region = pair.second.get();
 	if (!region)
 		throw std::runtime_error("Couldn't find Region for extraction");
 	if (region->areas.count(pieces[1]) == 0)
