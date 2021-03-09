@@ -65,8 +65,7 @@ CXXFLAGS	:= $(CFLAGS) -fno-rtti -std=c++17
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= `curl-config --libs` -lzzip -ljansson -lturbojpeg -ljpeg -lpng -lwebp \
-		   `sdl2-config --libs` -lglad -lEGL -lglapi -ldrm_nouveau -lnx -lm -lz
+LIBS	:= -lglad -lEGL -lglfw3 -lglapi -ldrm_nouveau -lnx -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

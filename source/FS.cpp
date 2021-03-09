@@ -1,5 +1,7 @@
+#include <stdexcept>
+
 #include "FS.h"
-#include "main.h"
+#include "Util.h"
 
 FsFileSystem fs;
 
@@ -7,8 +9,7 @@ namespace FS {
 	void init() {
 		FsFileSystem *fsptr = fsdevGetDeviceFileSystem("sdmc");
 		if (fsptr == nullptr) {
-			print("Unable to initialize filesystem.\n");
-			perish();
+			throw std::runtime_error("Unable to initialize filesystem.");
 		} else
 			fs = *fsptr;
 	}
