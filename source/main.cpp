@@ -233,7 +233,6 @@ void Context::load() {
 	try {
 		game = Game::load();
 		print("Game loaded successfully.\n");
-		// message = "Game loaded successfully.";
 		loaded = true;
 	} catch (const std::exception &err) {
 		print("Couldn't load game: %s\n", err.what());

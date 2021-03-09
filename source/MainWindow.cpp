@@ -37,7 +37,12 @@ void MainWindow(Context &context, bool *open) {
 			if (ImGui::CollapsingHeader(label.c_str(), ImGuiTreeNodeFlags_None)) {
 				if (ImGui::Button("Rename")) {
 					Keyboard::openForText([&](std::string new_name) {
-						context.message = "-> " + new_name;
+						if (new_name.empty() || new_name == region->name) {
+							context.message = "Name not updated.";
+						} else {
+							context.message = "Renamed " + region->name + " to " + new_name + ".";
+							context->updateName(*region, new_name);
+						}
 					}, "New Region Name", "", 64, region->name);
 				}
 				if (region->areas.empty()) {
