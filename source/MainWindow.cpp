@@ -124,7 +124,7 @@ void MainWindow::render(bool *open) {
 						for (int col = 0; col < 3; ++col) {
 							ImGui::TableSetColumnIndex(col);
 							const Region::Position pos(region->position.first + col - 1, region->position.second + row - 1);
-							std::string label = "?";
+							std::string label = "~";
 							bool exists = false;
 							if (context->regions.count(pos) != 0) {
 								label = context->regions.at(pos)->name;
