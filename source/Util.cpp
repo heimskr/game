@@ -102,3 +102,13 @@ unsigned long parseUlong(const std::string *str, int base) {
 unsigned long parseUlong(const char *str, int base) {
 	return parseUlong(std::string(str), base);
 }
+
+bool chance(double probability) {
+	return ((rand() % 100000000) / 100000000.) < probability;
+}
+
+size_t randomRange(size_t min, size_t max) {
+	if (max <= min)
+		return min;
+	return min + (rand() % (max - min + 1));
+}

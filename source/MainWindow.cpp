@@ -70,14 +70,12 @@ void MainWindow(Context &context, bool *open) {
 								ImGui::PushID(rname.c_str());
 								if (ImGui::Button("Extract")) {
 									Keyboard::openForDouble([&](double chosen) {
-										if (amount <= 0) {
+										if (amount <= 0)
 											context.message = "Invalid amount.";
-										} else if (amount < chosen) {
+										else if (amount < chosen)
 											context.message = "Not enough of that resource is available.";
-										} else {
+										else
 											context->extractions.emplace_back(area.get(), rname, chosen, context->resources.at(rname).defaultExtractionRate);
-											context.message = "Extracting " + std::to_string(chosen) + " x " + rname + ".";
-										}
 									}, "Amount to Extract");
 								}
 								ImGui::PopID();

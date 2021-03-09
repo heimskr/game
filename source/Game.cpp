@@ -20,10 +20,10 @@ void Game::add(const Resource &resource) {
 
 void Game::addResources() {
 	add(Resource(this, "charcoal").addTypes("fuel"));
-	add(Resource(this, "coal").addTypes("fuel"));
+	add(Resource(this, "coal").addTypes("fuel").setDefaultExtractionRate(0.1));
 	add(Resource(this, "wood").addTypes("fuel", "natural").add("charcoal", {1, {"furnace"}}));
 	add(Resource(this, "water").addTypes("liquid"));
-	add(Resource(this, "ironOre").addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}));
+	add(Resource(this, "ironOre").addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}).setDefaultExtractionRate(0.1));
 	add(Resource(this, "iron").addTypes("metal", "iron"));
 	add(Resource(this, "human").addTypes("alive", "sapient"));
 }

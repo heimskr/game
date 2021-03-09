@@ -4,3 +4,4 @@
 #include "area/Housing.h"
 #include "area/Mountain.h"
 #include "area/Lake.h"
+#include "area/Empty.h"

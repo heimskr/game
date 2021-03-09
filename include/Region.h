@@ -20,7 +20,7 @@ class Game;
  */
 class Region {
 	public:
-		static constexpr const char *INVALID_CHARS = ":;";
+		static constexpr const char *INVALID_CHARS = ":;?";
 		using Position = std::pair<s64, s64>;
 
 		Game *owner;
@@ -53,6 +53,8 @@ class Region {
 
 		std::string toString() const;
 		static std::unique_ptr<Region> fromString(Game &, const std::string &);
+		static std::unique_ptr<Region> generate(Game &, const Position &, size_t);
+		static std::unique_ptr<Region> generate(Game &, const Position &);
 };
 
 Region::Position operator+(const Region::Position &, const Region::Position &);

@@ -1,11 +1,15 @@
 #include <sstream>
 
 #include "Game.h"
+#include "NameGen.h"
 #include "Region.h"
 #include "Util.h"
+#include "area/Areas.h"
 
 Region::Region(Game *owner_, const std::string &name_, const Position &position_, size_t size_):
-	owner(owner_), name(name_), position(position_), size(size_) {}
+		owner(owner_), name(), position(position_), size(size_) {
+	setName(name_);
+}
 
 void Region::tick() {
 	for (auto &pair: areas)
@@ -87,6 +91,8 @@ Region & Region::setPosition(const std::pair<s64, s64> &position_) {
 }
 
 Region & Region::setName(const std::string &name_) {
+	if (name_.find_first_of(INVALID_CHARS) != std::string::npos)
+		throw std::invalid_argument("Invalid region name");
 	name = name_;
 	return *this;
 }
@@ -138,4 +144,46 @@ std::unique_ptr<Region> Region::fromString(Game &game, const std::string &str) {
 
 Region::Position operator+(const Region::Position &left, const Region::Position &right) {
 	return {left.first + right.first, left.second + right.second};
+}
+
+std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t size) {
+	std::unique_ptr<Region> region = std::make_unique<Region>(&game, NameGen::makeRandomLanguage().makeName(), pos, size);
+	size_t remaining_size = size;
+
+	if (chance(0.25)) {
+		const size_t housing_size = randomRange(std::min(5ul, remaining_size), remaining_size / 2);
+		auto housing = std::make_shared<HousingArea>(region.get(), housing_size);
+		*region += housing;
+		remaining_size -= housing_size;
+	}
+
+	if (remaining_size && chance(0.8)) {
+		const size_t forest_size = randomRange(std::min(4ul, remaining_size), remaining_size / 2);
+		auto forest = std::make_shared<ForestArea>(region.get(), forest_size);
+		*region += forest;
+		remaining_size -= forest_size;
+	}
+
+	if (remaining_size && chance(0.5)) {
+		const size_t mountain_size = randomRange(std::min(5ul, remaining_size), remaining_size * 3 / 4);
+		auto mountain = std::make_shared<MountainArea>(region.get(), mountain_size);
+		*region += mountain;
+		remaining_size -= mountain_size;
+	}
+
+	if (remaining_size && chance(0.4)) {
+		const size_t lake_size = randomRange(1, remaining_size / 2);
+		auto lake = std::make_shared<LakeArea>(region.get(), lake_size);
+		*region += lake;
+		remaining_size -= lake_size;
+	}
+
+	if (remaining_size)
+		*region += std::make_shared<EmptyArea>(region.get(), remaining_size);
+
+	return region;
+}
+
+std::unique_ptr<Region> Region::generate(Game &game, const Position &pos) {
+	return generate(game, pos, randomRange(32, 128));
 }

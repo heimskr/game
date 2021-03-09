@@ -12,7 +12,7 @@ class Area {
 	public:
 		static constexpr const char *INVALID_CHARS = ";:/";
 
-		enum class Type: unsigned {Housing, Forest, Mountain, Lake};
+		enum class Type: unsigned {Housing, Forest, Mountain, Lake, Empty};
 
 		Region *parent;
 		Resource::Map resources;
