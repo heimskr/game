@@ -219,6 +219,7 @@ int main() {
 				if (ImGui::BeginTable("Resources", 2)) {
 					ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthFixed, 200.f);
 					ImGui::TableSetupColumn("Amount",   ImGuiTableColumnFlags_WidthFixed, width - 200.f);
+					ImGui::TableHeadersRow();
 					for (const auto &[name, amount]: context->inventory) {
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);

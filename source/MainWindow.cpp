@@ -176,20 +176,29 @@ void MainWindow::render(bool *open) {
 
 		if (ImGui::BeginTabItem("Inventory", nullptr, selectedTab == 3? ImGuiTabItemFlags_SetSelected : 0)) {
 			lastTab = 3;
-			if (!context.game || !context.loaded)
+			if (!context.game || !context.loaded) {
 				ImGui::Text("No game is loaded.");
-			else if (context->inventory.empty())
+			} else if (context->inventory.empty()) {
 				ImGui::Text("You are bereft of resources.");
-			else {
-				ImGui::Columns(2, nullptr, false);
-				ImGui::SetColumnWidth(-1, 256.f);
+			} else if (ImGui::BeginTable("Inventory Table", 3)) {
+				ImGui::TableSetupColumn("Delete", ImGuiTableColumnFlags_WidthFixed, 50.f);
+				ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthFixed, 240.f);
+				ImGui::TableSetupColumn("Amount", ImGuiTableColumnFlags_WidthAlwaysAutoResize);
 				for (const auto &[name, amount]: context->inventory) {
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					if (ImGui::Button(("-##" + name).c_str(), {40.f, 0.f})) {
+						context.message = "Delete " + name;
+					}
+					ImGui::TableNextColumn();
+					ImGui::TableSetColumnIndex(1);
 					ImGui::Text("%s", name.c_str());
-					ImGui::NextColumn();
+					ImGui::TableNextColumn();
+					ImGui::TableSetColumnIndex(2);
 					ImGui::Text("%.2f", amount);
-					ImGui::NextColumn();
+					ImGui::TableNextColumn();
 				}
-				ImGui::Columns(1);
+				ImGui::EndTable();
 			}
 			ImGui::EndTabItem();
 		}
