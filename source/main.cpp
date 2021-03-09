@@ -124,18 +124,18 @@ int main() {
 
 		strcpy(config.Name, "Nintendo Ext");
 		static const ImWchar ranges[] = {
-			0xE000, 0xE06B,
-			0xE070, 0xE07E,
-			0xE080, 0xE099,
-			0xE0A0, 0xE0BA,
-			0xE0C0, 0xE0D6,
-			0xE0E0, 0xE0F5,
-			0xE100, 0xE105,
-			0xE110, 0xE116,
-			0xE121, 0xE12C,
-			0xE130, 0xE13C,
-			0xE140, 0xE14D,
-			0xE150, 0xE153,
+			0xe000, 0xe06b,
+			0xe070, 0xe07e,
+			0xe080, 0xe099,
+			0xe0a0, 0xe0ba,
+			0xe0c0, 0xe0d6,
+			0xe0e0, 0xe0f5,
+			0xe100, 0xe105,
+			0xe110, 0xe116,
+			0xe121, 0xe12c,
+			0xe130, 0xe13c,
+			0xe140, 0xe14d,
+			0xe150, 0xe153,
 			0,
 		};
 
@@ -149,12 +149,7 @@ int main() {
 	style.WindowRounding = 8;
 	style.FrameRounding = style.GrabRounding = 3;
 
-	for (int i = 0; i < io.Fonts->Fonts.Size; ++i) {
-		if (strcmp(io.Fonts->Fonts[i]->GetDebugName(), "Nintendo Standard") == 0) {
-			io.FontDefault = io.Fonts->Fonts[i];
-			break;
-		}
-	}
+	io.FontDefault = UI::getFont("Nintendo Standard");
 
 	Context context;
 	context.game = std::make_shared<Game>();

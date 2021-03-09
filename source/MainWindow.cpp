@@ -4,6 +4,7 @@
 #include "imgui_internal.h"
 #include "main.h"
 #include "MainWindow.h"
+#include "NameGen.h"
 #include "Keyboard.h"
 #include "UI.h"
 #include "Direction.h"
@@ -53,7 +54,7 @@ void MainWindow(Context &context, bool *open) {
 							context.message = "Renamed " + region->name + " to " + new_name + ".";
 							context->updateName(*region, new_name);
 						}
-					}, "New Region Name", "", 64, region->name);
+					}, "New Region Name", "", 64, NameGen::makeRandomLanguage().makeName());
 				}
 				if (region->areas.empty()) {
 					ImGui::Dummy(ImVec2(20.f, 0.f));
@@ -69,7 +70,9 @@ void MainWindow(Context &context, bool *open) {
 								ImGui::PushID(rname.c_str());
 								if (ImGui::Button("Extract")) {
 									Keyboard::openForDouble([&](double chosen) {
-										if (amount < chosen) {
+										if (amount <= 0) {
+											context.message = "Invalid amount.";
+										} else if (amount < chosen) {
 											context.message = "Not enough of that resource is available.";
 										} else {
 											context->extractions.emplace_back(area.get(), rname, chosen, context->resources.at(rname).defaultExtractionRate);
@@ -124,6 +127,24 @@ void MainWindow(Context &context, bool *open) {
 				}
 
 				ImGui::Columns(1);
+			}
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Extractions")) {
+			if (context->extractions.empty()) {
+				ImGui::Text("Nothing is happening.");
+			} else {
+				for (const Extraction &extraction: context->extractions) {
+					ImGui::Text("Extracting %s from %s in %s (%.2f left) @ %.2f/s",
+						extraction.resourceName.c_str(), extraction.area->name.c_str(),
+						extraction.area->parent->name.c_str(), extraction.amount, extraction.rate);
+					if (0. < extraction.startAmount) {
+						static char buf[32];
+						snprintf(buf, 32, "%.2f/%.2f", extraction.startAmount - extraction.amount, extraction.startAmount);
+						ImGui::ProgressBar((extraction.startAmount - extraction.amount) / extraction.startAmount, {0, 0}, buf);
+					}
+				}
 			}
 			ImGui::EndTabItem();
 		}
