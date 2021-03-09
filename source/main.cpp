@@ -156,17 +156,33 @@ int main() {
 
 	bool show_main_window = true;
 	time_t last_time = getTime();
+	MainWindow main_window(context);
+
 	while (show_main_window && !done) {
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				done = true;
-			} else if (event.type == SDL_CONTROLLERBUTTONDOWN) {
-				if (event.cbutton.which == 0) {
-					if (event.cbutton.button == SDL_CONTROLLER_BUTTON_START) {
-						SDL_Event quitEvent;
-						quitEvent.type = SDL_QUIT;
-						SDL_PushEvent(&quitEvent);
+			} else if (event.type == SDL_CONTROLLERAXISMOTION) {
+				const bool up = event.caxis.value == 0;
+				if (up && event.caxis.which == 0) {
+					if (event.caxis.axis == 4) { // ZL
+						if (main_window.lastTab == 0)
+							main_window.selectedTab = MainWindow::TAB_COUNT - 1;
+						else
+							main_window.selectedTab = main_window.lastTab - 1;
+					} else if (event.caxis.axis == 5) { // ZR
+						if (main_window.lastTab == MainWindow::TAB_COUNT - 1)
+							main_window.selectedTab = 0;
+						else
+							main_window.selectedTab = main_window.lastTab + 1;
 					}
+				}
+				ImGui_ImplSDL2_ProcessEvent(&event);
+			} else if (event.type == SDL_CONTROLLERBUTTONDOWN) {
+				if (event.cbutton.which == 0 && event.cbutton.button == SDL_CONTROLLER_BUTTON_START) {
+					SDL_Event quitEvent;
+					quitEvent.type = SDL_QUIT;
+					SDL_PushEvent(&quitEvent);
 				}
 				ImGui_ImplSDL2_ProcessEvent(&event);
 			} else {
@@ -184,7 +200,7 @@ int main() {
 		ImGui::NewFrame();
 
 		try {
-			MainWindow(context, &show_main_window);
+			main_window.render(&show_main_window);
 			if (!context.message.empty())
 				ImGui::OpenPopup("Message");
 		} catch (const std::exception &err) {

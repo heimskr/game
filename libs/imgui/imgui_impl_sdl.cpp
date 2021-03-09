@@ -401,16 +401,16 @@ static void ImGui_ImplSDL2_UpdateGamepads()
     }
     else if (g_EmulateMouseWithGamepad) {
         float mouse_speed;
-        bool a_down = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_B) != 0 ? true : false;
-        bool b_down = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_A) != 0 ? true : false;
-        bool y_down = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_Y) != 0 ? true : false;
+        bool a_down = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_B) != 0;
+        bool b_down = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_A) != 0;
+        bool y_down = SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_Y) != 0;
 
         for (int controller_id = 0;; ++controller_id) {
             SDL_GameController *sub_controller = SDL_GameControllerOpen(controller_id);
             if (!sub_controller)
                 break;
-            bool l_down = SDL_GameControllerGetButton(sub_controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) != 0 ? true : false;
-            bool r_down = SDL_GameControllerGetButton(sub_controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) != 0 ? true : false;
+            bool l_down = SDL_GameControllerGetButton(sub_controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) != 0;
+            bool r_down = SDL_GameControllerGetButton(sub_controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) != 0;
             int joy_l_y = SDL_GameControllerGetAxis(sub_controller, SDL_CONTROLLER_AXIS_LEFTY);
             int joy_l_x = SDL_GameControllerGetAxis(sub_controller, SDL_CONTROLLER_AXIS_LEFTX);
             float mouse_wheel = SDL_GameControllerGetAxis(sub_controller, SDL_CONTROLLER_AXIS_RIGHTY);

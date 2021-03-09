@@ -9,7 +9,7 @@
 #include "UI.h"
 #include "Direction.h"
 
-void MainWindow(Context &context, bool *open) {
+void MainWindow::render(bool *open) {
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(1280.0f, 720.0f), ImGuiCond_Once);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -39,7 +39,11 @@ void MainWindow(Context &context, bool *open) {
 	} catch (const std::out_of_range &) {}
 
 	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None)) {
-		if (ImGui::BeginTabItem("Region")) {
+		if (selectedTab != -1)
+			Logger::info("selectedTab = %d", selectedTab);
+
+		if (ImGui::BeginTabItem("Region", nullptr, selectedTab == 0? ImGuiTabItemFlags_SetSelected : 0)) {
+			lastTab = 0;
 			if (!context.game || !context.loaded) {
 				ImGui::Text("No game is loaded.");
 			} else if (region) {
@@ -91,7 +95,8 @@ void MainWindow(Context &context, bool *open) {
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Travel")) {
+		if (ImGui::BeginTabItem("Travel", nullptr, selectedTab == 1? ImGuiTabItemFlags_SetSelected : 0)) {
+			lastTab = 1;
 			if (!region) {
 				ImGui::Text("Travel is not possible within the void.");
 			} else {
@@ -130,7 +135,8 @@ void MainWindow(Context &context, bool *open) {
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Extractions")) {
+		if (ImGui::BeginTabItem("Extractions", nullptr, selectedTab == 2? ImGuiTabItemFlags_SetSelected : 0)) {
+			lastTab = 2;
 			if (context->extractions.empty()) {
 				ImGui::Text("Nothing is happening.");
 			} else {
@@ -148,7 +154,8 @@ void MainWindow(Context &context, bool *open) {
 			ImGui::EndTabItem();
 		}
 
-		if (ImGui::BeginTabItem("Inventory")) {
+		if (ImGui::BeginTabItem("Inventory", nullptr, selectedTab == 3? ImGuiTabItemFlags_SetSelected : 0)) {
+			lastTab = 3;
 			if (!context.game || !context.loaded)
 				ImGui::Text("No game is loaded.");
 			else if (context->inventory.empty())
@@ -159,6 +166,7 @@ void MainWindow(Context &context, bool *open) {
 			ImGui::EndTabItem();
 		}
 
+		selectedTab = -1;
 		ImGui::EndTabBar();
 	}
 
