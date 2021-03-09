@@ -95,6 +95,7 @@ void MainWindow(Context &context, bool *open) {
 			if (!region) {
 				ImGui::Text("Travel is not possible within the void.");
 			} else {
+				ImGui::Text("Your position is (%ld, %ld).", region->position.first, region->position.second);
 				ImGui::Columns(2, nullptr, false);
 
 				static int set_width = 0;

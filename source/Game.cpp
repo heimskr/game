@@ -239,14 +239,14 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 					break;
 				}
 				case Mode::Inventory: {
-					size_t equals = line.find('=');
+					const size_t equals = line.find('=');
 					if (equals == std::string::npos)
 						throw std::invalid_argument("Invalid Inventory line");
 					out->inventory.emplace(line.substr(0, equals), parseDouble(line.substr(equals + 1)));
 					break;
 				}
 				case Mode::Position: {
-					size_t comma = line.find(',');
+					const size_t comma = line.find(',');
 					if (comma == std::string::npos)
 						throw std::invalid_argument("Invalid Position line");
 					out->position = {parseLong(line.substr(0, comma)), parseLong(line.substr(comma + 1))};
