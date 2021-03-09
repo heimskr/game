@@ -155,7 +155,7 @@ int main() {
 	context.game = std::make_shared<Game>();
 
 	bool show_main_window = true;
-	time_t last_time = getTime();
+	auto last_time = getTime();
 	MainWindow main_window(context);
 
 	while (show_main_window && !done) {
@@ -190,9 +190,9 @@ int main() {
 			}
 		}
 
-		time_t new_time = getTime();
-		for (s64 i = 0; i < new_time - last_time; ++i)
-			context->tick();
+		auto new_time = getTime();
+		for (s64 i = 0; i < (new_time - last_time).count(); ++i)
+			context->tick(0.001);
 		last_time = new_time;
 
 		ImGui_ImplOpenGL3_NewFrame();
@@ -272,14 +272,8 @@ int main() {
 	return EXIT_SUCCESS;
 }
 
-time_t getTime() {
-	time_t current_time;
-	Result result = timeGetCurrentTime(TimeType_UserSystemClock, (u64 *) &current_time);
-	if (R_FAILED(result)) {
-		fprintf(stderr, "Couldn't get current time.\n");
-		exit(EXIT_FAILURE);
-	}
-	return current_time;
+std::chrono::milliseconds getTime() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 }
 
 void Context::pickResource(std::function<void(const std::string &)> fn) {

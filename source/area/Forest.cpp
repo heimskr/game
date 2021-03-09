@@ -10,7 +10,7 @@ std::string ForestArea::description() const {
 	return "A quiet wooded area.";
 }
 
-void ForestArea::tick() {
-	if ((resources["wood"] *= 1.02) > static_cast<double>(size))
+void ForestArea::tick(double delta) {
+	if ((resources["wood"] += resources["wood"] * .02 * delta) > static_cast<double>(size))
 		resources["wood"] = static_cast<double>(size);
 }

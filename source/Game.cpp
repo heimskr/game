@@ -149,12 +149,12 @@ Region & Game::currentRegion() {
 	return *regions.at(position);
 }
 
-void Game::tick() {
+void Game::tick(double delta) {
 	for (auto &pair: regions)
-		pair.second->tick();
+		pair.second->tick(delta);
 	for (auto iter = extractions.begin(); iter != extractions.end();) {
 		Extraction &extraction = *iter;
-		double to_extract = std::min(extraction.rate, extraction.amount);
+		double to_extract = std::min(extraction.rate * delta, extraction.amount);
 		if (extraction.area->resources[extraction.resourceName] <= to_extract) {
 			inventory[extraction.resourceName] += extraction.area->resources[extraction.resourceName];
 			extraction.area->resources.erase(extraction.resourceName);
@@ -163,7 +163,7 @@ void Game::tick() {
 			inventory[extraction.resourceName] += to_extract;
 			extraction.area->resources[extraction.resourceName] -= to_extract;
 			extraction.amount -= to_extract;
-			if (extraction.amount < 0.0001)
+			if (extraction.amount < 0.000001)
 				extractions.erase(iter++);
 			else
 				++iter;
@@ -187,6 +187,14 @@ void Game::loadDefaults() {
 	home += mountain;
 	home += lake;
 	print("Loaded default data.\n");
+}
+
+void Game::extract(Area &area, const std::string &name, double amount) {
+	extractions.emplace_back(&area, name, amount, resources.at(name).defaultExtractionRate);
+}
+
+void Game::extract(Area &area, const std::string &name, double amount, double rate) {
+	extractions.emplace_back(&area, name, amount, rate);
 }
 
 std::string Game::toString() const {

@@ -10,5 +10,5 @@ class LakeArea: public Area {
 		LakeArea(Region *, size_t = 0);
 		Type getType() const override { return Type::Lake; }
 		std::string description() const override;
-		void tick() override;
+		void tick(double delta) override;
 };

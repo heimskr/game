@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <string>
@@ -7,7 +8,7 @@
 
 class Game;
 
-time_t getTime();
+std::chrono::milliseconds getTime();
 
 class Context {
 	public:

@@ -33,9 +33,12 @@ class Game {
 		Region * addRegion();
 		Region & currentRegion();
 
-		void tick();
+		void tick(double delta);
 
 		void loadDefaults();
+
+		void extract(Area &, const std::string &name, double amount);
+		void extract(Area &, const std::string &name, double amount, double rate);
 
 		std::string toString() const;
 		static std::shared_ptr<Game> fromString(const std::string &);

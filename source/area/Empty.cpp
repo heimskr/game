@@ -8,4 +8,4 @@ std::string EmptyArea::description() const {
 	return "An empty area.";
 }
 
-void EmptyArea::tick() {}
+void EmptyArea::tick(double delta) {}

@@ -7,5 +7,5 @@ class ForestArea: public Area {
 		ForestArea(Region *, size_t = 0);
 		Type getType() const override { return Type::Forest; }
 		std::string description() const override;
-		void tick() override;
+		void tick(double delta) override;
 };

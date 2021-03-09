@@ -7,5 +7,5 @@ class HousingArea: public Area {
 		HousingArea(Region *, size_t = 0);
 		Type getType() const override { return Type::Housing; }
 		std::string description() const override;
-		void tick() override;
+		void tick(double delta) override;
 };

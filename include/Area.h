@@ -35,5 +35,5 @@ class Area {
 
 		virtual Type getType() const = 0;
 		virtual std::string description() const = 0;
-		virtual void tick() = 0;
+		virtual void tick(double delta) = 0;
 };

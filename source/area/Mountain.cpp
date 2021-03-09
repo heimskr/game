@@ -11,9 +11,9 @@ std::string MountainArea::description() const {
 	return "Resource-rich mountainous terrain.";
 }
 
-void MountainArea::tick() {
-	if ((resources["coal"] += static_cast<double>(size) * 0.002) > static_cast<double>(size) * COAL_MAX)
+void MountainArea::tick(double delta) {
+	if ((resources["coal"] += static_cast<double>(size) * 0.002 * delta) > static_cast<double>(size) * COAL_MAX)
 		 resources["coal"]  = static_cast<double>(size) * COAL_MAX;
-	if ((resources["ironOre"] += static_cast<double>(size) * 0.002) > static_cast<double>(size) * IRON_MAX)
+	if ((resources["ironOre"] += static_cast<double>(size) * 0.002 * delta) > static_cast<double>(size) * IRON_MAX)
 		 resources["ironOre"]  = static_cast<double>(size) * IRON_MAX;
 }

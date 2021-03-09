@@ -92,7 +92,7 @@ void MainWindow::render(bool *open) {
 										else if (amount < chosen)
 											context.message = "Not enough of that resource is available.";
 										else
-											context->extractions.emplace_back(area.get(), rname, chosen, context->resources.at(rname).defaultExtractionRate);
+											context->extract(*area, rname, chosen);
 									}, "Amount to Extract");
 								}
 								ImGui::PopID();

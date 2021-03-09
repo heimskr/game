@@ -11,9 +11,9 @@ Region::Region(Game *owner_, const std::string &name_, const Position &position_
 	setName(name_);
 }
 
-void Region::tick() {
+void Region::tick(double delta) {
 	for (auto &pair: areas)
-		pair.second->tick();
+		pair.second->tick(delta);
 }
 
 Resource::Map Region::allResources() const {

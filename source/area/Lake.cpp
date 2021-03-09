@@ -10,7 +10,7 @@ std::string LakeArea::description() const {
 	return "An expanse of fresh water.";
 }
 
-void LakeArea::tick() {
-	if ((resources["water"] += static_cast<double>(size) * 0.1) > static_cast<double>(size) * WATER_MAX)
+void LakeArea::tick(double delta) {
+	if ((resources["water"] += static_cast<double>(size) * 0.1 * delta) > static_cast<double>(size) * WATER_MAX)
 		resources["water"] = static_cast<double>(size) * WATER_MAX;
 }
