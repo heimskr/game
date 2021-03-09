@@ -1,6 +1,6 @@
 #pragma once
 
-struct Context;
+class Context;
 
 struct MainWindow {
 	constexpr static int TAB_COUNT = 4;

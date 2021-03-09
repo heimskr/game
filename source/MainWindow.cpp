@@ -76,7 +76,11 @@ void MainWindow::render(bool *open) {
 						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
 							ImGui::SameLine(1200.f);
 							if (ImGui::Button("+"))
-								context.showResourcePicker = true;
+								context.pickResource([this](const std::string &name) {
+									Keyboard::openForDouble([this](double chosen) {
+										context.message = std::to_string(chosen);
+									});
+								});
 							for (const auto &[rname, amount]: area->resources) {
 								ImGui::Dummy(ImVec2(20.f, 0.f));
 								ImGui::SameLine();

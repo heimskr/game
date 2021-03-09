@@ -223,7 +223,7 @@ int main() {
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
 						if (ImGui::Selectable(name.c_str())) {
-							context.message = name;
+							context.onResourcePicked(name);
 							context.showResourcePicker = false;
 							ImGui::CloseCurrentPopup();
 						}
@@ -280,6 +280,11 @@ time_t getTime() {
 		exit(EXIT_FAILURE);
 	}
 	return current_time;
+}
+
+void Context::pickResource(std::function<void(const std::string &)> fn) {
+	showResourcePicker = true;
+	onResourcePicked = fn;
 }
 
 void Context::load() {
