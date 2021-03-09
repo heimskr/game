@@ -1,10 +1,12 @@
 #include "Game.h"
 #include "Region.h"
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "main.h"
 #include "MainWindow.h"
 #include "Keyboard.h"
 #include "UI.h"
+#include "Direction.h"
 
 void MainWindow(Context &context, bool *open) {
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Once);
@@ -92,48 +94,32 @@ void MainWindow(Context &context, bool *open) {
 			if (!region) {
 				ImGui::Text("Travel is not possible within the void.");
 			} else {
-				// ImGui::Columns(3, nullptr, true);
-				// ImGui::Dummy(ImVec2(0.5f, 0.5f)); ImGui::NextColumn();
-				// ImGui::Button("North"); ImGui::NextColumn();
-				// ImGui::Dummy(ImVec2(0.5f, 0.5f)); ImGui::NextColumn();
-				// ImGui::Button("West"); ImGui::NextColumn();
-				// ImGui::Button(region->name.c_str()); ImGui::NextColumn();
-				// ImGui::Button("East"); ImGui::NextColumn();
-				// ImGui::Dummy(ImVec2(0.5f, 0.5f)); ImGui::NextColumn();
-				// ImGui::Button("South"); ImGui::NextColumn();
-				// ImGui::Dummy(ImVec2(0.5f, 0.5f));
-				// ImGui::Columns(1);
+				ImGui::Columns(2, nullptr, false);
 
-				ImGui::Dummy({0.f, 40.f});
+				static int set_width = 0;
+				if (set_width == 0) {
+					ImGui::SetColumnWidth(-1, 110.f);
+					++set_width;
+				}
 
-				ImGui::Dummy({40.f, 0.f});
+				for (int i = 0; i < 4; ++i) {
+					Direction direction = static_cast<Direction>(i);
+					const bool disabled = !region->hasNeighbor(direction);
+					if (disabled) {
+						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+					}
+					ImGui::Button(toString(direction), ImVec2(100.f, 0.f));
+					if (disabled) {
+						ImGui::PopItemFlag();
+						ImGui::PopStyleVar();
+					}
+					ImGui::NextColumn();
+					ImGui::Text("Region %d", i + 1);
+					ImGui::NextColumn();
+				}
 
-				ImGui::SameLine();
-
-				ImGui::BeginGroup();
-				ImGui::Dummy({0.f, 40.f});
-				ImGui::Button("West", {0.f, 40.f});
-				ImGui::Dummy({0.f, 40.f});
-				ImGui::EndGroup();
-
-				ImGui::SameLine();
-
-				ImGui::BeginGroup();
-				ImGui::Button("North", {0.f, 40.f});
-				float text_height = ImGui::GetTextLineHeight();
-				ImGui::Dummy({0.f, 3.f});
-				ImGui::Text("%s", region->name.c_str());
-				ImGui::Dummy({0.f, 3.f});
-				ImGui::Button("South", {0.f, 40.f});
-				ImGui::EndGroup();
-
-				ImGui::SameLine();
-
-				ImGui::BeginGroup();
-				ImGui::Dummy({0.f, 40.f});
-				ImGui::Button("East", {0.f, 40.f});
-				ImGui::Dummy({0.f, 40.f});
-				ImGui::EndGroup();
+				ImGui::Columns(1);
 			}
 			ImGui::EndTabItem();
 		}
