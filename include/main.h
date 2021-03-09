@@ -7,11 +7,12 @@ class Game;
 
 struct Context {
 	std::shared_ptr<Game> game;
+	bool loaded = false;
 
 	bool showExtractWindow = false;
-	bool showLoadWindow = false;
 
 	std::string message;
 
+	void load();
 	void save();
 };

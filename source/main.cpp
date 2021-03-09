@@ -13,6 +13,7 @@
 #define GLM_FORCE_PURE
 #define GLM_ENABLE_EXPERIMENTAL
 
+#include "FS.h"
 #include "Game.h"
 #include "main.h"
 #include "MainWindow.h"
@@ -26,12 +27,31 @@ constexpr uint32_t WINDOW_WIDTH  = 1280;
 constexpr uint32_t WINDOW_HEIGHT = 720;
 
 int main() {
-	socketInitializeDefault();
-	nxlinkStdio();
-	std::srand(std::time(nullptr));
+	try {
+		socketInitializeDefault();
+		nxlinkStdio();
+		std::srand(std::time(nullptr));
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0) {
-		throw std::runtime_error(SDL_GetError());
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0)
+			throw std::runtime_error(SDL_GetError());
+
+		FS::init();
+	} catch (const std::exception &err) {
+		consoleInit(nullptr);
+		printf("Error: %s\n", err.what());
+		consoleUpdate(console);
+		PadState pad;
+		padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+		padInitializeDefault(&pad);
+		while (appletMainLoop()) {
+			padUpdate(&pad);
+			u64 kDown = padGetButtonsDown(&pad);
+			if (kDown & HidNpadButton_Plus)
+				break;
+		}
+		socketExit();
+		consoleExit(nullptr);
+		exit(EXIT_FAILURE);
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -61,8 +81,6 @@ int main() {
 
 	SDL_Event event;
 	bool done = false;
-	// u64 time = 0ul;
-	// u64 frequency = SDL_GetPerformanceFrequency();
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -124,9 +142,6 @@ int main() {
 		plExit();
 	}
 
-	bool show_main_window = true;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
 	ImGuiStyle &style = ImGui::GetStyle();
 	style.WindowRounding = 8;
 	style.FrameRounding = style.GrabRounding = 3;
@@ -141,6 +156,7 @@ int main() {
 	Context context;
 	context.game = std::make_shared<Game>();
 
+	bool show_main_window = true;
 	while (show_main_window && !done) {
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
@@ -196,6 +212,18 @@ int main() {
 	return EXIT_SUCCESS;
 }
 
+void Context::load() {
+	try {
+		game = Game::load();
+		print("Game loaded successfully.\n");
+		message = "Game loaded successfully.";
+		loaded = true;
+	} catch (const std::exception &err) {
+		print("Couldn't load game: %s\n", err.what());
+		message = "Couldn't load game: " + std::string(err.what());
+	}
+}
+
 void Context::save() {
 	if (!game) {
 		message = "No game is open.";
@@ -204,12 +232,11 @@ void Context::save() {
 	}
 
 	try {
-		// game->save();
+		game->save();
 		message = "Game saved successfully.";
 		printf("Game saved.\n");
 	} catch (const std::exception &err) {
 		message = "An error occurred while saving: " + std::string(err.what());
 		printf("Game save error: %s\n", err.what());
-		return;
 	}
 }

@@ -205,15 +205,17 @@ std::string Game::toString() const {
 }
 
 std::shared_ptr<Game> Game::fromString(const std::string &str) {
-	const std::vector<std::string> lines = split(str, "\n", true);
+	std::vector<std::string> lines = split(str, "\n", true);
 	enum class Mode {None, Regions, Inventory, Position, Extractions};
 	Mode mode = Mode::None;
 
 	std::shared_ptr<Game> out = std::make_shared<Game>();
 
-	for (const std::string &line: lines) {
-		if (line.empty())
+	for (std::string &line: lines) {
+		if (line.empty() || line == "\r")
 			continue;
+		if (line.back() == '\r')
+			line.pop_back();
 		if (line[0] == '[') {
 			if (line == "[Regions]")
 				mode = Mode::Regions;
@@ -223,8 +225,12 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				mode = Mode::Position;
 			else if (line == "[Extractions]")
 				mode = Mode::Extractions;
-			else
+			else {
+				Logger::error("Invalid line: \"%s\"", line.c_str());
+				for (char ch: line)
+					Logger::info("%d / '%c'", ch, ch);
 				throw std::invalid_argument("Invalid line");
+			}
 		} else {
 			switch (mode) {
 				case Mode::Regions: {

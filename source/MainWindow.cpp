@@ -11,8 +11,10 @@ void MainWindow(Context &context, bool *open) {
 	if (ImGui::Begin("Trade Game", open, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("Menu")) {
-				if (ImGui::MenuItem("Load")) context.showLoadWindow = true;
-				if (ImGui::MenuItem("Save")) context.save();
+				if (ImGui::MenuItem("Load"))
+					context.load();
+				if (context.loaded && ImGui::MenuItem("Save"))
+					context.save();
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
