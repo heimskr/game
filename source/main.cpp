@@ -226,6 +226,7 @@ int main() {
 							context.onResourcePicked(name);
 							context.showResourcePicker = false;
 							ImGui::CloseCurrentPopup();
+							break;
 						}
 						ImGui::TableNextColumn();
 						ImGui::TableSetColumnIndex(1);
