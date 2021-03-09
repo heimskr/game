@@ -148,6 +148,17 @@ void MainWindow(Context &context, bool *open) {
 			ImGui::EndTabItem();
 		}
 
+		if (ImGui::BeginTabItem("Inventory")) {
+			if (!context.game || !context.loaded)
+				ImGui::Text("No game is loaded.");
+			else if (context->inventory.empty())
+				ImGui::Text("You are bereft of resources.");
+			else
+				for (const auto &[name, amount]: context->inventory)
+					ImGui::Text("%s x %.2f", name.c_str(), amount);
+			ImGui::EndTabItem();
+		}
+
 		ImGui::EndTabBar();
 	}
 
