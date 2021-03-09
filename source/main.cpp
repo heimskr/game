@@ -208,21 +208,53 @@ int main() {
 			ImGui::OpenPopup("Message");
 		}
 
-		constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 250.f;
-		ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
-		ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Always);
-		if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_HorizontalScrollbar)) {
-			auto &style = ImGui::GetStyle();
-			ImGui::BeginChild("message contents",
-				{600.f - style.WindowPadding.x * 2 - style.FrameBorderSize, 220.f - (style.WindowPadding.y + style.IndentSpacing) * 2},
-				false, ImGuiWindowFlags_HorizontalScrollbar);
-			ImGui::Text("%s", context.message.c_str());
-			ImGui::EndChild();
-			if (ImGui::Button("Close")) {
-				context.message.clear();
-				ImGui::CloseCurrentPopup();
+		if (context.showResourcePicker) {
+			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 300.f;
+			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Once);
+			ImGui::OpenPopup("Resource Selector");
+			bool modal_open = true;
+			if (ImGui::BeginPopupModal("Resource Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
+				const float width = ImGui::GetContentRegionMax().x;
+				if (ImGui::BeginTable("Resources", 2)) {
+					ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthFixed, 200.f);
+					ImGui::TableSetupColumn("Amount",   ImGuiTableColumnFlags_WidthFixed, width - 200.f);
+					for (const auto &[name, amount]: context->inventory) {
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						if (ImGui::Selectable(name.c_str())) {
+							context.message = name;
+							context.showResourcePicker = false;
+							ImGui::CloseCurrentPopup();
+						}
+						ImGui::TableNextColumn();
+						ImGui::TableSetColumnIndex(1);
+						ImGui::Text("%.2f", amount);
+						ImGui::TableNextColumn();
+					}
+					ImGui::EndTable();
+				}
+				ImGui::EndPopup();
 			}
-			ImGui::EndPopup();
+			if (!modal_open)
+				context.showResourcePicker = false;
+		} else {
+			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 250.f;
+			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
+			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Always);
+			if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+				auto &style = ImGui::GetStyle();
+				ImGui::BeginChild("message contents",
+					{600.f - style.WindowPadding.x * 2 - style.FrameBorderSize, 220.f - (style.WindowPadding.y + style.IndentSpacing) * 2},
+					false, ImGuiWindowFlags_HorizontalScrollbar);
+				ImGui::Text("%s", context.message.c_str());
+				ImGui::EndChild();
+				if (ImGui::Button("Close")) {
+					context.message.clear();
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
 		}
 
 		ImGui::Render();

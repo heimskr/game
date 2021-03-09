@@ -74,6 +74,9 @@ void MainWindow::render(bool *open) {
 					for (const auto &[name, area]: region->areas) {
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
+							ImGui::SameLine(1200.f);
+							if (ImGui::Button("+"))
+								context.showResourcePicker = true;
 							for (const auto &[rname, amount]: area->resources) {
 								ImGui::Dummy(ImVec2(20.f, 0.f));
 								ImGui::SameLine();

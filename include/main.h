@@ -12,7 +12,7 @@ struct Context {
 	std::shared_ptr<Game> game;
 	bool loaded = false;
 
-	bool showExtractWindow = false;
+	bool showResourcePicker = false;
 
 	std::string message;
 
