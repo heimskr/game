@@ -13,6 +13,6 @@ std::string HousingArea::description() const {
 void HousingArea::tick(double delta) {
 	double &humans = resources["human"];
 	if (2.0 <= humans)
-		if ((humans *= 1.002 * delta) > static_cast<double>(size))
+		if ((humans += humans * .002 * delta) > static_cast<double>(size))
 			humans = static_cast<double>(size);
 }

@@ -11,6 +11,7 @@ std::string ForestArea::description() const {
 }
 
 void ForestArea::tick(double delta) {
-	if ((resources["wood"] += resources["wood"] * .02 * delta) > static_cast<double>(size))
-		resources["wood"] = static_cast<double>(size);
+	double &wood = resources["wood"];
+	if ((wood += wood * .02 * delta) > static_cast<double>(size))
+		wood = static_cast<double>(size);
 }
