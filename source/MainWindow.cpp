@@ -76,10 +76,10 @@ void MainWindow::render(bool *open) {
 						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
 							ImGui::SameLine(1200.f);
 							if (ImGui::Button("+"))
-								context.pickResource([this](const std::string &name) {
-									Keyboard::openForDouble([this](double chosen) {
-										context.message = std::to_string(chosen);
-									});
+								context.pickResource([this, &area](const std::string &name) {
+									Keyboard::openForDouble([this, name, &area](double chosen) {
+										insert(area, name, chosen);
+									}, "Resource Amount");
 								});
 							for (const auto &[rname, amount]: area->resources) {
 								ImGui::Dummy(ImVec2(20.f, 0.f));
@@ -200,4 +200,34 @@ void MainWindow::render(bool *open) {
 
 	ImGui::End();
 	ImGui::PopStyleVar();
+}
+
+bool MainWindow::insert(std::shared_ptr<Area> area, const std::string &resource_name, double amount) {
+	try {
+		if (amount <= 0) {
+			context.message = "Error: Invalid amount.";
+			return false;
+		}
+
+		if (context->inventory.count(resource_name) == 0) {
+			context.message = "Error: You don't have any of that resource.";
+			return false;
+		}
+
+		double &in_inventory = context->inventory.at(resource_name);
+		if (in_inventory < amount) {
+			context.message = "Error: You don't have enough of that resource.";
+			return false;
+		}
+
+		if ((in_inventory -= amount) < 0.000001)
+			context->inventory.erase(resource_name);
+
+		area->resources[resource_name] += amount;
+		return true;
+	} catch (const std::exception &err) {
+		fprintf(stderr, "??? %s\n", err.what());
+		context.message = "??? " + std::string(err.what());
+		return false;
+	}
 }
