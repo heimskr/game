@@ -65,6 +65,7 @@ std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 		case Type::Forest:   area = std::make_shared<ForestArea>(&region);   break;
 		case Type::Mountain: area = std::make_shared<MountainArea>(&region); break;
 		case Type::Lake:     area = std::make_shared<LakeArea>(&region);     break;
+		case Type::Empty:    area = std::make_shared<EmptyArea>(&region);    break;
 		default: throw std::invalid_argument("Unknown Area type: " + std::to_string(static_cast<unsigned>(type)));
 	}
 	area->setName(name).setSize(size).setPlayerOwned(player_owned).setResources(resources);
