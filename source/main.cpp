@@ -118,9 +118,11 @@ int main() {
 		config.FontDataOwnedByAtlas = false;
 
 		strcpy(config.Name, "Nintendo Standard");
-		UI::addFont(fonts_std.address, fonts_std.size, 27.0f, &config, io.Fonts->GetGlyphRangesCyrillic());
+		UI::addFont(fonts_std.address, fonts_std.size, 27.0f, &config, io.Fonts->GetGlyphRangesDefault());
+		UI::addFont(fonts_ext.address, fonts_ext.size, 27.0f, &config, io.Fonts->GetGlyphRangesDefault());
 		strcpy(config.Name, "Nintendo Standard Big");
-		UI::addFont(fonts_std.address, fonts_std.size, 36.0f, &config, io.Fonts->GetGlyphRangesCyrillic());
+		UI::addFont(fonts_std.address, fonts_std.size, 36.0f, &config, io.Fonts->GetGlyphRangesDefault());
+		UI::addFont(fonts_ext.address, fonts_ext.size, 36.0f, &config, io.Fonts->GetGlyphRangesDefault());
 
 		strcpy(config.Name, "Nintendo Ext");
 		static const ImWchar ranges[] = {
