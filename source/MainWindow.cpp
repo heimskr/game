@@ -109,7 +109,10 @@ void MainWindow(Context &context, bool *open) {
 						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 					}
-					ImGui::Button(toString(direction), ImVec2(100.f, 0.f));
+					if (ImGui::Button(toString(direction), ImVec2(100.f, 0.f))) {
+						const auto &offset = getOffset(direction);
+						context->position = {context->position.first + offset.first, context->position.second + offset.second};
+					}
 					if (disabled) {
 						ImGui::PopItemFlag();
 						ImGui::PopStyleVar();
