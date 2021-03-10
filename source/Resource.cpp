@@ -26,3 +26,8 @@ Resource & Resource::setDefaultExtractionRate(double rate) {
 	defaultExtractionRate = rate;
 	return *this;
 }
+
+Resource & Resource::setBasePrice(double base_price) {
+	basePrice = base_price;
+	return *this;
+}

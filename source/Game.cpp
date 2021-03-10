@@ -19,16 +19,16 @@ void Game::add(const Resource &resource) {
 }
 
 void Game::addResources() {
-	add(Resource(this, "charcoal").addTypes("fuel"));
-	add(Resource(this, "coal").addTypes("fuel").setDefaultExtractionRate(0.1));
-	add(Resource(this, "wood").addTypes("fuel", "natural").add("charcoal", {1, {"furnace"}}));
-	add(Resource(this, "water").addTypes("liquid"));
-	add(Resource(this, "ironOre").addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}).setDefaultExtractionRate(0.1));
-	add(Resource(this, "iron").addTypes("metal", "iron"));
-	add(Resource(this, "human").addTypes("alive", "sapient"));
-	add(Resource(this, "apple").addTypes("farmable", "food"));
-	add(Resource(this, "wheat").addTypes("farmable"));
-	add(Resource(this, "honey").addTypes("farmable", "Food"));
+	add(Resource(this, "charcoal").setBasePrice(1.5).addTypes("fuel"));
+	add(Resource(this, "coal").setBasePrice(2.).addTypes("fuel").setDefaultExtractionRate(0.1));
+	add(Resource(this, "wood").setBasePrice(1.).addTypes("fuel", "natural").add("charcoal", {1, {"furnace"}}));
+	add(Resource(this, "water").setBasePrice(0.01).addTypes("liquid"));
+	add(Resource(this, "ironOre").setBasePrice(2.).addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}).setDefaultExtractionRate(0.1));
+	add(Resource(this, "iron").setBasePrice(3.).addTypes("metal", "iron"));
+	add(Resource(this, "human").setBasePrice(9999).addTypes("alive", "sapient"));
+	add(Resource(this, "apple").setBasePrice(0.5).addTypes("farmable", "food"));
+	add(Resource(this, "wheat").setBasePrice(0.5).addTypes("farmable"));
+	add(Resource(this, "honey").setBasePrice(0.75).addTypes("farmable", "Food"));
 }
 
 void Game::addAll() {

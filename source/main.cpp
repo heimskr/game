@@ -102,7 +102,6 @@ int main() {
 	}
 
 	ImGui::StyleColorsDark();
-	// ImGui::StyleColorsClassic();
 
 	io.Fonts->AddFontDefault();
 	{
