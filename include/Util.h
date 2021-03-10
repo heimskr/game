@@ -42,3 +42,4 @@ unsigned long parseUlong(const std::string *, int base = 10);
 unsigned long parseUlong(const char *, int base = 10);
 bool chance(double probability);
 size_t randomRange(size_t min, size_t max);
+double randomRangeDouble(double min, double max);

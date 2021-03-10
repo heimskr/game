@@ -24,6 +24,24 @@ Resource::Map Region::allResources() const {
 	return out;
 }
 
+Resource::Map Region::allOwnedResources() const {
+	Resource::Map out;
+	for (const auto &area_pair: areas)
+		if (area_pair.second->playerOwned)
+			for (const auto &resource_pair: area_pair.second->resources)
+				out[resource_pair.first] += resource_pair.second;
+	return out;
+}
+
+Resource::Map Region::allNonOwnedResources() const {
+	Resource::Map out;
+	for (const auto &area_pair: areas)
+		if (!area_pair.second->playerOwned)
+			for (const auto &resource_pair: area_pair.second->resources)
+				out[resource_pair.first] += resource_pair.second;
+	return out;
+}
+
 size_t Region::totalPopulation() const {
 	// Hopefully nothing goes wrong with storing population as doubles.
 	size_t out = 0;
@@ -151,11 +169,13 @@ Region::Position operator+(const Region::Position &left, const Region::Position 
 std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t size) {
 	NameGen::Language language = NameGen::makeRandomLanguage();
 	std::unique_ptr<Region> region = std::make_unique<Region>(&game, language.makeName(), pos, size);
+	region->money = randomRange(100ul, 10000ul);
+	region->greed = randomRangeDouble(0.1, 1.0);
 	size_t remaining_size = size;
 
 	bool populated = false;
 
-	if (chance(0.25)) {
+	if (chance(0.36)) {
 		populated = true;
 		const size_t housing_size = randomRange(std::min(5ul, remaining_size), remaining_size / 2);
 		auto housing = std::make_shared<HousingArea>(region.get(), housing_size);
@@ -168,7 +188,7 @@ std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t
 		const size_t forest_size = randomRange(std::min(4ul, remaining_size), remaining_size / 2);
 		auto forest = std::make_shared<ForestArea>(region.get(), forest_size);
 		const char *types[] = {"Forest", "Woods", "Weald"};
-		forest->setName(language.makeName() + " " + types[randomRange(0, sizeof(types) / sizeof(types[0]) - 1)]);
+		forest->setName(language.makeName() + " " + types[randomRange(0ul, sizeof(types) / sizeof(types[0]) - 1)]);
 		forest->setPlayerOwned(!populated);
 		*region += forest;
 		remaining_size -= forest_size;

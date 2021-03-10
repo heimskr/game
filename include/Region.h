@@ -38,6 +38,8 @@ class Region {
 		void tick(double delta);
 
 		Resource::Map allResources() const;
+		Resource::Map allOwnedResources() const;
+		Resource::Map allNonOwnedResources() const;
 		size_t totalPopulation() const;
 		bool hasNeighbor() const;
 		bool hasNeighbor(Direction) const;

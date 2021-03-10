@@ -112,3 +112,9 @@ size_t randomRange(size_t min, size_t max) {
 		return min;
 	return min + (rand() % (max - min + 1));
 }
+
+double randomRangeDouble(double min, double max) {
+	if (max <= min)
+		return min;
+	return min + static_cast<double>(rand()) / RAND_MAX * (max - min);
+}

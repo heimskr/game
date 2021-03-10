@@ -25,7 +25,7 @@ void Game::addResources() {
 	add(Resource(this, "water").setBasePrice(0.01).addTypes("liquid"));
 	add(Resource(this, "ironOre").setBasePrice(2.).addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}).setDefaultExtractionRate(0.1));
 	add(Resource(this, "iron").setBasePrice(3.).addTypes("metal", "iron"));
-	add(Resource(this, "human").setBasePrice(9999).addTypes("alive", "sapient"));
+	add(Resource(this, "human").setBasePrice(9999.).addTypes("alive", "sapient"));
 	add(Resource(this, "apple").setBasePrice(0.5).addTypes("farmable", "food"));
 	add(Resource(this, "wheat").setBasePrice(0.5).addTypes("farmable"));
 	add(Resource(this, "honey").setBasePrice(0.75).addTypes("farmable", "Food"));
@@ -47,7 +47,7 @@ std::string Game::randomResource(const Resource::Type &type) const {
 	}
 	if (choices.empty())
 		return "";
-	return choices.at(randomRange(0, choices.size() - 1));
+	return choices.at(randomRange(0ul, choices.size() - 1ul));
 }
 
 void Game::listRegions() {
