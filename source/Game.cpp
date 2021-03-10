@@ -26,6 +26,9 @@ void Game::addResources() {
 	add(Resource(this, "ironOre").addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}).setDefaultExtractionRate(0.1));
 	add(Resource(this, "iron").addTypes("metal", "iron"));
 	add(Resource(this, "human").addTypes("alive", "sapient"));
+	add(Resource(this, "apple").addTypes("farmable", "food"));
+	add(Resource(this, "wheat").addTypes("farmable"));
+	add(Resource(this, "honey").addTypes("farmable", "Food"));
 }
 
 void Game::addAll() {
@@ -33,6 +36,18 @@ void Game::addAll() {
 		addResources();
 		ready = true;
 	}
+}
+
+std::string Game::randomResource(const Resource::Type &type) const {
+	std::vector<std::string> choices;
+	choices.reserve(resources.size());
+	for (const auto &[name, resource]: resources) {
+		if (resource.types.count(type) != 0)
+			choices.push_back(name);
+	}
+	if (choices.empty())
+		return "";
+	return choices.at(randomRange(0, choices.size() - 1));
 }
 
 void Game::listRegions() {

@@ -24,6 +24,7 @@ class Game {
 		void addResources();
 		void addResource(const std::string &);
 		void addAll();
+		std::string randomResource(const Resource::Type &) const;
 
 		bool updatePosition(Region &, const Region::Position &);
 		Region::Position suggestPosition();

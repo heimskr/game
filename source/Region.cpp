@@ -173,7 +173,7 @@ std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t
 	}
 
 	if (remaining_size && chance(0.5)) {
-		const size_t mountain_size = randomRange(std::min(5ul, remaining_size), remaining_size * 3 / 4);
+		const size_t mountain_size = randomRange(std::min(5ul, remaining_size), remaining_size / 2);
 		auto mountain = std::make_shared<MountainArea>(region.get(), mountain_size);
 		mountain->setName("Mountain").setPlayerOwned(!populated);
 		*region += mountain;
@@ -181,11 +181,19 @@ std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t
 	}
 
 	if (remaining_size && chance(0.4)) {
-		const size_t lake_size = randomRange(1, remaining_size / 2);
+		const size_t lake_size = randomRange(1, remaining_size / 4);
 		auto lake = std::make_shared<LakeArea>(region.get(), lake_size);
 		lake->setName("Lake").setPlayerOwned(!populated);
 		*region += lake;
 		remaining_size -= lake_size;
+	}
+
+	if (populated && remaining_size && chance(0.8)) {
+		const size_t farmland_size = randomRange(1, remaining_size * 2 / 3);
+		auto farmland = std::make_shared<FarmlandArea>(region.get(), game.randomResource("farmable"), farmland_size);
+		farmland->setName("Farmland").setPlayerOwned(false);
+		*region += farmland;
+		remaining_size -= farmland_size;
 	}
 
 	if (remaining_size) {
