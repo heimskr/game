@@ -285,51 +285,18 @@ void MainWindow::render(bool *open) {
 										if (chosen < 0. || amount < chosen) {
 											context.showMessage("Error: Invalid amount.");
 										} else {
-											const double original_chosen = chosen;
-											const double original_region_amount = non_owned.count(name)? non_owned.at(name) : 0.;
-											double region_amount = original_region_amount;
-											const double base = context->resources.at(name).basePrice;
-											double price = 0.;
-											double region_money = region->money;
-											const double greed = region->greed;
-											bool failed = false;
-											while (1. <= chosen) {
-												const double unit_price = Stonks::sellPrice(base, region_amount++, region_money, greed);
-												if (region_money < unit_price) {
-													failed = true;
-													break;
-												}
-												region_money -= unit_price;
-												price += unit_price;
-												--chosen;
-											}
-
-											if (!failed && 0. < chosen) {
-												const double subunit_price = chosen * Stonks::sellPrice(base, region_amount, region_money, greed);
-												if (region_money < subunit_price) {
-													failed = true;
-												} else {
-													region_money -= subunit_price;
-													price += subunit_price;
-													chosen = 0;
-												}
-											}
-
-											size_t discrete_price = std::ceil(price);
-
-											if (region->money < discrete_price)
-												failed = true;
-
-											if (failed) {
+											const double original_chosen = chosen;											
+											size_t total_price;
+											if (!Stonks::totalSellPrice(*region, name, chosen, total_price)) {
 												context.showMessage("Error: Region doesn't have enough money.");
 												region->money = 100'000;
 											} else {
-												context.confirm("Price: " + std::to_string(discrete_price), [=](bool confirmed) {
+												context.confirm("Price: " + std::to_string(total_price), [=](bool confirmed) {
 													if (confirmed) {
 														housing->resources[name] += original_chosen;
 														context->inventory[name] -= original_chosen;
-														region->money -= discrete_price;
-														context->money += discrete_price;
+														region->money -= total_price;
+														context->money += total_price;
 													}
 												});
 											}

@@ -1,5 +1,6 @@
 #include <cmath>
 
+#include "Game.h"
 #include "Logger.h"
 #include "Region.h"
 #include "Stonks.h"
@@ -23,5 +24,38 @@ namespace Stonks {
 
 	double sellPrice(double base_price, double resource_amount, size_t region_money, double greed) {
 		return buyPriceToSellPrice(buyPrice(base_price, resource_amount, region_money), greed);
+	}
+
+	bool totalSellPrice(const Region &region, const std::string &resource_name, double amount, size_t &out) {
+		const Resource::Map non_owned = region.allNonOwnedResources();
+		double region_amount = non_owned.count(resource_name)? non_owned.at(resource_name) : 0.;
+		const double base = region.owner->resources.at(resource_name).basePrice;
+		double price = 0.;
+		double region_money = region.money;
+		const double greed = region.greed;
+		while (1. <= amount) {
+			const double unit_price = sellPrice(base, region_amount++, region_money, greed);
+			if (region_money < unit_price)
+				return false;
+			region_money -= unit_price;
+			price += unit_price;
+			--amount;
+		}
+
+		if (0. < amount) {
+			const double subunit_price = amount * sellPrice(base, region_amount, region_money, greed);
+			if (region_money < subunit_price)
+				return false;
+			region_money -= subunit_price;
+			price += subunit_price;
+		}
+
+		const size_t discrete_price = std::ceil(price);
+
+		if (region.money < discrete_price)
+			return false;
+
+		out = discrete_price;
+		return true;
 	}
 }

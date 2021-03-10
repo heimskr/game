@@ -19,7 +19,11 @@ namespace Stonks {
 	/** Prices depend on the amount of the resource a region owns. This adjusts a price accordingly. */
 	double applyScarcity(double base_price, double resource_amount);
 
+	/** Determines the buy price for a single unit of a resource. */
 	double buyPrice(double base_price, double resource_amount, size_t region_money);
 
+	/** Determines the sell price for a single unit of a resource. */
 	double sellPrice(double base_price, double resource_amount, size_t region_money, double greed);
+
+	bool totalSellPrice(const Region &region, const std::string &resource_name, double amount, size_t &out);
 }
