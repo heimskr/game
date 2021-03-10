@@ -180,17 +180,24 @@ void Game::tick(double delta) {
 	for (auto iter = extractions.begin(); iter != extractions.end();) {
 		Extraction &extraction = *iter;
 		double to_extract = std::min(extraction.rate * delta, extraction.amount);
+		double &in_inventory = inventory[extraction.resourceName];
 		if (extraction.area->resources[extraction.resourceName] <= to_extract) {
-			inventory[extraction.resourceName] += extraction.area->resources[extraction.resourceName];
+			in_inventory += extraction.area->resources[extraction.resourceName];
+			const double floored = std::floor(in_inventory);
+			if (1 - (in_inventory - floored) < Resource::MIN_AMOUNT)
+				in_inventory = floored + 1;
 			extraction.area->resources.erase(extraction.resourceName);
 			extractions.erase(iter++);
 		} else {
-			inventory[extraction.resourceName] += to_extract;
+			in_inventory += to_extract;
 			extraction.area->resources[extraction.resourceName] -= to_extract;
 			extraction.amount -= to_extract;
-			if (extraction.amount < Resource::MIN_AMOUNT)
+			if (extraction.amount < Resource::MIN_AMOUNT) {
+				const double floored = std::floor(in_inventory);
+				if (1 - (in_inventory - floored) < Resource::MIN_AMOUNT)
+					in_inventory = floored + 1;
 				extractions.erase(iter++);
-			else
+			} else
 				++iter;
 		}
 	}
