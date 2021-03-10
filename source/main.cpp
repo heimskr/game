@@ -193,10 +193,12 @@ int main() {
 
 		auto new_time = getTime();
 		s64 count = (new_time - last_time).count();
+		constexpr s64 divisor = 100;
 		// Up to 1,000 seconds of time spent in the background will be simulated on return.
-		for (s64 i = 0; i < count && i < 1'000'000; ++i)
-			context->tick(0.001);
-		last_time = new_time;
+		for (s64 i = 0; i < count / divisor && i < 1'000'000 / divisor; ++i)
+			context->tick(0.001 * divisor);
+		if (count / divisor)
+			last_time = new_time;
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL2_NewFrame(window);
