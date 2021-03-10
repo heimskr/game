@@ -356,10 +356,9 @@ void MainWindow::render(bool *open) {
 											context.showMessage("Error: Invalid amount.");
 										} else {
 											const double original_chosen = chosen;
-											size_t total_price = Stonks::totalBuyPrice(*region, name, chosen);
-
+											const size_t total_price = Stonks::totalBuyPrice(*region, name, chosen);
 											if (context->money < total_price) {
-												context.showMessage("Error: You doesn't have enough money.");
+												context.showMessage("Error: You don't have enough money.");
 											} else {
 												context.confirm("Price: " + std::to_string(total_price), [=](bool confirmed) {
 													if (confirmed) {
