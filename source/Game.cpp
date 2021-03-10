@@ -168,6 +168,13 @@ bool Game::erase(Region &region) {
 	if (regions.size() == 1 && regions.begin()->second->position == region.position)
 		return false;
 	const bool reposition = region.position == position;
+	for (auto iter = extractions.begin(); iter != extractions.end();) {
+		const Extraction &extraction = *iter;
+		if (extraction.area->parent->position == region.position)
+			extractions.erase(iter++);
+		else
+			++iter;
+	}
 	const bool out = regions.erase(region.position) != 0;
 	if (reposition)
 		position = suggestPosition(false, position.first, position.second);
