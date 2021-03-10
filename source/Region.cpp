@@ -48,7 +48,7 @@ void Region::subtractResourceFromNonOwned(const std::string &resource_name, doub
 		if (!area.playerOwned && area.resources.count(resource_name) != 0) {
 			double &area_amount = area.resources.at(resource_name);
 			if (amount <= area_amount) {
-				area_amount -= area_amount;
+				area_amount -= amount;
 				if (area_amount < Resource::MIN_AMOUNT)
 					area.resources.erase(resource_name);
 				return;
