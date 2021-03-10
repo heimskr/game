@@ -45,10 +45,12 @@ class Region {
 		size_t totalPopulation() const;
 		bool occupied() const;
 		std::shared_ptr<HousingArea> getHousing();
+		std::shared_ptr<Area> getArea(Area::Type);
 		bool hasNeighbor() const;
 		bool hasNeighbor(Direction) const;
 		Region * getNeighbor(Direction) const;
 		std::unordered_set<Direction> validDirections() const;
+		void erase(Area &);
 
 		bool updateName(Area &, const std::string &);
 

@@ -7,6 +7,8 @@
 #include <sys/types.h>
 #include <vector>
 
+#include "Area.h"
+
 class Game;
 
 std::chrono::milliseconds getTime();
@@ -17,7 +19,9 @@ class Context {
 		bool loaded = false;
 
 		bool showResourcePicker = false;
+		bool showAreaTypePicker = false;
 		std::function<void(const std::string &)> onResourcePicked = [](const std::string &) {};
+		std::function<void(Area::Type)> onAreaTypePicked = [](Area::Type) {};
 
 		std::string message;
 		bool isConfirm = false;
@@ -28,6 +32,7 @@ class Context {
 		void save();
 
 		void pickResource(std::function<void(const std::string &)>);
+		void pickAreaType(std::function<void(Area::Type)>);
 		void confirm(const std::string &, std::function<void(bool)>);
 		void showMessage(const std::string &);
 

@@ -305,6 +305,11 @@ void Context::pickResource(std::function<void(const std::string &)> fn) {
 	onResourcePicked = fn;
 }
 
+void Context::pickAreaType(std::function<void(Area::Type)> fn) {
+	showAreaTypePicker = true;
+	onAreaTypePicked = fn;
+}
+
 void Context::confirm(const std::string &str, std::function<void(bool)> fn) {
 	isConfirm = true;
 	message = str;

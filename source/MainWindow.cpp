@@ -87,7 +87,7 @@ void MainWindow::render(bool *open) {
 					ImGui::SameLine();
 					ImGui::Text("Region has no areas.");
 				} else {
-					for (const auto &[name, area]: region->areas) {
+					for (auto &[name, area]: region->areas) {
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 						if (area->playerOwned)
 							ImGui::PushStyleColor(ImGuiCol_Text, {0.f, 1.f, 0.f, 1.f});
@@ -95,12 +95,26 @@ void MainWindow::render(bool *open) {
 							if (area->playerOwned)
 								ImGui::PopStyleColor();
 							ImGui::SameLine(1200.f);
-							if (ImGui::Button("+"))
+							if (ImGui::Button("+", {30.f, 0.f}))
 								context.pickResource([this, &area](const std::string &name) {
 									Keyboard::openForDouble([this, name, &area](double chosen) {
 										insert(area, name, chosen);
 									}, "Resource Amount");
 								});
+							if (ImGui::IsItemHovered())
+								ImGui::SetTooltip("Move a resource from your inventory into the area.");
+							if (area->playerOwned) {
+								ImGui::SameLine();
+								if (ImGui::Button("-", {30.f, 0.f}))
+									Keyboard::openForNumber([this, area](size_t chosen) mutable {
+										context.frameActions.push_back([this, area, chosen]() {
+											if (!area->reduceSize(chosen))
+												context.showMessage("Couldn't reduce area size.");
+										});
+									}, "New Size");
+								if (ImGui::IsItemHovered())
+									ImGui::SetTooltip("Reduce the size of the region.");
+							}
 							for (const auto &[rname, amount]: area->resources) {
 								ImGui::Dummy(ImVec2(20.f, 0.f));
 								ImGui::SameLine();
@@ -192,11 +206,8 @@ void MainWindow::render(bool *open) {
 				s64 i = 0;
 				for (auto iter = context->extractions.begin(), end = context->extractions.end(); iter != end; ++iter) {
 					const Extraction &extraction = *iter;
-					if (ImGui::Button(("x##" + std::to_string(++i)).c_str())) {
-						context.frameActions.push_back([this, iter]() {
-							context->extractions.erase(iter);
-						});
-					}
+					if (ImGui::Button(("x##" + std::to_string(++i)).c_str()))
+						context.frameActions.push_back([this, iter]() { context->extractions.erase(iter); });
 					ImGui::SameLine();
 					ImGui::Text("Extracting %s from %s in %s (%.2f left) @ %.2f/s",
 						extraction.resourceName.c_str(), extraction.area->name.c_str(),

@@ -28,6 +28,8 @@ class Area {
 		Area & setPlayerOwned(bool);
 		Area & setName(const std::string &);
 
+		bool reduceSize(size_t new_size);
+
 		size_t totalPopulation() const;
 
 		virtual std::string toString() const;

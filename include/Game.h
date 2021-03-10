@@ -36,6 +36,7 @@ class Game {
 		Region * addRegion();
 		Region & currentRegion();
 		bool erase(Region &);
+		void eraseExtractions(const Area &);
 
 		void tick(double delta);
 

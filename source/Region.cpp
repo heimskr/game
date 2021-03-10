@@ -85,6 +85,13 @@ std::shared_ptr<HousingArea> Region::getHousing() {
 	return nullptr;
 }
 
+std::shared_ptr<Area> Region::getArea(Area::Type type) {
+	for (const auto &pair: areas)
+		if (pair.second->getType() == type)
+			return pair.second;
+	return nullptr;
+}
+
 bool Region::hasNeighbor() const {
 	return owner->regions.count(position + Position( 0, -1)) != 0
 	    || owner->regions.count(position + Position( 1,  0)) != 0
@@ -114,6 +121,14 @@ std::unordered_set<Direction> Region::validDirections() const {
 	if (owner->regions.count(position + Position(-1,  0)) != 0)
 		out.insert(Direction::West);
 	return out;
+}
+
+void Region::erase(Area &area) {
+	if (areas.count(area.name) == 0)
+		return;
+
+	owner->eraseExtractions(area);
+	areas.erase(area.name);
 }
 
 bool Region::updateName(Area &area, const std::string &new_name) {

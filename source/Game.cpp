@@ -181,6 +181,16 @@ bool Game::erase(Region &region) {
 	return out;
 }
 
+void Game::eraseExtractions(const Area &area) {
+	for (auto iter = extractions.begin(); iter != extractions.end();) {
+		const Extraction &extraction = *iter;
+		if (extraction.area->name == area.name && extraction.area->parent == area.parent)
+			extractions.erase(iter++);
+		else
+			++iter;
+	}
+}
+
 void Game::tick(double delta) {
 	for (auto &pair: regions)
 		pair.second->tick(delta);

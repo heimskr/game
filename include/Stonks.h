@@ -25,7 +25,10 @@ namespace Stonks {
 	/** Determines the sell price for a single unit of a resource. */
 	double sellPrice(double base_price, double resource_amount, size_t region_money, double greed);
 
+	/** Determines whether the region can afford a given amount of a certain resource, and if so, outputs the price.
+	 *  Unfortunately, this is O(amount). */
 	bool totalSellPrice(const Region &region, const std::string &resource_name, double amount, size_t &out);
 
+	/** Returns the price to buy a given amount of a resource from a region. Like totalSellPrice, this is O(amount). */
 	size_t totalBuyPrice(const Region &region, const std::string &resource_name, double amount);
 }
