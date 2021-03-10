@@ -31,28 +31,19 @@ Area & Area::setName(const std::string &name_) {
 }
 
 bool Area::reduceSize(size_t new_size) {
-	if (new_size == 0 || getType() == Type::Empty)
+	if (new_size == 0 || getType() == Type::Empty || size < new_size)
 		return false;
 	if (size == new_size)
 		return true;
 
 	std::shared_ptr<Area> empty = parent->getArea(Type::Empty);
 
-	if (size < new_size) {
-		if (!empty || empty->size < new_size - size)
-			return false;
-
-		empty->size -= new_size - size;
-		if (empty->size == 0)
-			parent->erase(*empty);
-	} else {
-		if (!empty) {
-			empty = std::make_shared<EmptyArea>(parent, size - new_size);
-			empty->setName("Empty");
-			*parent += empty;
-		} else
-			empty->setSize(empty->size + size - new_size);
-	}
+	if (!empty) {
+		empty = std::make_shared<EmptyArea>(parent, size - new_size);
+		empty->setName("Empty");
+		*parent += empty;
+	} else
+		empty->setSize(empty->size + size - new_size);
 
 	size = new_size;
 	return true;
