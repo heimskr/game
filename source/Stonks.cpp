@@ -50,7 +50,7 @@ namespace Stonks {
 			price += subunit_price;
 		}
 
-		const size_t discrete_price = std::ceil(price);
+		const size_t discrete_price = std::floor(price);
 
 		if (region.money < discrete_price)
 			return false;
@@ -79,6 +79,6 @@ namespace Stonks {
 		}
 
 		// It's assumed the caller will check whether the player has enough money.
-		return std::floor(price);
+		return std::ceil(price);
 	}
 }
