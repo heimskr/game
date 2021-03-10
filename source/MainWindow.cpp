@@ -94,8 +94,8 @@ void MainWindow::render(bool *open) {
 						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
 							if (area->playerOwned)
 								ImGui::PopStyleColor();
-							ImGui::SameLine(1200.f);
-							if (ImGui::Button("+", {30.f, 0.f}))
+							ImGui::SameLine(1180.f);
+							if (ImGui::Button("M", {40.f, 0.f}))
 								context.pickResource([this, &area](const std::string &name) {
 									Keyboard::openForDouble([this, name, &area](double chosen) {
 										insert(area, name, chosen);
@@ -105,15 +105,20 @@ void MainWindow::render(bool *open) {
 								ImGui::SetTooltip("Move a resource from your inventory into the area.");
 							if (area->playerOwned) {
 								ImGui::SameLine();
-								if (ImGui::Button("-", {30.f, 0.f}))
+								if (ImGui::Button("R", {40.f, 0.f}))
 									Keyboard::openForNumber([this, area](size_t chosen) mutable {
 										context.frameActions.push_back([this, area, chosen]() {
-											if (!area->reduceSize(chosen))
-												context.showMessage("Couldn't reduce area size.");
+											if (chosen < area->size) {
+												if (!area->reduceSize(chosen))
+													context.showMessage("Couldn't reduce area size.");
+											} else if (chosen == area->size)
+												context.showMessage("That wouldn't do anything.");
+											else
+												context.showMessage("Increasing area size is unimplemented.");
 										});
 									}, "New Size");
 								if (ImGui::IsItemHovered())
-									ImGui::SetTooltip("Reduce the size of the region.");
+									ImGui::SetTooltip("Resize the area.");
 							}
 							for (const auto &[rname, amount]: area->resources) {
 								ImGui::Dummy(ImVec2(20.f, 0.f));
