@@ -18,6 +18,7 @@ class Game {
 		std::list<Extraction> extractions;
 		Region::Position position;
 		size_t money = 0;
+		bool cheatsEnabled = false;
 
 		Game();
 

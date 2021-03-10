@@ -29,6 +29,8 @@ void MainWindow::render(bool *open) {
 					else
 						context.showMessage("Game is null");
 				}
+				if (context.loaded && ImGui::MenuItem("Cheats", nullptr, context->cheatsEnabled))
+					context->cheatsEnabled = !context->cheatsEnabled;
 				if (context.loaded && ImGui::MenuItem("Save"))
 					context.save();
 				ImGui::EndMenu();
@@ -256,7 +258,16 @@ void MainWindow::render(bool *open) {
 					ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
 					ImGui::PopStyleColor();
 					ImGui::Text(("Region money: " + std::to_string(region->money)).c_str());
-					ImGui::Text(("Your money: " + std::to_string(context->money)).c_str());
+					if (context->cheatsEnabled) {
+						ImGui::Text("Your money: ");
+						ImGui::SameLine();
+						if (ImGui::Selectable((std::to_string(context->money) + "##money").c_str())) {
+							Keyboard::openForNumber([this](size_t chosen) {
+								context->money = chosen;
+							}, "Amount of Money");
+						}
+					} else
+						ImGui::Text(("Your money: " + std::to_string(context->money)).c_str());
 					if (ImGui::BeginTable("Market Layout", 2)) {
 						const float width = ImGui::GetContentRegionMax().x;
 						ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
@@ -290,7 +301,8 @@ void MainWindow::render(bool *open) {
 											size_t total_price;
 											if (!Stonks::totalSellPrice(*region, name, chosen, total_price)) {
 												context.showMessage("Error: Region doesn't have enough money.");
-												region->money = 100'000;
+												if (context->cheatsEnabled)
+													region->money = 100'000;
 											} else {
 												context.confirm("Price: " + std::to_string(total_price), [=](bool confirmed) {
 													if (confirmed) {
@@ -302,7 +314,7 @@ void MainWindow::render(bool *open) {
 												});
 											}
 										}
-									});
+									}, "Amount to Sell");
 								}
 								ImGui::TableNextColumn();
 								ImGui::TableSetColumnIndex(1);
@@ -370,7 +382,7 @@ void MainWindow::render(bool *open) {
 												});
 											}
 										}
-									});
+									}, "Amount to Buy");
 								}
 								ImGui::TableNextColumn();
 							}
