@@ -247,7 +247,9 @@ void MainWindow::render(bool *open) {
 			} else if (!region) {
 				ImGui::Text("The void has no market.");
 			} else {
+				ImGui::PushStyleColor(ImGuiCol_Text, {1.f, 1.f, 1.f, 0.5f});
 				ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
+				ImGui::PopStyleColor();
 				ImGui::Text(("Money: " + std::to_string(region->money)).c_str());
 				if (ImGui::BeginTable("Market Layout", 2)) {
 					const float width = ImGui::GetContentRegionMax().x;

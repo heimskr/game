@@ -22,6 +22,6 @@ namespace Stonks {
 	}
 
 	double sellPrice(double base_price, double resource_amount, size_t region_money, double greed) {
-		return buyPriceToSellPrice(buyPrice(base_price, resource_amount, greed), region_money);
+		return buyPriceToSellPrice(buyPrice(base_price, resource_amount, region_money), greed);
 	}
 }
