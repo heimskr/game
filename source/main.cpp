@@ -195,8 +195,9 @@ int main() {
 		s64 count = (new_time - last_time).count();
 		constexpr s64 divisor = 100;
 		// Up to 1,000 seconds of time spent in the background will be simulated on return.
-		for (s64 i = 0; i < count / divisor && i < 1'000'000 / divisor; ++i)
-			context->tick(0.001 * divisor);
+		if (context.loaded)
+			for (s64 i = 0; i < count / divisor && i < 1'000'000 / divisor; ++i)
+				context->tick(0.001 * divisor);
 		if (count / divisor)
 			last_time = new_time;
 

@@ -50,6 +50,20 @@ size_t Region::totalPopulation() const {
 	return out;
 }
 
+bool Region::occupied() const {
+	for (const auto &pair: areas)
+		if (pair.second->getType() == Area::Type::Housing)
+			return true;
+	return false;
+}
+
+std::shared_ptr<HousingArea> Region::getHousing() {
+	for (const auto &pair: areas)
+		if (pair.second->getType() == Area::Type::Housing)
+			return std::reinterpret_pointer_cast<HousingArea>(pair.second); // No RTTI =(
+	return nullptr;
+}
+
 bool Region::hasNeighbor() const {
 	return owner->regions.count(position + Position( 0, -1)) != 0
 	    || owner->regions.count(position + Position( 1,  0)) != 0

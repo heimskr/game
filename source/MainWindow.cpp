@@ -9,6 +9,7 @@
 #include "UI.h"
 #include "Direction.h"
 #include "Stonks.h"
+#include "area/Areas.h"
 
 void MainWindow::render(bool *open) {
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Once);
@@ -247,93 +248,151 @@ void MainWindow::render(bool *open) {
 			} else if (!region) {
 				ImGui::Text("The void has no market.");
 			} else {
-				ImGui::PushStyleColor(ImGuiCol_Text, {1.f, 1.f, 1.f, 0.5f});
-				ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
-				ImGui::PopStyleColor();
-				ImGui::Text(("Money: " + std::to_string(region->money)).c_str());
-				if (ImGui::BeginTable("Market Layout", 2)) {
-					const float width = ImGui::GetContentRegionMax().x;
-					ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
-					ImGui::TableSetupColumn("Region", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
+				std::shared_ptr<HousingArea> housing = region->getHousing();
+				if (!housing) {
+					ImGui::Text((region->name + " has no market.").c_str());
+				} else {
+					ImGui::PushStyleColor(ImGuiCol_Text, {1.f, 1.f, 1.f, 0.5f});
+					ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
+					ImGui::PopStyleColor();
+					ImGui::Text(("Money: " + std::to_string(region->money)).c_str());
+					if (ImGui::BeginTable("Market Layout", 2)) {
+						const float width = ImGui::GetContentRegionMax().x;
+						ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
+						ImGui::TableSetupColumn("Region", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
 
-					const Resource::Map non_owned = region->allNonOwnedResources();
-					const double greed = region->greed;
-					const size_t money = region->money;
+						const Resource::Map non_owned = region->allNonOwnedResources();
+						const double greed = region->greed;
+						const size_t money = region->money;
 
-					const float half_width = ImGui::GetContentRegionMax().x / 2.;
-					static char str[32];
+						const float half_width = ImGui::GetContentRegionMax().x / 2.;
+						static char str[32];
 
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					if (ImGui::BeginTable("Player Table", 4)) {
-						const float column_width = half_width / 3.f - 50.f;
-						ImGui::TableSetupColumn("##sell", ImGuiTableColumnFlags_WidthFixed, 50.f);
-						ImGui::TableSetupColumn("Your Resources", ImGuiTableColumnFlags_WidthStretch);
-						ImGui::TableSetupColumn("Amount##player", ImGuiTableColumnFlags_WidthFixed, column_width);
-						ImGui::TableSetupColumn("Price##player", ImGuiTableColumnFlags_WidthFixed, column_width);
-						ImGui::TableHeadersRow();
-						for (const auto &[name, amount]: context->inventory) {
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-							if (ImGui::Button(("S##" + name).c_str(), {40.f, 0.f})) {
-								context.showMessage("Sell " + name);
-							}
-							ImGui::TableNextColumn();
-							ImGui::TableSetColumnIndex(1);
-							ImGui::Text(name.c_str());
-							ImGui::TableNextColumn();
-							ImGui::TableSetColumnIndex(2);
-							snprintf(str, 32, "%.4f", amount);
-							ImGui::Text(str);
-							ImGui::TableNextColumn();
-							ImGui::TableSetColumnIndex(3);
-							double sell;
-							try {
-								sell = Stonks::sellPrice(context->resources.at(name).basePrice, non_owned.count(name)? non_owned.at(name) : 0, money, greed);
-								snprintf(str, 32, "%.4f", sell);
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						if (ImGui::BeginTable("Player Table", 4)) {
+							const float column_width = half_width / 3.f - 50.f;
+							ImGui::TableSetupColumn("##sell", ImGuiTableColumnFlags_WidthFixed, 50.f);
+							ImGui::TableSetupColumn("Your Resources", ImGuiTableColumnFlags_WidthStretch);
+							ImGui::TableSetupColumn("Amount##player", ImGuiTableColumnFlags_WidthFixed, column_width);
+							ImGui::TableSetupColumn("Price##player", ImGuiTableColumnFlags_WidthFixed, column_width);
+							ImGui::TableHeadersRow();
+							for (const auto &[name, amount]: context->inventory) {
+								ImGui::TableNextRow();
+								ImGui::TableSetColumnIndex(0);
+								if (ImGui::Button(("S##" + name).c_str(), {40.f, 0.f})) {
+									Keyboard::openForDouble([&](double chosen) {
+										if (chosen < 0. || amount < chosen) {
+											context.showMessage("Error: Invalid amount.");
+										} else {
+											const double original_chosen = chosen;
+											const double original_region_amount = non_owned.count(name)? non_owned.at(name) : 0.;
+											double region_amount = original_region_amount;
+											const double base = context->resources.at(name).basePrice;
+											double price = 0.;
+											double region_money = region->money;
+											const double greed = region->greed;
+											bool failed = false;
+											while (1. <= chosen) {
+												const double unit_price = Stonks::sellPrice(base, region_amount++, region_money, greed);
+												if (region_money < unit_price) {
+													failed = true;
+													break;
+												}
+												region_money -= unit_price;
+												price += unit_price;
+												--chosen;
+											}
+
+											if (!failed && 0. < chosen) {
+												const double subunit_price = chosen * Stonks::sellPrice(base, region_amount, region_money, greed);
+												if (region_money < subunit_price) {
+													failed = true;
+												} else {
+													region_money -= subunit_price;
+													price += subunit_price;
+													chosen = 0;
+												}
+											}
+
+											size_t discrete_price = std::ceil(price);
+
+											if (region->money < discrete_price)
+												failed = true;
+
+											if (failed) {
+												context.showMessage("Error: Region doesn't have enough money.");
+												region->money = 100'000;
+											} else {
+												context.confirm("Price: " + std::to_string(discrete_price), [=](bool confirmed) {
+													if (confirmed) {
+														housing->resources[name] += original_chosen;
+														context->inventory[name] -= original_chosen;
+														region->money -= discrete_price;
+														context->money += discrete_price;
+													}
+												});
+											}
+										}
+									});
+								}
+								ImGui::TableNextColumn();
+								ImGui::TableSetColumnIndex(1);
+								ImGui::Text(name.c_str());
+								ImGui::TableNextColumn();
+								ImGui::TableSetColumnIndex(2);
+								snprintf(str, 32, "%.4f", amount);
 								ImGui::Text(str);
-							} catch (const std::exception &err) {
-								ImGui::Text(err.what());
+								ImGui::TableNextColumn();
+								ImGui::TableSetColumnIndex(3);
+								double sell;
+								try {
+									sell = Stonks::sellPrice(context->resources.at(name).basePrice, non_owned.count(name)? non_owned.at(name) : 0, money, greed);
+									snprintf(str, 32, "%.4f", sell);
+									ImGui::Text(str);
+								} catch (const std::exception &err) {
+									ImGui::Text(err.what());
+								}
+								ImGui::TableNextColumn();
 							}
-							ImGui::TableNextColumn();
+
+							ImGui::EndTable();
 						}
 
-						ImGui::EndTable();
-					}
-
-					ImGui::TableNextColumn();
-					ImGui::TableSetColumnIndex(1);
-					if (ImGui::BeginTable("Region Table", 4)) {
-						const float column_width = half_width / 3.f - 50.f;
-						ImGui::TableSetupColumn("Region Resources", ImGuiTableColumnFlags_WidthStretch);
-						ImGui::TableSetupColumn("Amount##region", ImGuiTableColumnFlags_WidthFixed, column_width);
-						ImGui::TableSetupColumn("Price##region", ImGuiTableColumnFlags_WidthFixed, column_width);
-						ImGui::TableSetupColumn("##Buy", ImGuiTableColumnFlags_WidthFixed, 50.f);
-						ImGui::TableHeadersRow();
-						for (const auto &[name, amount]: non_owned) {
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-							ImGui::Text(name.c_str());
-							ImGui::TableNextColumn();
-							ImGui::TableSetColumnIndex(1);
-							snprintf(str, 32, "%.4f", amount);
-							ImGui::Text(str);
-							ImGui::TableNextColumn();
-							ImGui::TableSetColumnIndex(2);
-							snprintf(str, 32, "%.4f", Stonks::buyPrice(context->resources.at(name).basePrice, amount, money));
-							ImGui::Text(str);
-							ImGui::TableNextColumn();
-							ImGui::TableSetColumnIndex(3);
-							if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f})) {
-								context.showMessage("Buy " + name);
+						ImGui::TableNextColumn();
+						ImGui::TableSetColumnIndex(1);
+						if (ImGui::BeginTable("Region Table", 4)) {
+							const float column_width = half_width / 3.f - 50.f;
+							ImGui::TableSetupColumn("Region Resources", ImGuiTableColumnFlags_WidthStretch);
+							ImGui::TableSetupColumn("Amount##region", ImGuiTableColumnFlags_WidthFixed, column_width);
+							ImGui::TableSetupColumn("Price##region", ImGuiTableColumnFlags_WidthFixed, column_width);
+							ImGui::TableSetupColumn("##Buy", ImGuiTableColumnFlags_WidthFixed, 50.f);
+							ImGui::TableHeadersRow();
+							for (const auto &[name, amount]: non_owned) {
+								ImGui::TableNextRow();
+								ImGui::TableSetColumnIndex(0);
+								ImGui::Text(name.c_str());
+								ImGui::TableNextColumn();
+								ImGui::TableSetColumnIndex(1);
+								snprintf(str, 32, "%.4f", amount);
+								ImGui::Text(str);
+								ImGui::TableNextColumn();
+								ImGui::TableSetColumnIndex(2);
+								snprintf(str, 32, "%.4f", Stonks::buyPrice(context->resources.at(name).basePrice, amount, money));
+								ImGui::Text(str);
+								ImGui::TableNextColumn();
+								ImGui::TableSetColumnIndex(3);
+								if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f})) {
+									context.showMessage("Buy " + name);
+								}
+								ImGui::TableNextColumn();
 							}
-							ImGui::TableNextColumn();
+							ImGui::EndTable();
 						}
+
+						ImGui::TableNextColumn();
 						ImGui::EndTable();
 					}
-
-					ImGui::TableNextColumn();
-					ImGui::EndTable();
 				}
 			}
 			ImGui::EndTabItem();

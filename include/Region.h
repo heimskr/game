@@ -13,6 +13,7 @@
 #include "Direction.h"
 #include "Resource.h"
 
+class HousingArea;
 class Game;
 
 /** Regions are individual locations within the broader game universe. It's yet to be determined whether they're
@@ -41,6 +42,8 @@ class Region {
 		Resource::Map allOwnedResources() const;
 		Resource::Map allNonOwnedResources() const;
 		size_t totalPopulation() const;
+		bool occupied() const;
+		std::shared_ptr<HousingArea> getHousing();
 		bool hasNeighbor() const;
 		bool hasNeighbor(Direction) const;
 		Region * getNeighbor(Direction) const;
