@@ -40,9 +40,15 @@ size_t Area::totalPopulation() const {
 
 std::string Area::toString() const {
 	std::stringstream out;
-	out << name << ":" << size << ":" << (playerOwned? "1" : "0") << ":" << static_cast<unsigned>(getType());
-	for (const auto &pair: resources)
-		out << ":" << pair.first << "/" << pair.second;
+	out << name << ":" << size << ":" << (playerOwned? "1" : "0") << ":" << static_cast<unsigned>(getType()) << ":";
+	bool first = true;
+	for (const auto &pair: resources) {
+		if (first)
+			first = false;
+		else
+			out << "/";
+		out << pair.first << "/" << pair.second;
+	}
 	return out.str();
 }
 
@@ -55,10 +61,9 @@ std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 	const bool player_owned = pieces[2] == "1";
 	const Type type = static_cast<Type>(parseLong(pieces[3]));
 	Resource::Map resources;
-	for (size_t i = 4; i < pieces.size(); ++i) {
-		const std::vector<std::string> resource_pieces = split(pieces[i], "/");
-		resources.emplace(resource_pieces[0], parseDouble(resource_pieces[1]));
-	}
+	const std::vector<std::string> by_slash = split(pieces[4], "/", false);
+	for (size_t i = 0; i < by_slash.size(); i += 2)
+		resources.emplace(by_slash[i], parseDouble(by_slash[i + 1]));
 	std::shared_ptr<Area> area;
 	switch (type) {
 		case Type::Housing:  area = std::make_shared<HousingArea>(&region);  break;
@@ -66,6 +71,7 @@ std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 		case Type::Mountain: area = std::make_shared<MountainArea>(&region); break;
 		case Type::Lake:     area = std::make_shared<LakeArea>(&region);     break;
 		case Type::Empty:    area = std::make_shared<EmptyArea>(&region);    break;
+		case Type::Farmland: area = std::make_shared<FarmlandArea>(&region, 0, pieces[5]); break;
 		default: throw std::invalid_argument("Unknown Area type: " + std::to_string(static_cast<unsigned>(type)));
 	}
 	area->setName(name).setSize(size).setPlayerOwned(player_owned).setResources(resources);

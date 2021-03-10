@@ -17,6 +17,8 @@ void MainWindow::render(bool *open) {
 	if (ImGui::Begin("Trade Game", open, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("Menu")) {
+				if (ImGui::MenuItem("New"))
+					context.newGame();
 				if (ImGui::MenuItem("Load"))
 					context.load();
 				if (context.loaded && ImGui::MenuItem("Stringify")) {
@@ -83,7 +85,8 @@ void MainWindow::render(bool *open) {
 				} else {
 					for (const auto &[name, area]: region->areas) {
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
+						std::string node_label = name + " (" + std::to_string(area->size) + ")";
+						if (ImGui::TreeNode(node_label.c_str())) {
 							ImGui::SameLine(1200.f);
 							if (ImGui::Button("+"))
 								context.pickResource([this, &area](const std::string &name) {

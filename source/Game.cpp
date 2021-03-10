@@ -198,20 +198,24 @@ void Game::tick(double delta) {
 
 void Game::loadDefaults() {
 	regions.clear();
-	Region &home = *regions.insert({{0, 0}, std::make_unique<Region>(this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 64)}).first->second;
-	auto forest = std::make_shared<ForestArea>(&home, 20);
-	auto housing = std::make_shared<HousingArea>(&home, 16);
-	auto mountain = std::make_shared<MountainArea>(&home, 24);
-	auto lake = std::make_shared<LakeArea>(&home, 4);
+	Region &home = *regions.insert({{0, 0}, std::make_unique<Region>(this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
+	home.greed = 0.25;
+	auto forest = std::make_shared<ForestArea>(&home, 32);
+	auto housing = std::make_shared<HousingArea>(&home, 20);
+	auto mountain = std::make_shared<MountainArea>(&home, 48);
+	auto lake = std::make_shared<LakeArea>(&home, 8);
+	auto farmland = std::make_shared<FarmlandArea>(&home, 20);
 	forest->setName("Forest").setPlayerOwned(true);
 	housing->setName("Small Town");
 	mountain->setName("Mountain").setPlayerOwned(true);
 	lake->setName("Lake").setPlayerOwned(true);
+	farmland->setName("Farm").setPlayerOwned(false);
 	home += forest;
 	home += housing;
 	home += mountain;
 	home += lake;
-	print("Loaded default data.\n");
+	home += farmland;
+	Logger::info("Loaded default data.");
 }
 
 void Game::extract(Area &area, const std::string &name, double amount) {

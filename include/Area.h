@@ -30,7 +30,7 @@ class Area {
 
 		size_t totalPopulation() const;
 
-		std::string toString() const;
+		virtual std::string toString() const;
 		static std::shared_ptr<Area> fromString(Region &, const std::string &);
 
 		virtual Type getType() const = 0;

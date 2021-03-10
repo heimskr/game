@@ -30,6 +30,8 @@ class Region {
 		/** Don't directly insert Areas into this map; use operator+= instead. */
 		std::map<std::string, std::shared_ptr<Area>> areas;
 		size_t money = 0;
+		/** To get the buy price for a good, take the sell price and divide it by 1 plus the region's greed value. */
+		double greed = 0.5;
 
 		Region(Game *, const std::string &name_, const Position &, size_t size_);
 

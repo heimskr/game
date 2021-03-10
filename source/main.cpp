@@ -314,6 +314,12 @@ void Context::showMessage(const std::string &str) {
 	message = str;
 }
 
+void Context::newGame() {
+	game = std::make_shared<Game>();
+	game->loadDefaults();
+	loaded = true;
+}
+
 void Context::load() {
 	try {
 		game = Game::load();
