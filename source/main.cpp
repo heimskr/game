@@ -206,7 +206,7 @@ int main() {
 			if (!context.message.empty())
 				ImGui::OpenPopup("Message");
 		} catch (const std::exception &err) {
-			context.message = "Error: " + std::string(err.what());
+			context.showMessage("Error: " + std::string(err.what()));
 			ImGui::OpenPopup("Message");
 		}
 
@@ -251,7 +251,21 @@ int main() {
 				ImGui::BeginChild("message contents", {max.x, max.y - 80.f}, false, ImGuiWindowFlags_HorizontalScrollbar);
 				ImGui::Text("%s", context.message.c_str());
 				ImGui::EndChild();
-				if (ImGui::Button("Close")) {
+				if (context.isConfirm) {
+					if (ImGui::Button("Okay")) {
+						context.message.clear();
+						ImGui::CloseCurrentPopup();
+						context.onChoice(true);
+					}
+
+					ImGui::SameLine();
+
+					if (ImGui::Button("Cancel")) {
+						context.message.clear();
+						ImGui::CloseCurrentPopup();
+						context.onChoice(false);
+					}
+				} else if (ImGui::Button("Close")) {
 					context.message.clear();
 					ImGui::CloseCurrentPopup();
 				}
@@ -283,6 +297,17 @@ void Context::pickResource(std::function<void(const std::string &)> fn) {
 	onResourcePicked = fn;
 }
 
+void Context::confirm(const std::string &str, std::function<void(bool)> fn) {
+	isConfirm = true;
+	message = str;
+	onChoice = fn;
+}
+
+void Context::showMessage(const std::string &str) {
+	isConfirm = false;
+	message = str;
+}
+
 void Context::load() {
 	try {
 		game = Game::load();
@@ -290,23 +315,23 @@ void Context::load() {
 		loaded = true;
 	} catch (const std::exception &err) {
 		print("Couldn't load game: %s\n", err.what());
-		message = "Couldn't load game: " + std::string(err.what());
+		showMessage("Couldn't load game: " + std::string(err.what()));
 	}
 }
 
 void Context::save() {
 	if (!game) {
-		message = "No game is open.";
+		showMessage("No game is open.");
 		printf("No game.\n");
 		return;
 	}
 
 	try {
 		game->save();
-		message = "Game saved successfully.";
+		showMessage("Game saved successfully.");
 		printf("Game saved.\n");
 	} catch (const std::exception &err) {
-		message = "An error occurred while saving: " + std::string(err.what());
+		showMessage("An error occurred while saving: " + std::string(err.what()));
 		printf("Game save error: %s\n", err.what());
 	}
 }

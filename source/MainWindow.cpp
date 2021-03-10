@@ -21,9 +21,9 @@ void MainWindow::render(bool *open) {
 					context.load();
 				if (context.loaded && ImGui::MenuItem("Stringify")) {
 					if (context.game)
-						context.message = context.game->toString();
+						context.showMessage(context.game->toString());
 					else
-						context.message = "Game is null";
+						context.showMessage("Game is null");
 				}
 				if (context.loaded && ImGui::MenuItem("Save"))
 					context.save();
@@ -53,12 +53,22 @@ void MainWindow::render(bool *open) {
 				if (ImGui::Button("Rename")) {
 					Keyboard::openForText([&](std::string new_name) {
 						if (new_name.empty() || new_name == region->name) {
-							context.message = "Name not updated.";
+							context.showMessage("Name not updated.");
 						} else {
-							context.message = "Renamed " + region->name + " to " + new_name + ".";
+							context.showMessage("Renamed " + region->name + " to " + new_name + ".");
 							context->updateName(*region, new_name);
 						}
 					}, "New Region Name", "", 64, NameGen::makeRandomLanguage().makeName());
+				}
+
+				ImGui::SameLine();
+				if (ImGui::Button("Delete")) {
+					context.confirm("Are you sure you want to delete " + region->name + "?", [this](bool choice) {
+						if (choice)
+							context.showMessage("Okay, deleting.");
+						else
+							context.showMessage("Never mind.");
+					});
 				}
 
 				ImGui::Dummy({0, 20.f});
@@ -88,9 +98,9 @@ void MainWindow::render(bool *open) {
 								if (ImGui::Button("Extract")) {
 									Keyboard::openForDouble([&](double chosen) {
 										if (amount <= 0)
-											context.message = "Invalid amount.";
+											context.showMessage("Invalid amount.");
 										else if (amount < chosen)
-											context.message = "Not enough of that resource is available.";
+											context.showMessage("Not enough of that resource is available.");
 										else
 											context->extract(*area, rname, chosen);
 									}, "Amount to Extract");
@@ -201,7 +211,7 @@ void MainWindow::render(bool *open) {
 						Keyboard::openForDouble([this, &name, &to_erase](double chosen) {
 							double &amount = context->inventory[name];
 							if (chosen <= 0)
-								context.message = "Error: Invalid amount.";
+								context.showMessage("Error: Invalid amount.");
 							else if (amount <= chosen)
 								to_erase.push_back(&name);
 							else
@@ -233,18 +243,18 @@ void MainWindow::render(bool *open) {
 bool MainWindow::insert(std::shared_ptr<Area> area, const std::string &resource_name, double amount) {
 	try {
 		if (amount <= 0) {
-			context.message = "Error: Invalid amount.";
+			context.showMessage("Error: Invalid amount.");
 			return false;
 		}
 
 		if (context->inventory.count(resource_name) == 0) {
-			context.message = "Error: You don't have any of that resource.";
+			context.showMessage("Error: You don't have any of that resource.");
 			return false;
 		}
 
 		double &in_inventory = context->inventory.at(resource_name);
 		if (in_inventory < amount) {
-			context.message = "Error: You don't have enough of that resource.";
+			context.showMessage("Error: You don't have enough of that resource.");
 			return false;
 		}
 
@@ -255,7 +265,7 @@ bool MainWindow::insert(std::shared_ptr<Area> area, const std::string &resource_
 		return true;
 	} catch (const std::exception &err) {
 		fprintf(stderr, "??? %s\n", err.what());
-		context.message = "??? " + std::string(err.what());
+		context.showMessage("??? " + std::string(err.what()));
 		return false;
 	}
 }
