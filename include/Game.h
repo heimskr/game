@@ -17,6 +17,7 @@ class Game {
 		std::map<Region::Position, std::unique_ptr<Region>> regions;
 		std::list<Extraction> extractions;
 		Region::Position position;
+		size_t money = 0;
 
 		Game();
 
