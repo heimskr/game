@@ -193,7 +193,9 @@ int main() {
 		}
 
 		auto new_time = getTime();
-		for (s64 i = 0; i < (new_time - last_time).count(); ++i)
+		s64 count = (new_time - last_time).count();
+		// Up to 1,000 seconds of time spent in the background will be simulated on return.
+		for (s64 i = 0; i < count && i < 1'000'000; ++i)
 			context->tick(0.001);
 		last_time = new_time;
 
