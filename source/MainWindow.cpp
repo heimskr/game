@@ -257,17 +257,25 @@ void MainWindow::render(bool *open) {
 					ImGui::PushStyleColor(ImGuiCol_Text, {1.f, 1.f, 1.f, 0.5f});
 					ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
 					ImGui::PopStyleColor();
-					ImGui::Text(("Region money: " + std::to_string(region->money)).c_str());
 					if (context->cheatsEnabled) {
+						ImGui::Text("Region money: ");
+						ImGui::SameLine();
+						if (ImGui::Selectable((std::to_string(region->money) + "##region_money").c_str())) {
+							Keyboard::openForNumber([region](size_t chosen) {
+								region->money = chosen;
+							}, "Amount of Money");
+						}
 						ImGui::Text("Your money: ");
 						ImGui::SameLine();
-						if (ImGui::Selectable((std::to_string(context->money) + "##money").c_str())) {
+						if (ImGui::Selectable((std::to_string(context->money) + "##player_money").c_str())) {
 							Keyboard::openForNumber([this](size_t chosen) {
 								context->money = chosen;
 							}, "Amount of Money");
 						}
-					} else
+					} else {
+						ImGui::Text(("Region money: " + std::to_string(region->money)).c_str());
 						ImGui::Text(("Your money: " + std::to_string(context->money)).c_str());
+					}
 					if (ImGui::BeginTable("Market Layout", 2)) {
 						const float width = ImGui::GetContentRegionMax().x;
 						ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
@@ -300,9 +308,8 @@ void MainWindow::render(bool *open) {
 											const double original_chosen = chosen;
 											size_t total_price;
 											if (!Stonks::totalSellPrice(*region, name, chosen, total_price)) {
-												context.showMessage("Error: Region doesn't have enough money.");
-												if (context->cheatsEnabled)
-													region->money = 100'000;
+												context.showMessage("Error: Region doesn't have enough money.\nPrice: "
+													+ std::to_string(total_price));
 											} else {
 												context.confirm("Price: " + std::to_string(total_price), [=](bool confirmed) {
 													if (confirmed) {
@@ -370,7 +377,8 @@ void MainWindow::render(bool *open) {
 											const double original_chosen = chosen;
 											const size_t total_price = Stonks::totalBuyPrice(*region, name, chosen);
 											if (context->money < total_price) {
-												context.showMessage("Error: You don't have enough money.");
+												context.showMessage("Error: You don't have enough money.\nPrice: "
+													+ std::to_string(total_price));
 											} else {
 												context.confirm("Price: " + std::to_string(total_price), [=](bool confirmed) {
 													if (confirmed) {

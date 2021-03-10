@@ -81,7 +81,7 @@ bool Region::occupied() const {
 std::shared_ptr<HousingArea> Region::getHousing() {
 	for (const auto &pair: areas)
 		if (pair.second->getType() == Area::Type::Housing)
-			return std::reinterpret_pointer_cast<HousingArea>(pair.second); // No RTTI =(
+			return std::static_pointer_cast<HousingArea>(pair.second); // No RTTI =(
 	return nullptr;
 }
 
