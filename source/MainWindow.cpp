@@ -85,8 +85,11 @@ void MainWindow::render(bool *open) {
 				} else {
 					for (const auto &[name, area]: region->areas) {
 						ImGui::SetNextItemOpen(true, ImGuiCond_Once);
-						std::string node_label = name + " (" + std::to_string(area->size) + ")";
-						if (ImGui::TreeNode(node_label.c_str())) {
+						if (area->playerOwned)
+							ImGui::PushStyleColor(ImGuiCol_Text, {0.f, 1.f, 0.f, 1.f});
+						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
+							if (area->playerOwned)
+								ImGui::PopStyleColor();
 							ImGui::SameLine(1200.f);
 							if (ImGui::Button("+"))
 								context.pickResource([this, &area](const std::string &name) {
@@ -115,13 +118,14 @@ void MainWindow::render(bool *open) {
 									ImGui::SameLine();
 									ImGui::Dummy({10.f, 0.f});
 									ImGui::SameLine();
-									ImGui::PushStyleColor(ImGuiCol_Text, {1.0f, 0.f, 0.f, 1.0f});
+									ImGui::PushStyleColor(ImGuiCol_Text, {1.f, 0.f, 0.f, 1.f});
 									ImGui::Text("- %.2f/s", extraction->rate);
 									ImGui::PopStyleColor();
 								}
 							}
 							ImGui::TreePop();
-						}
+						} else if (area->playerOwned)
+							ImGui::PopStyleColor();
 					}
 				}
 			}

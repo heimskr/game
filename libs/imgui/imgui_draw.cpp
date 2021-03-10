@@ -2524,6 +2524,7 @@ const ImWchar*   ImFontAtlas::GetGlyphRangesDefault() {
         0x1e00, 0x1eff, // Latin Extended Additional
         0x2000, 0x206f, // General punctutation
         0x2600, 0x26ff, // Miscellaneous symbols
+        0x2700, 0x27bf, // Dingbats
         0,
     };
     return &ranges[0];
