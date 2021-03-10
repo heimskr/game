@@ -188,7 +188,7 @@ void Game::tick(double delta) {
 			inventory[extraction.resourceName] += to_extract;
 			extraction.area->resources[extraction.resourceName] -= to_extract;
 			extraction.amount -= to_extract;
-			if (extraction.amount < 0.000001)
+			if (extraction.amount < Resource::MIN_AMOUNT)
 				extractions.erase(iter++);
 			else
 				++iter;

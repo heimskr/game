@@ -255,7 +255,8 @@ void MainWindow::render(bool *open) {
 					ImGui::PushStyleColor(ImGuiCol_Text, {1.f, 1.f, 1.f, 0.5f});
 					ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
 					ImGui::PopStyleColor();
-					ImGui::Text(("Money: " + std::to_string(region->money)).c_str());
+					ImGui::Text(("Region money: " + std::to_string(region->money)).c_str());
+					ImGui::Text(("Your money: " + std::to_string(context->money)).c_str());
 					if (ImGui::BeginTable("Market Layout", 2)) {
 						const float width = ImGui::GetContentRegionMax().x;
 						ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
@@ -285,7 +286,7 @@ void MainWindow::render(bool *open) {
 										if (chosen < 0. || amount < chosen) {
 											context.showMessage("Error: Invalid amount.");
 										} else {
-											const double original_chosen = chosen;											
+											const double original_chosen = chosen;
 											size_t total_price;
 											if (!Stonks::totalSellPrice(*region, name, chosen, total_price)) {
 												context.showMessage("Error: Region doesn't have enough money.");
@@ -350,7 +351,27 @@ void MainWindow::render(bool *open) {
 								ImGui::TableNextColumn();
 								ImGui::TableSetColumnIndex(3);
 								if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f})) {
-									context.showMessage("Buy " + name);
+									Keyboard::openForDouble([&](double chosen) {
+										if (chosen < 0. || amount < chosen) {
+											context.showMessage("Error: Invalid amount.");
+										} else {
+											const double original_chosen = chosen;
+											size_t total_price = Stonks::totalBuyPrice(*region, name, chosen);
+
+											if (context->money < total_price) {
+												context.showMessage("Error: You doesn't have enough money.");
+											} else {
+												context.confirm("Price: " + std::to_string(total_price), [=](bool confirmed) {
+													if (confirmed) {
+														region->subtractResourceFromNonOwned(name, original_chosen);
+														context->inventory[name] += original_chosen;
+														region->money += total_price;
+														context->money -= total_price;
+													}
+												});
+											}
+										}
+									});
 								}
 								ImGui::TableNextColumn();
 							}
@@ -391,7 +412,7 @@ bool MainWindow::insert(std::shared_ptr<Area> area, const std::string &resource_
 			return false;
 		}
 
-		if ((in_inventory -= amount) < 0.000001)
+		if ((in_inventory -= amount) < Resource::MIN_AMOUNT)
 			context->inventory.erase(resource_name);
 
 		area->resources[resource_name] += amount;

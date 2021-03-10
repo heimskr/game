@@ -41,6 +41,7 @@ class Region {
 		Resource::Map allResources() const;
 		Resource::Map allOwnedResources() const;
 		Resource::Map allNonOwnedResources() const;
+		void subtractResourceFromNonOwned(const std::string &, double);
 		size_t totalPopulation() const;
 		bool occupied() const;
 		std::shared_ptr<HousingArea> getHousing();

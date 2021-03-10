@@ -26,4 +26,6 @@ namespace Stonks {
 	double sellPrice(double base_price, double resource_amount, size_t region_money, double greed);
 
 	bool totalSellPrice(const Region &region, const std::string &resource_name, double amount, size_t &out);
+
+	size_t totalBuyPrice(const Region &region, const std::string &resource_name, double amount);
 }

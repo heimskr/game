@@ -42,6 +42,27 @@ Resource::Map Region::allNonOwnedResources() const {
 	return out;
 }
 
+void Region::subtractResourceFromNonOwned(const std::string &resource_name, double amount) {
+	for (auto &pair: areas) {
+		Area &area = *pair.second;
+		if (!area.playerOwned && area.resources.count(resource_name) != 0) {
+			double &area_amount = area.resources.at(resource_name);
+			if (amount <= area_amount) {
+				area_amount -= area_amount;
+				if (area_amount < Resource::MIN_AMOUNT)
+					area.resources.erase(resource_name);
+				return;
+			} else {
+				area.resources.erase(resource_name);
+				amount -= area_amount;
+			}
+		}
+	}
+
+	Logger::error("Amount of %s remaining: %f", resource_name.c_str(), amount);
+	throw std::runtime_error("Couldn't fully subtract resource");
+}
+
 size_t Region::totalPopulation() const {
 	// Hopefully nothing goes wrong with storing population as doubles.
 	size_t out = 0;

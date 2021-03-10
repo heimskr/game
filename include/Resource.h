@@ -11,6 +11,8 @@ class Game;
 
 class Resource {
 	public:
+		constexpr static double MIN_AMOUNT = 0.000001;
+
 		using Type = std::string;
 		using Map  = std::map<std::string, double>;
 

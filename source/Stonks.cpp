@@ -58,4 +58,27 @@ namespace Stonks {
 		out = discrete_price;
 		return true;
 	}
+
+	size_t totalBuyPrice(const Region &region, const std::string &resource_name, double amount) {
+		const Resource::Map non_owned = region.allNonOwnedResources();
+		double region_amount = non_owned.count(resource_name)? non_owned.at(resource_name) : 0.;
+		const double base = region.owner->resources.at(resource_name).basePrice;
+		double price = 0.;
+		double region_money = region.money;
+		while (1. <= amount) {
+			const double unit_price = buyPrice(base, region_amount--, region_money);
+			region_money += unit_price;
+			price += unit_price;
+			--amount;
+		}
+
+		if (0. < amount) {
+			const double subunit_price = amount * buyPrice(base, region_amount, region_money);
+			region_money += subunit_price;
+			price += subunit_price;
+		}
+
+		// It's assumed the caller will check whether the player has enough money.
+		return std::floor(price);
+	}
 }
