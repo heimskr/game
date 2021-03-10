@@ -8,6 +8,7 @@
 #include "Keyboard.h"
 #include "UI.h"
 #include "Direction.h"
+#include "Stonks.h"
 
 void MainWindow::render(bool *open) {
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Once);
@@ -245,66 +246,93 @@ void MainWindow::render(bool *open) {
 				ImGui::Text("No game is loaded.");
 			} else if (!region) {
 				ImGui::Text("The void has no market.");
-			} else if (ImGui::BeginTable("Market Layout", 2)) {
-				const float width = ImGui::GetContentRegionMax().x;
-				ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
-				ImGui::TableSetupColumn("Region", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
+			} else {
+				ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
+				ImGui::Text(("Money: " + std::to_string(region->money)).c_str());
+				if (ImGui::BeginTable("Market Layout", 2)) {
+					const float width = ImGui::GetContentRegionMax().x;
+					ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
+					ImGui::TableSetupColumn("Region", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
 
-				const float half_width = ImGui::GetContentRegionMax().x / 2.;
+					const Resource::Map non_owned = region->allNonOwnedResources();
+					const double greed = region->greed;
+					const size_t money = region->money;
 
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);
-				if (ImGui::BeginTable("Player Table", 3)) {
-					const float column_width = half_width / 2.f - 50.f;
-					ImGui::TableSetupColumn("##sell", ImGuiTableColumnFlags_WidthFixed, 50.f);
-					ImGui::TableSetupColumn("Your Resources", ImGuiTableColumnFlags_WidthFixed, column_width);
-					ImGui::TableSetupColumn("Amount##player", ImGuiTableColumnFlags_WidthFixed, column_width);
-					ImGui::TableHeadersRow();
-					for (const auto &[name, amount]: context->inventory) {
-						ImGui::TableNextRow();
-						ImGui::TableSetColumnIndex(0);
-						if (ImGui::Button(("S##" + name).c_str(), {40.f, 0.f})) {
-							context.showMessage("Sell " + name);
+					const float half_width = ImGui::GetContentRegionMax().x / 2.;
+					static char str[32];
+
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					if (ImGui::BeginTable("Player Table", 4)) {
+						const float column_width = half_width / 3.f - 50.f;
+						ImGui::TableSetupColumn("##sell", ImGuiTableColumnFlags_WidthFixed, 50.f);
+						ImGui::TableSetupColumn("Your Resources", ImGuiTableColumnFlags_WidthStretch);
+						ImGui::TableSetupColumn("Amount##player", ImGuiTableColumnFlags_WidthFixed, column_width);
+						ImGui::TableSetupColumn("Price##player", ImGuiTableColumnFlags_WidthFixed, column_width);
+						ImGui::TableHeadersRow();
+						for (const auto &[name, amount]: context->inventory) {
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							if (ImGui::Button(("S##" + name).c_str(), {40.f, 0.f})) {
+								context.showMessage("Sell " + name);
+							}
+							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(1);
+							ImGui::Text(name.c_str());
+							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(2);
+							snprintf(str, 32, "%.4f", amount);
+							ImGui::Text(str);
+							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(3);
+							double sell;
+							try {
+								sell = Stonks::sellPrice(context->resources.at(name).basePrice, non_owned.count(name)? non_owned.at(name) : 0, money, greed);
+								snprintf(str, 32, "%.4f", sell);
+								ImGui::Text(str);
+							} catch (const std::exception &err) {
+								ImGui::Text(err.what());
+							}
+							ImGui::TableNextColumn();
 						}
-						ImGui::TableNextColumn();
-						ImGui::TableSetColumnIndex(1);
-						ImGui::Text(name.c_str());
-						ImGui::TableNextColumn();
-						ImGui::TableSetColumnIndex(2);
-						ImGui::Text(std::to_string(amount).c_str());
-						ImGui::TableNextColumn();
+
+						ImGui::EndTable();
 					}
 
-					ImGui::EndTable();
-				}
-
-				ImGui::TableNextColumn();
-				ImGui::TableSetColumnIndex(1);
-				if (ImGui::BeginTable("Region Table", 3)) {
-					const float column_width = half_width / 2.f - 40.f;
-					ImGui::TableSetupColumn("Region Resources", ImGuiTableColumnFlags_WidthFixed, column_width);
-					ImGui::TableSetupColumn("Amount##region", ImGuiTableColumnFlags_WidthStretch);
-					ImGui::TableSetupColumn("##Buy", ImGuiTableColumnFlags_WidthFixed, 50.f);
-					ImGui::TableHeadersRow();
-					for (const auto &[name, amount]: region->allNonOwnedResources()) {
-						ImGui::TableNextRow();
-						ImGui::TableSetColumnIndex(0);
-						ImGui::Text(name.c_str());
-						ImGui::TableNextColumn();
-						ImGui::TableSetColumnIndex(1);
-						ImGui::Text(std::to_string(amount).c_str());
-						ImGui::TableNextColumn();
-						ImGui::TableSetColumnIndex(2);
-						if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f})) {
-							context.showMessage("Buy " + name);
+					ImGui::TableNextColumn();
+					ImGui::TableSetColumnIndex(1);
+					if (ImGui::BeginTable("Region Table", 4)) {
+						const float column_width = half_width / 3.f - 50.f;
+						ImGui::TableSetupColumn("Region Resources", ImGuiTableColumnFlags_WidthStretch);
+						ImGui::TableSetupColumn("Amount##region", ImGuiTableColumnFlags_WidthFixed, column_width);
+						ImGui::TableSetupColumn("Price##region", ImGuiTableColumnFlags_WidthFixed, column_width);
+						ImGui::TableSetupColumn("##Buy", ImGuiTableColumnFlags_WidthFixed, 50.f);
+						ImGui::TableHeadersRow();
+						for (const auto &[name, amount]: non_owned) {
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							ImGui::Text(name.c_str());
+							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(1);
+							snprintf(str, 32, "%.4f", amount);
+							ImGui::Text(str);
+							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(2);
+							snprintf(str, 32, "%.4f", Stonks::buyPrice(context->resources.at(name).basePrice, amount, money));
+							ImGui::Text(str);
+							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(3);
+							if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f})) {
+								context.showMessage("Buy " + name);
+							}
+							ImGui::TableNextColumn();
 						}
-						ImGui::TableNextColumn();
+						ImGui::EndTable();
 					}
+
+					ImGui::TableNextColumn();
 					ImGui::EndTable();
 				}
-
-				ImGui::TableNextColumn();
-				ImGui::EndTable();
 			}
 			ImGui::EndTabItem();
 		}

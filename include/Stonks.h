@@ -11,15 +11,15 @@ namespace Stonks {
 	constexpr double E = 2.71828182845904523536;
 
 	/** Returns the price for which a region will buy a resource, given the resource's sell price. */
-	double buyPriceToSellPrice(double buy_price, const Region &);
+	double buyPriceToSellPrice(double buy_price, double greed);
 
 	/** Prices depend on the amount of money a region has. This adjusts a price accordingly. */
-	double applyMoney(double base_price, const Region &);
+	double applyMoney(double base_price, size_t region_money);
 
 	/** Prices depend on the amount of the resource a region owns. This adjusts a price accordingly. */
-	double applyScarcity(double base_price, const std::string &, const Region &);
+	double applyScarcity(double base_price, double resource_amount);
 
-	double buyPrice(double base_price, const std::string &, const Region &);
+	double buyPrice(double base_price, double resource_amount, size_t region_money);
 
-	double sellPrice(double base_price, const std::string &, const Region &);
+	double sellPrice(double base_price, double resource_amount, size_t region_money, double greed);
 }
