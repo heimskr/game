@@ -24,9 +24,6 @@
 #include <chrono>
 #include <memory>
 
-#include <cmath>
-#include "Stonks.h"
-
 constexpr uint32_t WINDOW_WIDTH  = 1280;
 constexpr uint32_t WINDOW_HEIGHT = 720;
 
@@ -161,17 +158,6 @@ int main() {
 	bool show_main_window = true;
 	auto last_time = getTime();
 	MainWindow main_window(context);
-
-	double base_price = 0.5;
-	double amount = 0;
-	size_t money = 0;
-	double greed = 0.25;
-	Logger::info("base_price: %f", base_price);
-	Logger::info("money divisor: %f", 1. + (1. / pow(2.71828182845904523536, -money / 50.)));
-	Logger::info("scarcity divisor: %f", 1. + (1. / pow(2.71828182845904523536, -amount / 100.)));
-
-	Logger::info("buy[%f]", Stonks::buyPrice(base_price, amount, money));
-	Logger::info("sell[%f]", Stonks::sellPrice(base_price, amount, money, greed));
 
 	while (show_main_window && !done) {
 		while (SDL_PollEvent(&event)) {
