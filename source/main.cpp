@@ -276,6 +276,10 @@ int main() {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		SDL_GL_SwapWindow(window);
+
+		for (const auto &fn: context.frameActions)
+			fn();
+		context.frameActions.clear();
 	}
 
 	ImGui::DestroyContext();

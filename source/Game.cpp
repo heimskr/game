@@ -85,14 +85,13 @@ bool Game::updatePosition(Region &region, const Region::Position &new_position) 
 	return true;
 }
 
-Region::Position Game::suggestPosition() {
-	s64 x = 0, y = 0;
+Region::Position Game::suggestPosition(bool is_free, s64 x, s64 y) {
 	enum Direction {Up, Right, Down, Left};
 	Direction direction = Up;
 	int max_extent = 1;
 	int extent = 0;
 	for (;;) {
-		if (regions.count({x, y}) == 0)
+		if (regions.count({x, y}) == (is_free? 0 : 1))
 			return {x, y};
 
 		switch (direction) {
@@ -137,7 +136,7 @@ Region * Game::addRegion() {
 		return nullptr;
 	}
 	s64 x, y;
-	std::tie(x, y) = suggestPosition();
+	std::tie(x, y) = suggestPosition(true);
 	size_t size;
 	if (!Keyboard::openForNumber([&](s64 x_) { x = x_; }, "Region X Coordinate", "", 64, std::to_string(x), "-")) {
 		print("Invalid x coordinate.\n");
@@ -162,6 +161,17 @@ Region * Game::addRegion() {
 
 Region & Game::currentRegion() {
 	return *regions.at(position);
+}
+
+bool Game::erase(Region &region) {
+	// If this region is the only region, don't erase it.
+	if (regions.size() == 1 && regions.begin()->second->position == region.position)
+		return false;
+	const bool reposition = region.position == position;
+	const bool out = regions.erase(region.position) != 0;
+	if (reposition)
+		position = suggestPosition(false, position.first, position.second);
+	return out;
 }
 
 void Game::tick(double delta) {

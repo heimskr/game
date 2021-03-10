@@ -63,11 +63,11 @@ void MainWindow::render(bool *open) {
 
 				ImGui::SameLine();
 				if (ImGui::Button("Delete")) {
-					context.confirm("Are you sure you want to delete " + region->name + "?", [this](bool choice) {
+					context.confirm("Do you want to delete " + region->name + "?", [this, region](bool choice) {
 						if (choice)
-							context.showMessage("Okay, deleting.");
-						else
-							context.showMessage("Never mind.");
+							context.frameActions.push_back([this, region] {
+								context->erase(*region);
+							});
 					});
 				}
 
