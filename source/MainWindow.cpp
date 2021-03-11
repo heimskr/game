@@ -61,8 +61,13 @@ void MainWindow::render(bool *open) {
 						if (new_name.empty() || new_name == region->name) {
 							context.showMessage("Name not updated.");
 						} else {
-							context.showMessage("Renamed " + region->name + " to " + new_name + ".");
-							context->updateName(*region, new_name);
+							try {
+								const std::string old_name = region->name;
+								context->updateName(*region, new_name);
+								context.showMessage("Renamed " + old_name + " to " + new_name + ".");
+							} catch (const std::exception &err) {
+								context.showMessage("Error: " + std::string(err.what()));
+							}
 						}
 					}, "New Region Name", "", 64, NameGen::makeRandomLanguage().makeName());
 				}
@@ -94,7 +99,7 @@ void MainWindow::render(bool *open) {
 						if (ImGui::TreeNode((name + " (" + std::to_string(area->size) + ")").c_str())) {
 							if (area->playerOwned)
 								ImGui::PopStyleColor();
-							ImGui::SameLine(1180.f);
+							ImGui::SameLine(1170.f);
 							if (ImGui::Button("M", {40.f, 0.f}))
 								context.pickResource([this, &area](const std::string &name) {
 									Keyboard::openForDouble([this, name, &area](double chosen) {

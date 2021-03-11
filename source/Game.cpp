@@ -114,6 +114,8 @@ Region::Position Game::suggestPosition(bool is_free, s64 x, s64 y) {
 }
 
 bool Game::updateName(Region &region, const std::string &new_name) {
+	if (new_name.find_first_of(Region::INVALID_CHARS) != std::string::npos)
+		throw std::invalid_argument("Invalid region name.");
 	region.name = new_name;
 	return true;
 }
