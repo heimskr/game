@@ -10,7 +10,7 @@ class MainWindow {
 		bool insert(std::shared_ptr<Area>, const std::string &, double);
 
 	public:
-		constexpr static int TAB_COUNT = 5;
+		constexpr static int TAB_COUNT = 6;
 		Context &context;
 		int selectedTab = 0;
 		int lastTab = 0;

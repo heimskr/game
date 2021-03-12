@@ -292,13 +292,13 @@ void MainWindow::render(bool *open) {
 							Keyboard::openForDouble([region](double chosen) {
 								region->greed = chosen;
 							}, "Region Greed");
-						ImGui::Text("Region money: ");
+						ImGui::Text("Region money:");
 						ImGui::SameLine();
 						if (ImGui::Selectable((std::to_string(region->money) + "##region_money").c_str()))
 							Keyboard::openForNumber([region](size_t chosen) {
 								region->money = chosen;
 							}, "Amount of Money");
-						ImGui::Text("Your money: ");
+						ImGui::Text("Your money:");
 						ImGui::SameLine();
 						if (ImGui::Selectable((std::to_string(context->money) + "##player_money").c_str()))
 							Keyboard::openForNumber([this](size_t chosen) {
@@ -433,6 +433,18 @@ void MainWindow::render(bool *open) {
 						ImGui::EndTable();
 					}
 				}
+			}
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Conversion", nullptr, selectedTab == 5? ImGuiTabItemFlags_SetSelected : 0)) {
+			lastTab = 5;
+			if (!context.game || !context.loaded) {
+				ImGui::Text("The void doesn't support conversion.");
+			} else if (context->processors.empty()) {
+				ImGui::Text("You have no processors.");
+			} else {
+				
 			}
 			ImGui::EndTabItem();
 		}
