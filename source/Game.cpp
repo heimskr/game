@@ -35,6 +35,8 @@ void Game::addResources() {
 	add(Resource(this, "Silicon").setBasePrice(0.5).addTypes("element", "chemical"));
 	add(Resource(this, "Oxygen").setBasePrice(0.1).addTypes("element", "chemical"));
 	add(Resource(this, "Carbon").setBasePrice(0.2).addTypes("element", "chemical"));
+	add(Resource(this, "Malic Acid").setBasePrice(1.0).addTypes("molecule", "chemical"));
+	add(Resource(this, "Hydrogen").setBasePrice(0.05).addTypes("element", "chemical"));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {
@@ -42,8 +44,8 @@ void Game::add(Processor::Type type, const Resource::Map &cost) {
 }
 
 void Game::addProcessorCosts() {
-	add(Processor::Type::Furnace, {{"iron", 100.}});
-	add(Processor::Type::Centrifuge, {{"iron", 200.}});
+	add(Processor::Type::Furnace, {{"Iron", 100.}});
+	add(Processor::Type::Centrifuge, {{"Iron", 200.}});
 }
 
 void Game::addAll() {
