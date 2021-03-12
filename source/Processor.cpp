@@ -32,7 +32,7 @@ Processor * Processor::ofType(Game &owner, Type type) {
 	}
 }
 
-double Processor::tick() {
+double Processor::tick(double delta) {
 	std::vector<const std::string *> to_remove;
 	to_remove.clear();
 	to_remove.reserve(input.size());
@@ -40,10 +40,10 @@ double Processor::tick() {
 
 	for (auto &[name, amount]: input) {
 		const Resource &resource = owner->resources.at(name);
-		if (resource.conversions.count(Type::Furnace) == 0)
+		if (resource.conversions.count(getType()) == 0)
 			continue;
-		const auto &conversion = resource.conversions.at(Type::Furnace);
-		const double to_convert = std::min(amount, conversion.rate);
+		const auto &conversion = resource.conversions.at(getType());
+		const double to_convert = std::min(amount, conversion.rate * delta);
 		if ((amount -= to_convert) < Resource::MIN_AMOUNT)
 			to_remove.push_back(&name);
 		out += to_convert;

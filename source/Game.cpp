@@ -236,6 +236,8 @@ void Game::tick(double delta) {
 				++iter;
 		}
 	}
+	for (auto &processor: processors)
+		processor->tick(delta);
 }
 
 void Game::loadDefaults() {

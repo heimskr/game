@@ -20,7 +20,7 @@ struct Processor {
 
 	virtual std::string toString() const;
 	/** Returns the amount processed. */
-	virtual double tick();
+	virtual double tick(double delta);
 	virtual Type getType() const = 0;
 	static Processor * fromString(Game &, const std::string &);
 	static Processor * ofType(Game &, Processor::Type);
