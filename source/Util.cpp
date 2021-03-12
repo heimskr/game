@@ -156,3 +156,8 @@ void shrink(Resource::Map &map) {
 	for (const std::string *name: to_remove)
 		map.erase(*name);
 }
+
+void shrink(Resource::Map &map, const std::string &key) {
+	if (map[key] < Resource::MIN_AMOUNT)
+		map.erase(key);
+}

@@ -470,9 +470,19 @@ void MainWindow::render(bool *open) {
 						ImGui::Text("%s", Processor::typeName(processor->getType()));
 						ImGui::SameLine();
 						if (ImGui::Button(("+##" + std::to_string(i)).c_str()))
-							context.pickInventory([this](const std::string &name) {
-								Keyboard::openForDouble([this, &name](double chosen) {
-									context.showMessage(std::to_string(chosen) + " x " + name);
+							context.pickInventory([this, &processor](const std::string &name) {
+								if (context->inventory.count(name) == 0) {
+									context.showMessage("You don't have any " + name + ".");
+									return;
+								}
+								Keyboard::openForDouble([this, &processor, &name](double chosen) {
+									if (context->inventory[name] < chosen) {
+										context.showMessage("You don't have enough " + name + ".");
+										return;
+									}
+									context->inventory[name] -= chosen;
+									shrink(context->inventory, name);
+									processor->input[name] += chosen;
 								}, "Resource Amount");
 							});
 						if (ImGui::IsItemHovered())

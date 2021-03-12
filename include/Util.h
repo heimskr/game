@@ -48,3 +48,4 @@ std::string stringify(const std::map<std::string, double> &);
 std::map<std::string, double> parseMap(const std::string &);
 bool contains(const std::map<std::string, double> &, const std::map<std::string, double> &);
 void shrink(std::map<std::string, double> &);
+void shrink(std::map<std::string, double> &, const std::string &);
