@@ -36,6 +36,7 @@ double Furnace::tick(double delta) {
 			const double to_convert = std::min(fuel, std::min(amount, conversion.rate * delta));
 			out += to_convert;
 			fuel -= to_convert;
+			amount -= to_convert;
 			output[conversion.outName] += to_convert * conversion.amount;
 			if (fuel < Resource::MIN_AMOUNT)
 				break;

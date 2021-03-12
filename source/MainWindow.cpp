@@ -334,7 +334,7 @@ void MainWindow::render(bool *open) {
 								ImGui::TableSetColumnIndex(0);
 								if (ImGui::Button(("S##" + name).c_str(), {40.f, 0.f})) {
 									Keyboard::openForDouble([&](double chosen) {
-										if (chosen < 0. || amount < chosen) {
+										if (chosen <= 0. || amount < chosen) {
 											context.showMessage("Error: Invalid amount.");
 										} else {
 											const double original_chosen = chosen;
@@ -476,13 +476,15 @@ void MainWindow::render(bool *open) {
 									return;
 								}
 								Keyboard::openForDouble([this, &processor, &name](double chosen) {
-									if (context->inventory[name] < chosen) {
+									if (chosen <= 0) {
+										context.showMessage("Invalid amount.");
+									} else if (context->inventory[name] < chosen) {
 										context.showMessage("You don't have enough " + name + ".");
-										return;
+									} else {
+										context->inventory[name] -= chosen;
+										shrink(context->inventory, name);
+										processor->input[name] += chosen;
 									}
-									context->inventory[name] -= chosen;
-									shrink(context->inventory, name);
-									processor->input[name] += chosen;
 								}, "Resource Amount");
 							});
 						if (ImGui::IsItemHovered())
@@ -514,10 +516,24 @@ void MainWindow::render(bool *open) {
 								ImGui::TableSetupColumn("Output Resource", ImGuiTableColumnFlags_WidthStretch);
 								ImGui::TableSetupColumn("Amount##output", ImGuiTableColumnFlags_WidthFixed, 300.f);
 								ImGui::TableHeadersRow();
-								for (const auto &[name, amount]: processor->output) {
+								u64 j = 0;
+								for (auto &[name, amount]: processor->output) {
 									ImGui::TableNextRow();
 									ImGui::TableSetColumnIndex(0);
-									ImGui::Text("%s", name.c_str());
+									if (ImGui::Selectable((name + "##outsel_" + std::to_string(++j)).c_str()))
+										Keyboard::openForDouble([this, &processor, &name, &amount](double chosen) {
+											if (chosen <= 0) {
+												context.showMessage("Invalid amount.");
+											} else if (amount < chosen) {
+												context.showMessage("There isn't enough of that resource.");
+											} else {
+												amount -= chosen;
+												context->inventory[name] += chosen;
+												context.frameActions.push_back([&processor, &name] {
+													shrink(processor->output, name);
+												});
+											}
+										}, "Amount to Remove");
 									ImGui::TableNextColumn();
 									ImGui::TableSetColumnIndex(1);
 									ImGui::Text("%.3f", amount);

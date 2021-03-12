@@ -41,6 +41,7 @@ double Processor::tick(double delta) {
 			const auto &conversion = resource.conversions.at(getType());
 			const double to_convert = std::min(amount, conversion.rate * delta);
 			out += to_convert;
+			amount -= to_convert;
 			output[conversion.outName] += to_convert * conversion.amount;
 		}
 	}
