@@ -50,3 +50,6 @@ bool contains(const std::map<std::string, double> &, const std::map<std::string,
 void shrink(std::map<std::string, double> &);
 void shrink(std::map<std::string, double> &, const std::string &);
 bool approx(double, double);
+bool lte(double, double);
+/** Less than and not approximate */
+bool ltna(double, double);

@@ -133,7 +133,7 @@ void MainWindow::render(bool *open) {
 									Keyboard::openForDouble([&](double chosen) {
 										if (amount <= 0)
 											context.showMessage("Invalid amount.");
-										else if (amount < chosen)
+										else if (ltna(amount, chosen))
 											context.showMessage("Not enough of that resource is available.");
 										else
 											context->extract(*area, rname, chosen);
@@ -266,7 +266,7 @@ void MainWindow::render(bool *open) {
 								double &amount = context->inventory[name];
 								if (chosen <= 0)
 									context.showMessage("Error: Invalid amount.");
-								else if (amount <= chosen)
+								else if (lte(amount, chosen))
 									to_erase.push_back(&name);
 								else
 									amount -= chosen;
@@ -349,7 +349,7 @@ void MainWindow::render(bool *open) {
 								ImGui::TableSetColumnIndex(0);
 								if (ImGui::Button(("S##" + name).c_str(), {40.f, 0.f})) {
 									Keyboard::openForDouble([&](double chosen) {
-										if (chosen <= 0. || amount < chosen) {
+										if (chosen <= 0. || ltna(amount, chosen)) {
 											context.showMessage("Error: Invalid amount.");
 										} else {
 											const double original_chosen = chosen;
@@ -418,7 +418,7 @@ void MainWindow::render(bool *open) {
 								ImGui::TableSetColumnIndex(3);
 								if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f})) {
 									Keyboard::openForDouble([&](double chosen) {
-										if (chosen < 0. || amount < chosen) {
+										if (chosen < 0. || ltna(amount, chosen)) {
 											context.showMessage("Error: Invalid amount.");
 										} else {
 											const double original_chosen = chosen;
@@ -493,7 +493,7 @@ void MainWindow::render(bool *open) {
 								Keyboard::openForDouble([this, &processor, &name](double chosen) {
 									if (chosen <= 0) {
 										context.showMessage("Invalid amount.");
-									} else if (context->inventory[name] < chosen) {
+									} else if (ltna(context->inventory[name], chosen)) {
 										context.showMessage("You don't have enough " + name + ".");
 									} else {
 										context->inventory[name] -= chosen;
@@ -539,7 +539,7 @@ void MainWindow::render(bool *open) {
 										Keyboard::openForDouble([this, &processor, &name, &amount](double chosen) {
 											if (chosen <= 0) {
 												context.showMessage("Invalid amount.");
-											} else if (amount < chosen) {
+											} else if (ltna(amount, chosen)) {
 												context.showMessage("There isn't enough of that resource.");
 											} else {
 												amount -= chosen;
@@ -586,7 +586,7 @@ bool MainWindow::insert(std::shared_ptr<Area> area, const std::string &resource_
 		}
 
 		double &in_inventory = context->inventory.at(resource_name);
-		if (in_inventory < amount) {
+		if (ltna(in_inventory, amount)) {
 			context.showMessage("Error: You don't have enough of that resource.");
 			return false;
 		}

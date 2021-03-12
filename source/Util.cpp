@@ -144,7 +144,7 @@ std::map<std::string, double> parseMap(const std::string &str) {
 
 bool contains(const std::map<std::string, double> &left, const std::map<std::string, double> &right) {
 	for (const auto &[name, amount]: right)
-		if (left.count(name) == 0 || left.at(name) < amount)
+		if (left.count(name) == 0 || ltna(left.at(name), amount))
 			return false;
 	return true;
 }
@@ -164,5 +164,13 @@ void shrink(Resource::Map &map, const std::string &key) {
 }
 
 bool approx(double left, double right) {
-	return std::fdim(left, right) < 0.000001;
+	return std::fabs(left - right) < 0.000001;
+}
+
+bool lte(double left, double right) {
+	return left <= right || approx(left, right);
+}
+
+bool ltna(double left, double right) {
+	return (left < right) && !approx(left, right);
 }
