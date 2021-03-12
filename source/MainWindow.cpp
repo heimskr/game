@@ -285,24 +285,25 @@ void MainWindow::render(bool *open) {
 				if (!housing) {
 					ImGui::Text((region->name + " has no market.").c_str());
 				} else {
-					ImGui::PushStyleColor(ImGuiCol_Text, {1.f, 1.f, 1.f, 0.5f});
-					ImGui::Text(("Greed: " + std::to_string(region->greed)).c_str());
-					ImGui::PopStyleColor();
 					if (context->cheatsEnabled) {
+						ImGui::Text("Greed:");
+						ImGui::SameLine();
+						if (ImGui::Selectable((std::to_string(region->greed) + "##region_greed").c_str()))
+							Keyboard::openForDouble([region](double chosen) {
+								region->greed = chosen;
+							}, "Region Greed");
 						ImGui::Text("Region money: ");
 						ImGui::SameLine();
-						if (ImGui::Selectable((std::to_string(region->money) + "##region_money").c_str())) {
+						if (ImGui::Selectable((std::to_string(region->money) + "##region_money").c_str()))
 							Keyboard::openForNumber([region](size_t chosen) {
 								region->money = chosen;
 							}, "Amount of Money");
-						}
 						ImGui::Text("Your money: ");
 						ImGui::SameLine();
-						if (ImGui::Selectable((std::to_string(context->money) + "##player_money").c_str())) {
+						if (ImGui::Selectable((std::to_string(context->money) + "##player_money").c_str()))
 							Keyboard::openForNumber([this](size_t chosen) {
 								context->money = chosen;
 							}, "Amount of Money");
-						}
 					} else {
 						ImGui::Text(("Region money: " + std::to_string(region->money)).c_str());
 						ImGui::Text(("Your money: " + std::to_string(context->money)).c_str());
