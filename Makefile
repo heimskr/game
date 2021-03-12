@@ -49,9 +49,9 @@ INCLUDES	:=	include libs/imgui
 ICON		:=	resources/tradegame.jpg
 #ROMFS	:=	romfs
 
-APP_TITLE	:= Trade Game
+APP_TITLE	:= Trader
 APP_AUTHOR	:= heimskr
-APP_VERSION	:= 0.0.1
+APP_VERSION	:= 0.1.0
 
 #---------------------------------------------------------------------------------
 # options for code generation

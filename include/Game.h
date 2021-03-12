@@ -15,6 +15,8 @@ class Game {
 	public:
 		bool ready = false;
 		std::map<std::string, Resource> resources;
+		std::map<Processor::Type, Resource::Map> processorCosts;
+
 		std::map<std::string, double> inventory;
 		std::map<Region::Position, std::unique_ptr<Region>> regions;
 		std::list<Extraction> extractions;
@@ -27,7 +29,8 @@ class Game {
 
 		void add(const Resource &);
 		void addResources();
-		void addResource(const std::string &);
+		void add(Processor::Type, const Resource::Map &);
+		void addProcessorCosts();
 		void addAll();
 		std::string randomResource(const Resource::Type &) const;
 

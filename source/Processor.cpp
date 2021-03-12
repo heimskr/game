@@ -7,6 +7,8 @@
 Processor::Processor(Game &owner_, const Resource::Map &input_, const Resource::Map &output_):
 	owner(&owner_), input(input_), output(output_) {}
 
+Processor::Processor(Game &owner_): Processor(owner_, {}, {}) {}
+
 std::string Processor::toString() const {
 	return std::to_string(static_cast<int>(getType())) + ":" + stringify(input) + ":" + stringify(output);
 }
@@ -43,4 +45,12 @@ double Processor::tick() {
 		input.erase(*name);
 
 	return out;
+}
+
+const char * Processor::typeName(Type type) {
+	switch (type) {
+		case Type::Furnace:    return "Furnace";
+		case Type::Centrifuge: return "Centrifuge";
+		default: return "?";
+	}
 }

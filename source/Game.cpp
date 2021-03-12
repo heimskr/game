@@ -10,6 +10,7 @@
 #include "Util.h"
 #include "Processor.h"
 #include "area/Areas.h"
+#include "processor/Processors.h"
 
 Game::Game() {
 	addAll();
@@ -36,9 +37,19 @@ void Game::addResources() {
 	add(Resource(this, "carbon").setBasePrice(0.2).addTypes("element"));
 }
 
+void Game::add(Processor::Type type, const Resource::Map &cost) {
+	processorCosts.emplace(type, cost);
+}
+
+void Game::addProcessorCosts() {
+	add(Processor::Type::Furnace, {{"iron", 100.}});
+	add(Processor::Type::Centrifuge, {{"iron", 200.}});
+}
+
 void Game::addAll() {
 	if (!ready) {
 		addResources();
+		addProcessorCosts();
 		ready = true;
 	}
 }
@@ -246,6 +257,7 @@ void Game::loadDefaults() {
 	home += mountain;
 	home += lake;
 	home += farmland;
+	processors.push_back(std::make_unique<Furnace>(*this));
 	Logger::info("Loaded default data.");
 }
 
