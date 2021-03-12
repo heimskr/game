@@ -14,9 +14,11 @@ double Centrifuge::tick(double delta) {
 			const std::pair<std::string, double> choice = recipes.at(name).choose();
 			// TODO: possibly allow centrifuge recipes to consume more than 1 of the resource per second
 			const double to_convert = std::min(amount, delta);
-			output[choice.first] += to_convert * choice.second;
 			amount -= to_convert;
-			out += to_convert;
+			if (!choice.first.empty()) {
+				output[choice.first] += to_convert * choice.second;
+				out += to_convert;
+			}
 		}
 
 	shrink(input);
