@@ -468,6 +468,15 @@ void MainWindow::render(bool *open) {
 					for (const std::unique_ptr<Processor> &processor: context->processors) {
 						++i;
 						ImGui::Text("%s", Processor::typeName(processor->getType()));
+						ImGui::SameLine();
+						if (ImGui::Button(("+##" + std::to_string(i)).c_str()))
+							context.pickInventory([this](const std::string &name) {
+								Keyboard::openForDouble([this, &name](double chosen) {
+									context.showMessage(std::to_string(chosen) + " x " + name);
+								}, "Resource Amount");
+							});
+						if (ImGui::IsItemHovered())
+							ImGui::SetTooltip("Add resource to processor");
 						if (ImGui::BeginTable(("Layout##" + std::to_string(i)).c_str(), 2)) {
 							const float width = ImGui::GetContentRegionMax().x / 2.f;
 							ImGui::TableSetupColumn("##input_table", ImGuiTableColumnFlags_WidthFixed, width);
@@ -478,6 +487,15 @@ void MainWindow::render(bool *open) {
 								ImGui::TableSetupColumn("Input Resource", ImGuiTableColumnFlags_WidthStretch);
 								ImGui::TableSetupColumn("Amount##input", ImGuiTableColumnFlags_WidthFixed, 300.f);
 								ImGui::TableHeadersRow();
+								for (const auto &[name, amount]: processor->input) {
+									ImGui::TableNextRow();
+									ImGui::TableSetColumnIndex(0);
+									ImGui::Text("%s", name.c_str());
+									ImGui::TableNextColumn();
+									ImGui::TableSetColumnIndex(1);
+									ImGui::Text("%.3f", amount);
+									ImGui::TableNextColumn();
+								}
 								ImGui::EndTable();
 							}
 							ImGui::TableNextColumn();
@@ -486,6 +504,15 @@ void MainWindow::render(bool *open) {
 								ImGui::TableSetupColumn("Output Resource", ImGuiTableColumnFlags_WidthStretch);
 								ImGui::TableSetupColumn("Amount##output", ImGuiTableColumnFlags_WidthFixed, 300.f);
 								ImGui::TableHeadersRow();
+								for (const auto &[name, amount]: processor->output) {
+									ImGui::TableNextRow();
+									ImGui::TableSetColumnIndex(0);
+									ImGui::Text("%s", name.c_str());
+									ImGui::TableNextColumn();
+									ImGui::TableSetColumnIndex(1);
+									ImGui::Text("%.3f", amount);
+									ImGui::TableNextColumn();
+								}
 								ImGui::EndTable();
 							}
 							ImGui::TableNextColumn();

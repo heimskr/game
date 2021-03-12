@@ -264,6 +264,37 @@ int main() {
 			}
 			if (!modal_open)
 				context.showProcessorTypePicker = false;
+		} else if (context.showInventoryPicker) {
+			constexpr float MODAL_WIDTH = 900.f, MODAL_HEIGHT = 300.f;
+			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Once);
+			ImGui::OpenPopup("Inventory Selector");
+			bool modal_open = true;
+			if (ImGui::BeginPopupModal("Inventory Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
+				if (ImGui::BeginTable("Inventory", 2)) {
+					ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthStretch);
+					ImGui::TableSetupColumn("Amount", ImGuiTableColumnFlags_WidthFixed, 300.f);
+					ImGui::TableHeadersRow();
+					for (const auto &[name, amount]: context->inventory) {
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						if (ImGui::Selectable(name.c_str())) {
+							context.onInventoryPicked(name);
+							context.showInventoryPicker = false;
+							ImGui::CloseCurrentPopup();
+							break;
+						}
+						ImGui::TableNextColumn();
+						ImGui::TableSetColumnIndex(1);
+						ImGui::Text("%.3f", amount);
+						ImGui::TableNextColumn();
+					}
+					ImGui::EndTable();
+				}
+				ImGui::EndPopup();
+			}
+			if (!modal_open)
+				context.showInventoryPicker = false;
 		} else {
 			constexpr float MODAL_HEIGHT = 250.f;
 			const float modalWidth = std::max(200.f, std::min(ImGui::CalcTextSize(context.message.c_str()).x + 20.f, 1200.f));
@@ -334,6 +365,11 @@ void Context::pickAreaType(std::function<void(Area::Type)> fn) {
 void Context::pickProcessorType(std::function<void(Processor::Type)> fn) {
 	showProcessorTypePicker = true;
 	onProcessorTypePicked = fn;
+}
+
+void Context::pickInventory(std::function<void(const std::string &)> fn) {
+	showInventoryPicker = true;
+	onInventoryPicked = fn;
 }
 
 void Context::confirm(const std::string &str, std::function<void(bool)> fn) {
