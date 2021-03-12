@@ -46,3 +46,5 @@ size_t randomRange(size_t min, size_t max);
 double randomRangeDouble(double min, double max);
 std::string stringify(const std::map<std::string, double> &);
 std::map<std::string, double> parseMap(const std::string &);
+bool contains(const std::map<std::string, double> &, const std::map<std::string, double> &);
+void shrink(std::map<std::string, double> &);

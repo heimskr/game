@@ -16,10 +16,19 @@ std::string Processor::toString() const {
 Processor * Processor::fromString(Game &owner, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);
 	Resource::Map input(parseMap(pieces[1])), output(parseMap(pieces[2]));
-	switch (static_cast<Type>(parseLong(pieces[0]))) {
+	const Type type = static_cast<Type>(parseLong(pieces[0]));
+	switch (type) {
 		case Type::Furnace:    return new Furnace(owner, std::move(input), std::move(output));
 		case Type::Centrifuge: return new Centrifuge(owner, std::move(input), std::move(output));
-		default: return nullptr;
+		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
+	}
+}
+
+Processor * Processor::ofType(Game &owner, Type type) {
+	switch (type) {
+		case Type::Furnace:    return new Furnace(owner);
+		case Type::Centrifuge: return new Centrifuge(owner);
+		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }
 

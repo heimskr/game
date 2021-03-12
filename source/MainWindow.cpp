@@ -444,13 +444,54 @@ void MainWindow::render(bool *open) {
 			} else  {
 				if (ImGui::Button("Add Processor"))
 					context.pickProcessorType([this](Processor::Type type) {
-						context.showMessage("You picked " + std::string(Processor::typeName(type)));
+						if (context->processorCosts.count(type) == 0) {
+							context.showMessage("There is no recipe for " + std::string(Processor::typeName(type))
+								+ " processors.");
+							return;
+						}
+						const Resource::Map &cost = context->processorCosts.at(type);
+						if (!contains(context->inventory, cost)) {
+							context.showMessage("You don't have enough resources to make that.");
+							return;
+						}
+						for (const auto &[name, amount]: cost)
+							context->inventory[name] -= amount;
+						shrink(context->inventory);
+						context->processors.push_back(std::unique_ptr<Processor>(Processor::ofType(*context.game, type)));
+						context.showMessage("Added a new " + std::string(Processor::typeName(type)) + ".");
 					});
 
 				if (context->processors.empty()) {
 					ImGui::Text("You have no processors.");
 				} else {
-
+					u64 i = 0;
+					for (const std::unique_ptr<Processor> &processor: context->processors) {
+						++i;
+						ImGui::Text("%s", Processor::typeName(processor->getType()));
+						if (ImGui::BeginTable(("Layout##" + std::to_string(i)).c_str(), 2)) {
+							const float width = ImGui::GetContentRegionMax().x / 2.f;
+							ImGui::TableSetupColumn("##input_table", ImGuiTableColumnFlags_WidthFixed, width);
+							ImGui::TableSetupColumn("##output_table", ImGuiTableColumnFlags_WidthFixed, width);
+							ImGui::TableNextRow();
+							ImGui::TableSetColumnIndex(0);
+							if (ImGui::BeginTable(("##input" + std::to_string(++i)).c_str(), 2)) {
+								ImGui::TableSetupColumn("Input Resource", ImGuiTableColumnFlags_WidthStretch);
+								ImGui::TableSetupColumn("Amount##input", ImGuiTableColumnFlags_WidthFixed, 300.f);
+								ImGui::TableHeadersRow();
+								ImGui::EndTable();
+							}
+							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(1);
+							if (ImGui::BeginTable(("##output" + std::to_string(++i)).c_str(), 2)) {
+								ImGui::TableSetupColumn("Output Resource", ImGuiTableColumnFlags_WidthStretch);
+								ImGui::TableSetupColumn("Amount##output", ImGuiTableColumnFlags_WidthFixed, 300.f);
+								ImGui::TableHeadersRow();
+								ImGui::EndTable();
+							}
+							ImGui::TableNextColumn();
+							ImGui::EndTable();
+						}
+					}
 				}
 			}
 			ImGui::EndTabItem();

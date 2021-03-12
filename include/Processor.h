@@ -23,5 +23,6 @@ struct Processor {
 	virtual double tick();
 	virtual Type getType() const = 0;
 	static Processor * fromString(Game &, const std::string &);
+	static Processor * ofType(Game &, Processor::Type);
 	static const char * typeName(Type);
 };

@@ -1,6 +1,7 @@
+#include <list>
 #include <stdexcept>
-#include <vector>
 
+#include "Resource.h"
 #include "Util.h"
 
 PrintConsole *console = nullptr;
@@ -138,4 +139,20 @@ std::map<std::string, double> parseMap(const std::string &str) {
 	for (size_t i = 0, max = pieces.size(); i < max; i += 2)
 		out.emplace(pieces[i], parseDouble(pieces[i + 1]));
 	return out;
+}
+
+bool contains(const std::map<std::string, double> &left, const std::map<std::string, double> &right) {
+	for (const auto &[name, amount]: right)
+		if (left.count(name) == 0 || left.at(name) < amount)
+			return false;
+	return true;
+}
+
+void shrink(Resource::Map &map) {
+	std::list<const std::string *> to_remove;
+	for (const auto &[name, amount]: map)
+		if (amount < Resource::MIN_AMOUNT)
+			to_remove.push_back(&name);
+	for (const std::string *name: to_remove)
+		map.erase(*name);
 }
