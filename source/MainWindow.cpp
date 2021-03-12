@@ -482,6 +482,7 @@ void MainWindow::render(bool *open) {
 					u64 i = 0;
 					for (const std::unique_ptr<Processor> &processor: context->processors) {
 						++i;
+						ImGui::Dummy({0.f, 20.f});
 						ImGui::Text("%s", Processor::typeName(processor->getType()));
 						ImGui::SameLine();
 						if (ImGui::Button(("+##" + std::to_string(i)).c_str()))
