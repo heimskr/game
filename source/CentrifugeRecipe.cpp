@@ -6,8 +6,8 @@
 CentrifugeOutput::CentrifugeOutput(const std::string &name_, double amount_, double chance_):
 	name(name_), amount(amount_), chance(chance_) {}
 
-CentrifugeRecipe::CentrifugeRecipe(const std::string &input_resource, const std::list<CentrifugeOutput> &outputs_):
-	inputResource(input_resource), outputs(outputs_), probabilitySum(getSum(outputs_)) {}
+CentrifugeRecipe::CentrifugeRecipe(const std::list<CentrifugeOutput> &outputs_):
+	outputs(outputs_), probabilitySum(getSum(outputs_)) {}
 
 std::pair<std::string, double> CentrifugeRecipe::choose() const {
 	if (outputs.empty())

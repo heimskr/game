@@ -13,11 +13,10 @@ struct CentrifugeOutput {
 
 class CentrifugeRecipe {
 	public:
-		std::string inputResource;
 		const std::list<CentrifugeOutput> outputs;
 		const double probabilitySum;
 
-		CentrifugeRecipe(const std::string &input_resource, const std::list<CentrifugeOutput> &outputs_);
+		CentrifugeRecipe(const std::list<CentrifugeOutput> &outputs_);
 
 		// double probabilitySum() const;
 		std::pair<std::string, double> choose() const;
