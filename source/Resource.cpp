@@ -4,8 +4,8 @@
 Resource::Resource(Game *owner_, const std::string &name_): owner(owner_), name(name_) {}
 Resource::Resource(Game *owner_, const char *name_): owner(owner_), name(name_) {}
 
-Resource & Resource::add(const std::string &name_, const Conversion &conversion) {
-	conversions.emplace(name_, conversion);
+Resource & Resource::add(Processor::Type type, const Conversion &conversion) {
+	conversions.emplace(type, conversion);
 	return *this;
 }
 

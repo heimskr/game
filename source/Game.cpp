@@ -20,10 +20,10 @@ void Game::add(const Resource &resource) {
 
 void Game::addResources() {
 	add(Resource(this, "charcoal").setBasePrice(1.5).addTypes("fuel"));
-	add(Resource(this, "coal").setBasePrice(2.).addTypes("fuel").setDefaultExtractionRate(0.1));
-	add(Resource(this, "wood").setBasePrice(1.).addTypes("fuel", "natural").add("charcoal", {1, {"furnace"}}));
+	add(Resource(this, "coal").setBasePrice(2.).addTypes("fuel").setDefaultExtractionRate(0.2));
+	add(Resource(this, "wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "charcoal"}));
 	add(Resource(this, "water").setBasePrice(0.05).addTypes("liquid"));
-	add(Resource(this, "ironOre").setBasePrice(2.).addTypes("ore", "iron").add("iron", {0.5, {"furnace"}}).setDefaultExtractionRate(0.1));
+	add(Resource(this, "ironOre").setBasePrice(2.).addTypes("ore", "iron").add(Processor::Type::Furnace, {0.5, "iron"}).setDefaultExtractionRate(0.2));
 	add(Resource(this, "iron").setBasePrice(3.).addTypes("metal", "iron"));
 	add(Resource(this, "human").setBasePrice(9999.).addTypes("alive", "sapient"));
 	add(Resource(this, "apple").setBasePrice(0.5).addTypes("farmable", "food"));

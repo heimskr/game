@@ -2,5 +2,5 @@
 
 struct Furnace: public Processor {
 	using Processor::Processor;
-	void tick() override;
+	Type getType() const override { return Type::Furnace; }
 };

@@ -1,19 +1,22 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 
-#include "Resource.h"
+class Game;
 
+// TODO: probably not make subclasses of this
 struct Processor {
 	enum class Type {Furnace, Centrifuge};
 
-	Type type;
-	Resource::Map input, output;
+	Game *owner;
+	std::map<std::string, double> input, output;
 
-	Processor(Type type_, const Resource::Map &input_, const Resource::Map &output_);
+	Processor(Game *owner_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_);
 
 	virtual std::string toString() const;
-	virtual void tick() = 0;
-	static Processor * fromString(const std::string &);
+	virtual void tick();
+	virtual Type getType() const = 0;
+	static Processor * fromString(Game *, const std::string &);
 };

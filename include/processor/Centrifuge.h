@@ -2,5 +2,5 @@
 
 struct Centrifuge: public Processor {
 	using Processor::Processor;
-	void tick() override;
+	Type getType() const override { return Type::Centrifuge; }
 };

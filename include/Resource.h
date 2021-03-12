@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Processor.h"
+
 class Game;
 
 class Resource {
@@ -18,16 +20,17 @@ class Resource {
 
 		struct Conversion {
 			double amount; // From converting 1 unit of the source resource
-			std::vector<std::string> tags; // Conversion is valid if the converter has any of these tags.
+			double rate;   // Amount of source resource converted per second
+			std::string outName;
 			Conversion() = delete;
-			Conversion(double amount_): amount(amount_) {}
-			Conversion(double amount_, const std::vector<std::string> &tags_): amount(amount_), tags(tags_) {}
+			Conversion(double amount_, const std::string &out_name, double rate_ = 1.):
+				amount(amount_), rate(rate_), outName(out_name) {}
 		};
 
 		Game *owner;
 		std::string name;
 		std::set<Type> types;
-		std::unordered_multimap<std::string, Conversion> conversions;
+		std::unordered_map<Processor::Type, Conversion> conversions;
 		bool discrete = false;
 		double defaultExtractionRate = 1.0;
 		double basePrice = 1.0;
@@ -41,7 +44,7 @@ class Resource {
 			return *this;
 		}
 
-		Resource & add(const std::string &, const Conversion &);
+		Resource & add(Processor::Type, const Conversion &);
 
 		bool hasType(const Type &) const;
 		static bool hasType(Game &, const std::string &, const Type &);
