@@ -244,6 +244,7 @@ void Game::loadDefaults() {
 	regions.clear();
 	Region &home = *regions.insert({{0, 0}, std::make_unique<Region>(this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
 	home.greed = 0.25;
+	home.money = 10'000;
 	auto forest = std::make_shared<ForestArea>(&home, 32);
 	auto housing = std::make_shared<HousingArea>(&home, 20);
 	auto mountain = std::make_shared<MountainArea>(&home, 48);
