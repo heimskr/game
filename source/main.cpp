@@ -266,7 +266,7 @@ int main() {
 				context.showProcessorTypePicker = false;
 		} else {
 			constexpr float MODAL_HEIGHT = 250.f;
-			const float modalWidth = ImGui::CalcTextSize(context.message.c_str()).x + 20.f;
+			const float modalWidth = std::max(200.f, std::min(ImGui::CalcTextSize(context.message.c_str()).x + 20.f, 1200.f));
 
 			ImGui::SetNextWindowPos(ImVec2((1280.f - modalWidth) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
 			ImGui::SetNextWindowSize(ImVec2(modalWidth, MODAL_HEIGHT), ImGuiCond_Always);
