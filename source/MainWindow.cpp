@@ -257,6 +257,8 @@ void MainWindow::render(bool *open) {
 							else
 								amount -= chosen;
 						}, "Amount to Discard");
+					if (ImGui::IsItemHovered())
+						ImGui::SetTooltip("Discard resource");
 					ImGui::TableNextColumn();
 					ImGui::TableSetColumnIndex(1);
 					ImGui::Text("%s", name.c_str());
