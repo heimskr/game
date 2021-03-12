@@ -3,8 +3,9 @@
 #include "Game.h"
 
 MountainArea::MountainArea(Region *region, size_t size): Area(region, size) {
-	resources.emplace("ironOre", static_cast<double>(size) * IRON_MAX);
-	resources.emplace("coal", static_cast<double>(size) * COAL_MAX);
+	resources.emplace("Iron Ore", static_cast<double>(size) * IRON_MAX);
+	resources.emplace("Coal", static_cast<double>(size) * COAL_MAX);
+	resources.emplace("Stone", static_cast<double>(size) * STONE_MAX);
 }
 
 std::string MountainArea::description() const {
@@ -12,8 +13,10 @@ std::string MountainArea::description() const {
 }
 
 void MountainArea::tick(double delta) {
-	if ((resources["coal"] += static_cast<double>(size) * 0.002 * delta) > static_cast<double>(size) * COAL_MAX)
-		 resources["coal"]  = static_cast<double>(size) * COAL_MAX;
-	if ((resources["ironOre"] += static_cast<double>(size) * 0.002 * delta) > static_cast<double>(size) * IRON_MAX)
-		 resources["ironOre"]  = static_cast<double>(size) * IRON_MAX;
+	if ((resources["Coal"] += static_cast<double>(size) * 0.001 * delta) > static_cast<double>(size) * COAL_MAX)
+		 resources["Coal"]  = static_cast<double>(size) * COAL_MAX;
+	if ((resources["Iron Ore"] += static_cast<double>(size) * 0.001 * delta) > static_cast<double>(size) * IRON_MAX)
+		 resources["Iron Ore"]  = static_cast<double>(size) * IRON_MAX;
+	if ((resources["Stone"] += static_cast<double>(size) * 0.001 * delta) > static_cast<double>(size) * STONE_MAX)
+		 resources["Stone"]  = static_cast<double>(size) * STONE_MAX;
 }

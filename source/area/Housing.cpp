@@ -3,7 +3,7 @@
 #include "Game.h"
 
 HousingArea::HousingArea(Region *region, size_t size): Area(region, size) {
-	resources.emplace("human", static_cast<double>(size / 4));
+	resources.emplace("Human", static_cast<double>(size / 4));
 }
 
 std::string HousingArea::description() const {
@@ -11,7 +11,7 @@ std::string HousingArea::description() const {
 }
 
 void HousingArea::tick(double delta) {
-	double &humans = resources["human"];
+	double &humans = resources["Human"];
 	if (2.0 <= humans)
 		if ((humans += humans * .002 * delta) > static_cast<double>(size))
 			humans = static_cast<double>(size);

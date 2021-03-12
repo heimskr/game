@@ -21,20 +21,20 @@ void Game::add(const Resource &resource) {
 }
 
 void Game::addResources() {
-	add(Resource(this, "charcoal").setBasePrice(1.5).addTypes("fuel"));
-	add(Resource(this, "coal").setBasePrice(2.).addTypes("fuel").setDefaultExtractionRate(0.2));
-	add(Resource(this, "wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "charcoal"}));
-	add(Resource(this, "water").setBasePrice(0.05).addTypes("liquid"));
-	add(Resource(this, "ironOre").setBasePrice(2.).addTypes("ore", "iron").add(Processor::Type::Furnace, {0.5, "iron"}).setDefaultExtractionRate(0.2));
-	add(Resource(this, "iron").setBasePrice(3.).addTypes("metal", "iron"));
-	add(Resource(this, "human").setBasePrice(9999.).addTypes("alive", "sapient"));
-	add(Resource(this, "apple").setBasePrice(0.5).addTypes("farmable", "food"));
-	add(Resource(this, "wheat").setBasePrice(0.5).addTypes("farmable"));
-	add(Resource(this, "honey").setBasePrice(0.75).addTypes("farmable", "Food"));
-	add(Resource(this, "stone").setBasePrice(0.1));
-	add(Resource(this, "silicon").setBasePrice(0.5).addTypes("element"));
-	add(Resource(this, "oxygen").setBasePrice(0.1).addTypes("element"));
-	add(Resource(this, "carbon").setBasePrice(0.2).addTypes("element"));
+	add(Resource(this, "Charcoal").setBasePrice(1.5).addTypes("fuel"));
+	add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel").setDefaultExtractionRate(0.5));
+	add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "Charcoal"}));
+	add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid"));
+	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
+	add(Resource(this, "Iron").setBasePrice(3.).addTypes("metal", "iron"));
+	add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
+	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food"));
+	add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
+	add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "Food"));
+	add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5));
+	add(Resource(this, "Silicon").setBasePrice(0.5).addTypes("element", "chemical"));
+	add(Resource(this, "Oxygen").setBasePrice(0.1).addTypes("element", "chemical"));
+	add(Resource(this, "Carbon").setBasePrice(0.2).addTypes("element", "chemical"));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {
