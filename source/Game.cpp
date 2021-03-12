@@ -8,6 +8,7 @@
 #include "Keyboard.h"
 #include "NameGen.h"
 #include "Util.h"
+#include "Processor.h"
 #include "area/Areas.h"
 
 Game::Game() {
@@ -270,12 +271,15 @@ std::string Game::toString() const {
 	out << "\n[Extractions]\n";
 	for (const Extraction &extraction: extractions)
 		out << extraction.toString() << "\n";
+	out << "\n[Processors]\n";
+	for (const std::unique_ptr<Processor> &processor: processors)
+		out << processor->toString() << "\n";
 	return out.str();
 }
 
 std::shared_ptr<Game> Game::fromString(const std::string &str) {
 	std::vector<std::string> lines = split(str, "\n", true);
-	enum class Mode {None, Regions, Inventory, Position, Extractions};
+	enum class Mode {None, Regions, Inventory, Position, Extractions, Processors};
 	Mode mode = Mode::None;
 
 	std::shared_ptr<Game> out = std::make_shared<Game>();
@@ -294,6 +298,8 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				mode = Mode::Position;
 			else if (line == "[Extractions]")
 				mode = Mode::Extractions;
+			else if (line == "[Processors]")
+				mode = Mode::Processors;
 			else {
 				Logger::error("Invalid line: \"%s\"", line.c_str());
 				for (char ch: line)
@@ -326,10 +332,12 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 					out->position = {parseLong(line.substr(0, comma)), parseLong(line.substr(comma + 1))};
 					break;
 				}
-				case Mode::Extractions: {
+				case Mode::Extractions:
 					out->extractions.push_back(Extraction::fromString(*out, line));
 					break;
-				}
+				case Mode::Processors:
+					out->processors.push_back(std::unique_ptr<Processor>(Processor::fromString(*out, line)));
+					break;
 				default: throw std::runtime_error("Invalid mode: " + std::to_string(static_cast<int>(mode)));
 			}
 		}

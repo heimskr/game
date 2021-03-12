@@ -13,10 +13,11 @@ struct Processor {
 	Game *owner;
 	std::map<std::string, double> input, output;
 
-	Processor(Game *owner_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_);
+	Processor(Game &owner_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_);
 
 	virtual std::string toString() const;
-	virtual void tick();
+	/** Returns the amount processed. */
+	virtual double tick();
 	virtual Type getType() const = 0;
-	static Processor * fromString(Game *, const std::string &);
+	static Processor * fromString(Game &, const std::string &);
 };

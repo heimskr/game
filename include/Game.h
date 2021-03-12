@@ -9,6 +9,8 @@
 #include "Resource.h"
 #include "Util.h"
 
+class Processor;
+
 class Game {
 	public:
 		bool ready = false;
@@ -16,6 +18,7 @@ class Game {
 		std::map<std::string, double> inventory;
 		std::map<Region::Position, std::unique_ptr<Region>> regions;
 		std::list<Extraction> extractions;
+		std::list<std::unique_ptr<Processor>> processors;
 		Region::Position position;
 		size_t money = 0;
 		bool cheatsEnabled = false;
