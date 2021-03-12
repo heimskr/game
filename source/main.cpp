@@ -265,12 +265,15 @@ int main() {
 			if (!modal_open)
 				context.showProcessorTypePicker = false;
 		} else {
-			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 250.f;
-			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
-			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Always);
+			constexpr float MODAL_HEIGHT = 250.f;
+			const float modalWidth = ImGui::CalcTextSize(context.message.c_str()).x + 20.f;
+
+			ImGui::SetNextWindowPos(ImVec2((1280.f - modalWidth) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
+			ImGui::SetNextWindowSize(ImVec2(modalWidth, MODAL_HEIGHT), ImGuiCond_Always);
 			if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
 				ImVec2 max = ImGui::GetContentRegionMax();
-				ImGui::BeginChild("message contents", {max.x, max.y - 80.f}, false, ImGuiWindowFlags_HorizontalScrollbar);
+				const float child_x = max.x - ImGui::GetStyle().WindowPadding.x;
+				ImGui::BeginChild("message contents", {child_x, max.y - 80.f}, false, ImGuiWindowFlags_HorizontalScrollbar);
 				ImGui::Text("%s", context.message.c_str());
 				ImGui::EndChild();
 				if (context.isConfirm) {
