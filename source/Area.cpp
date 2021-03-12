@@ -79,10 +79,6 @@ std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 	const size_t size = parseLong(pieces[1]);
 	const bool player_owned = pieces[2] == "1";
 	const Type type = static_cast<Type>(parseLong(pieces[3]));
-	Resource::Map resources;
-	const std::vector<std::string> by_slash = split(pieces[4], "/", false);
-	for (size_t i = 0; i < by_slash.size(); i += 2)
-		resources.emplace(by_slash[i], parseDouble(by_slash[i + 1]));
 	std::shared_ptr<Area> area;
 	switch (type) {
 		case Type::Housing:  area = std::make_shared<HousingArea>(&region);  break;
@@ -93,6 +89,6 @@ std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 		case Type::Farmland: area = std::make_shared<FarmlandArea>(&region, 0, pieces[5]); break;
 		default: throw std::invalid_argument("Unknown Area type: " + std::to_string(static_cast<unsigned>(type)));
 	}
-	area->setName(name).setSize(size).setPlayerOwned(player_owned).setResources(resources);
+	area->setName(name).setSize(size).setPlayerOwned(player_owned).setResources(parseMap(pieces[4]));
 	return area;
 }

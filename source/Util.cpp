@@ -118,3 +118,24 @@ double randomRangeDouble(double min, double max) {
 		return min;
 	return min + static_cast<double>(rand()) / RAND_MAX * (max - min);
 }
+
+std::string stringify(const std::map<std::string, double> &map) {
+	std::stringstream out;
+	bool first = true;
+	for (const auto &[name, amount]: map) {
+		if (first)
+			first = false;
+		else
+			out << "/";
+		out << name << "/" << amount;
+	}
+	return out.str();
+}
+
+std::map<std::string, double> parseMap(const std::string &str) {
+	const std::vector<std::string> pieces = split(str, "/", false);
+	std::map<std::string, double> out;
+	for (size_t i = 0, max = pieces.size(); i < max; i += 2)
+		out.emplace(pieces[i], parseDouble(pieces[i + 1]));
+	return out;
+}
