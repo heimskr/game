@@ -238,7 +238,7 @@ void MainWindow::render(bool *open) {
 				ImGui::Text("No game is loaded.");
 			} else {
 				if (context->cheatsEnabled) {
-					if (ImGui::Button("+##add_resource"))
+					if (ImGui::Button("+##add_resource", {40.f, 0.f}))
 						context.pickResource([this](const std::string &name) {
 							Keyboard::openForDouble([this, &name](double chosen) {
 								if (chosen <= 0.)
