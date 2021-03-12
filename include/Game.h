@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "Extraction.h"
+#include "RecipeManager.h"
 #include "Region.h"
 #include "Resource.h"
 #include "Util.h"
@@ -16,6 +17,7 @@ class Game {
 		bool ready = false;
 		std::map<std::string, Resource> resources;
 		std::map<Processor::Type, Resource::Map> processorCosts;
+		RecipeManager recipes = {*this};
 
 		std::map<std::string, double> inventory;
 		std::map<Region::Position, std::unique_ptr<Region>> regions;

@@ -1,3 +1,4 @@
+#include <cmath>
 #include <list>
 #include <stdexcept>
 
@@ -160,4 +161,8 @@ void shrink(Resource::Map &map) {
 void shrink(Resource::Map &map, const std::string &key) {
 	if (map[key] < Resource::MIN_AMOUNT)
 		map.erase(key);
+}
+
+bool approx(double left, double right) {
+	return std::fdim(left, right) < 0.000001;
 }
