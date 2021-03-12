@@ -246,6 +246,24 @@ int main() {
 			}
 			if (!modal_open)
 				context.showResourcePicker = false;
+		} else if (context.showProcessorTypePicker) {
+			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 300.f;
+			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Once);
+			ImGui::OpenPopup("Processor Type Selector");
+			bool modal_open = true;
+			if (ImGui::BeginPopupModal("Processor Type Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
+				for (Processor::Type type: Processor::TYPES)
+					if (ImGui::Selectable(Processor::typeName(type))) {
+						context.onProcessorTypePicked(type);
+						context.showProcessorTypePicker = false;
+						ImGui::CloseCurrentPopup();
+						break;
+					}
+				ImGui::EndPopup();
+			}
+			if (!modal_open)
+				context.showProcessorTypePicker = false;
 		} else {
 			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 250.f;
 			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
@@ -308,6 +326,11 @@ void Context::pickResource(std::function<void(const std::string &)> fn) {
 void Context::pickAreaType(std::function<void(Area::Type)> fn) {
 	showAreaTypePicker = true;
 	onAreaTypePicked = fn;
+}
+
+void Context::pickProcessorType(std::function<void(Processor::Type)> fn) {
+	showProcessorTypePicker = true;
+	onProcessorTypePicked = fn;
 }
 
 void Context::confirm(const std::string &str, std::function<void(bool)> fn) {

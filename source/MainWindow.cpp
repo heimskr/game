@@ -441,10 +441,17 @@ void MainWindow::render(bool *open) {
 			lastTab = 5;
 			if (!context.game || !context.loaded) {
 				ImGui::Text("The void doesn't support conversion.");
-			} else if (context->processors.empty()) {
-				ImGui::Text("You have no processors.");
-			} else {
-				
+			} else  {
+				if (ImGui::Button("Add Processor"))
+					context.pickProcessorType([this](Processor::Type type) {
+						context.showMessage("You picked " + std::string(Processor::typeName(type)));
+					});
+
+				if (context->processors.empty()) {
+					ImGui::Text("You have no processors.");
+				} else {
+
+				}
 			}
 			ImGui::EndTabItem();
 		}

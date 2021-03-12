@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Area.h"
+#include "Processor.h"
 
 class Game;
 
@@ -20,8 +21,10 @@ class Context {
 
 		bool showResourcePicker = false;
 		bool showAreaTypePicker = false;
+		bool showProcessorTypePicker = false;
 		std::function<void(const std::string &)> onResourcePicked = [](const std::string &) {};
 		std::function<void(Area::Type)> onAreaTypePicked = [](Area::Type) {};
+		std::function<void(Processor::Type)> onProcessorTypePicked = [](Processor::Type) {};
 
 		std::string message;
 		bool isConfirm = false;
@@ -33,6 +36,7 @@ class Context {
 
 		void pickResource(std::function<void(const std::string &)>);
 		void pickAreaType(std::function<void(Area::Type)>);
+		void pickProcessorType(std::function<void(Processor::Type)>);
 		void confirm(const std::string &, std::function<void(bool)>);
 		void showMessage(const std::string &);
 
