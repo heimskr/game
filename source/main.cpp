@@ -221,27 +221,13 @@ int main() {
 			ImGui::OpenPopup("Resource Selector");
 			bool modal_open = true;
 			if (ImGui::BeginPopupModal("Resource Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
-				const float width = ImGui::GetContentRegionMax().x;
-				if (ImGui::BeginTable("Resources", 2)) {
-					ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthFixed, 200.f);
-					ImGui::TableSetupColumn("Amount",   ImGuiTableColumnFlags_WidthFixed, width - 200.f);
-					ImGui::TableHeadersRow();
-					for (const auto &[name, amount]: context->inventory) {
-						ImGui::TableNextRow();
-						ImGui::TableSetColumnIndex(0);
-						if (ImGui::Selectable(name.c_str())) {
-							context.onResourcePicked(name);
-							context.showResourcePicker = false;
-							ImGui::CloseCurrentPopup();
-							break;
-						}
-						ImGui::TableNextColumn();
-						ImGui::TableSetColumnIndex(1);
-						ImGui::Text("%.2f", amount);
-						ImGui::TableNextColumn();
+				for (const auto &[name, resource]: context->resources)
+					if (ImGui::Selectable(name.c_str())) {
+						context.onResourcePicked(name);
+						context.showResourcePicker = false;
+						ImGui::CloseCurrentPopup();
+						break;
 					}
-					ImGui::EndTable();
-				}
 				ImGui::EndPopup();
 			}
 			if (!modal_open)
