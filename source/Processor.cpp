@@ -18,7 +18,7 @@ Processor * Processor::fromString(Game &owner, const std::string &str) {
 	Resource::Map input(parseMap(pieces[1])), output(parseMap(pieces[2]));
 	const Type type = static_cast<Type>(parseLong(pieces[0]));
 	switch (type) {
-		case Type::Furnace:    return new Furnace(owner, std::move(input), std::move(output));
+		case Type::Furnace:    return new Furnace(owner, parseDouble(pieces[3]), std::move(input), std::move(output));
 		case Type::Centrifuge: return new Centrifuge(owner, std::move(input), std::move(output));
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
@@ -33,26 +33,19 @@ Processor * Processor::ofType(Game &owner, Type type) {
 }
 
 double Processor::tick(double delta) {
-	std::vector<const std::string *> to_remove;
-	to_remove.clear();
-	to_remove.reserve(input.size());
 	double out = 0.;
 
 	for (auto &[name, amount]: input) {
 		const Resource &resource = owner->resources.at(name);
-		if (resource.conversions.count(getType()) == 0)
-			continue;
-		const auto &conversion = resource.conversions.at(getType());
-		const double to_convert = std::min(amount, conversion.rate * delta);
-		if ((amount -= to_convert) < Resource::MIN_AMOUNT)
-			to_remove.push_back(&name);
-		out += to_convert;
-		output[conversion.outName] += to_convert * conversion.amount;
+		if (resource.conversions.count(getType()) != 0) {
+			const auto &conversion = resource.conversions.at(getType());
+			const double to_convert = std::min(amount, conversion.rate * delta);
+			out += to_convert;
+			output[conversion.outName] += to_convert * conversion.amount;
+		}
 	}
 
-	for (const std::string *name: to_remove)
-		input.erase(*name);
-
+	shrink(input);
 	return out;
 }
 

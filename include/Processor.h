@@ -7,7 +7,6 @@
 
 class Game;
 
-// TODO: probably not make subclasses of this
 struct Processor {
 	enum class Type {Furnace, Centrifuge};
 	static constexpr auto TYPES = std::array {Type::Furnace, Type::Centrifuge};
