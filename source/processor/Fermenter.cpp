@@ -4,10 +4,10 @@
 #include "Resource.h"
 #include "processor/Fermenter.h"
 
-Fermenter::Fermenter(Game &owner_, double yeast_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract):
-	Processor(owner_, input_, output_, auto_extract), yeast(yeast_) {}
+Fermenter::Fermenter(Game &game_, double yeast_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract):
+	Processor(game_, input_, output_, auto_extract), yeast(yeast_) {}
 
-Fermenter::Fermenter(Game &owner_): Processor(owner_) {}
+Fermenter::Fermenter(Game &game_): Processor(game_) {}
 
 std::string Fermenter::toString() const {
 	return Processor::toString() + ":" + std::to_string(yeast);
@@ -27,7 +27,7 @@ double Fermenter::tick(double delta) {
 		yeast = 0.;
 	} else {
 		for (auto &[name, amount]: input) {
-			const Resource &resource = owner->resources.at(name);
+			const Resource &resource = game->resources.at(name);
 			if (resource.conversions.count(getType()) == 0)
 				continue;
 			const auto &conversion = resource.conversions.at(getType());

@@ -12,7 +12,7 @@ struct Processor {
 	enum class Type {Furnace, Centrifuge, Fermenter};
 	static constexpr auto TYPES = std::array {Type::Furnace, Type::Centrifuge, Type::Fermenter};
 
-	Game *owner;
+	Game *game;
 	std::map<std::string, double> input, output;
 	bool autoExtract = false;
 

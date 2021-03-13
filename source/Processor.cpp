@@ -7,10 +7,10 @@
 #include "Keyboard.h"
 #include "imgui.h"
 
-Processor::Processor(Game &owner_, const Resource::Map &input_, const Resource::Map &output_, bool auto_extract):
-	owner(&owner_), input(input_), output(output_), autoExtract(auto_extract) {}
+Processor::Processor(Game &game_, const Resource::Map &input_, const Resource::Map &output_, bool auto_extract):
+	game(&game_), input(input_), output(output_), autoExtract(auto_extract) {}
 
-Processor::Processor(Game &owner_): Processor(owner_, {}, {}, false) {}
+Processor::Processor(Game &game_): Processor(game_, {}, {}, false) {}
 
 std::string Processor::toString() const {
 	return std::to_string(static_cast<int>(getType())) + ":" + stringify(input) + ":" + stringify(output) + ":"
@@ -21,7 +21,7 @@ double Processor::tick(double delta) {
 	double out = 0.;
 
 	for (auto &[name, amount]: input) {
-		const Resource &resource = owner->resources.at(name);
+		const Resource &resource = game->resources.at(name);
 		if (resource.conversions.count(getType()) != 0) {
 			const auto &conversion = resource.conversions.at(getType());
 			const double to_convert = std::min(amount, conversion.rate * delta);
@@ -122,24 +122,24 @@ void Processor::renderBody(Context &context, long index) {
 	}
 }
 
-Processor * Processor::fromString(Game &owner, const std::string &str) {
+Processor * Processor::fromString(Game &game, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);
 	Resource::Map input(parseMap(pieces[1])), output(parseMap(pieces[2]));
 	const bool auto_extract = parseLong(pieces[3]) != 0;
 	const Type type = static_cast<Type>(parseLong(pieces[0]));
 	switch (type) {
-		case Type::Furnace:    return new Furnace(owner, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
-		case Type::Centrifuge: return new Centrifuge(owner, std::move(input), std::move(output), auto_extract);
-		case Type::Fermenter:  return new Fermenter(owner, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
+		case Type::Furnace:    return new Furnace(game, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
+		case Type::Centrifuge: return new Centrifuge(game, std::move(input), std::move(output), auto_extract);
+		case Type::Fermenter:  return new Fermenter(game, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }
 
-Processor * Processor::ofType(Game &owner, Type type) {
+Processor * Processor::ofType(Game &game, Type type) {
 	switch (type) {
-		case Type::Furnace:    return new Furnace(owner);
-		case Type::Centrifuge: return new Centrifuge(owner);
-		case Type::Fermenter:  return new Fermenter(owner);
+		case Type::Furnace:    return new Furnace(game);
+		case Type::Centrifuge: return new Centrifuge(game);
+		case Type::Fermenter:  return new Fermenter(game);
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }

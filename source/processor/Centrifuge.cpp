@@ -7,7 +7,7 @@
 double Centrifuge::tick(double delta) {
 	double out = 0.;
 
-	const auto &recipes = owner->recipes.centrifuge;
+	const auto &recipes = game->recipes.centrifuge;
 
 	for (auto &[name, amount]: input)
 		if (recipes.count(name) != 0) {

@@ -4,10 +4,10 @@
 #include "Resource.h"
 #include "processor/Furnace.h"
 
-Furnace::Furnace(Game &owner_, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract):
-	Processor(owner_, input_, output_, auto_extract), fuel(fuel_) {}
+Furnace::Furnace(Game &game_, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract):
+	Processor(game_, input_, output_, auto_extract), fuel(fuel_) {}
 
-Furnace::Furnace(Game &owner_): Processor(owner_) {}
+Furnace::Furnace(Game &game_): Processor(game_) {}
 
 std::string Furnace::toString() const {
 	return Processor::toString() + ":" + std::to_string(fuel);
@@ -15,7 +15,7 @@ std::string Furnace::toString() const {
 
 double Furnace::tick(double delta) {
 	for (auto &[name, amount]: input) {
-		const Resource &resource = owner->resources.at(name);
+		const Resource &resource = game->resources.at(name);
 		if (resource.hasType("fuel")) {
 			const double to_remove = std::min(delta, amount);
 			amount -= to_remove;
@@ -29,7 +29,7 @@ double Furnace::tick(double delta) {
 		fuel = 0.;
 	} else {
 		for (auto &[name, amount]: input) {
-			const Resource &resource = owner->resources.at(name);
+			const Resource &resource = game->resources.at(name);
 			if (resource.conversions.count(getType()) == 0)
 				continue;
 			const auto &conversion = resource.conversions.at(getType());
