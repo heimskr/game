@@ -459,7 +459,7 @@ void MainWindow::render(bool *open) {
 		if (ImGui::BeginTabItem("Conversion", nullptr, selectedTab == 5? ImGuiTabItemFlags_SetSelected : 0)) {
 			lastTab = 5;
 			if (!context.game || !context.loaded) {
-				ImGui::Text("The void doesn't support conversion.");
+				ImGui::Text("You can't convert anything in the void.");
 			} else  {
 				if (ImGui::Button("Add Processor"))
 					context.pickProcessorType([this](Processor::Type type) {
@@ -486,61 +486,7 @@ void MainWindow::render(bool *open) {
 					u64 i = 0;
 					for (const std::unique_ptr<Processor> &processor: context->processors) {
 						processor->renderHeader(context, ++i);
-						if (ImGui::BeginTable(("Layout##" + std::to_string(i)).c_str(), 2)) {
-							const float width = ImGui::GetContentRegionMax().x / 2.f;
-							ImGui::TableSetupColumn("##input_table", ImGuiTableColumnFlags_WidthFixed, width);
-							ImGui::TableSetupColumn("##output_table", ImGuiTableColumnFlags_WidthFixed, width);
-							ImGui::TableNextRow();
-							ImGui::TableSetColumnIndex(0);
-							if (ImGui::BeginTable(("##input" + std::to_string(++i)).c_str(), 2)) {
-								ImGui::TableSetupColumn("Input Resource", ImGuiTableColumnFlags_WidthStretch);
-								ImGui::TableSetupColumn("Amount##input", ImGuiTableColumnFlags_WidthFixed, 300.f);
-								ImGui::TableHeadersRow();
-								for (const auto &[name, amount]: processor->input) {
-									ImGui::TableNextRow();
-									ImGui::TableSetColumnIndex(0);
-									ImGui::Text("%s", name.c_str());
-									ImGui::TableNextColumn();
-									ImGui::TableSetColumnIndex(1);
-									ImGui::Text("%.3f", amount);
-									ImGui::TableNextColumn();
-								}
-								ImGui::EndTable();
-							}
-							ImGui::TableNextColumn();
-							ImGui::TableSetColumnIndex(1);
-							if (ImGui::BeginTable(("##output" + std::to_string(++i)).c_str(), 2)) {
-								ImGui::TableSetupColumn("Output Resource", ImGuiTableColumnFlags_WidthStretch);
-								ImGui::TableSetupColumn("Amount##output", ImGuiTableColumnFlags_WidthFixed, 300.f);
-								ImGui::TableHeadersRow();
-								u64 j = 0;
-								for (auto &[name, amount]: processor->output) {
-									ImGui::TableNextRow();
-									ImGui::TableSetColumnIndex(0);
-									if (ImGui::Selectable((name + "##outsel_" + std::to_string(++j)).c_str()))
-										Keyboard::openForDouble([this, &processor, &name, &amount](double chosen) {
-											if (chosen <= 0) {
-												context.showMessage("Invalid amount.");
-											} else if (ltna(amount, chosen)) {
-												context.showMessage("There isn't enough of that resource.");
-											} else {
-												amount -= chosen;
-												context->inventory[name] += chosen;
-												context.frameActions.push_back([&processor, &name] {
-													shrink(processor->output, name);
-												});
-											}
-										}, "Amount to Remove");
-									ImGui::TableNextColumn();
-									ImGui::TableSetColumnIndex(1);
-									ImGui::Text("%.3f", amount);
-									ImGui::TableNextColumn();
-								}
-								ImGui::EndTable();
-							}
-							ImGui::TableNextColumn();
-							ImGui::EndTable();
-						}
+						processor->renderBody(context, ++i);
 					}
 				}
 			}

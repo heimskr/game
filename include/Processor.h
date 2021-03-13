@@ -23,6 +23,7 @@ struct Processor {
 	/** Returns the amount processed. */
 	virtual double tick(double delta);
 	virtual void renderHeader(Context &context, long index);
+	virtual void renderBody(Context &context, long index);
 	virtual Type getType() const = 0;
 	static Processor * fromString(Game &, const std::string &);
 	static Processor * ofType(Game &, Processor::Type);

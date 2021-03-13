@@ -61,6 +61,64 @@ void Processor::renderHeader(Context &context, long index) {
 	ImGui::Text("%s", Processor::typeName(getType()));
 }
 
+void Processor::renderBody(Context &context, long index) {
+	if (ImGui::BeginTable(("Layout##" + std::to_string(index)).c_str(), 2)) {
+		const float width = ImGui::GetContentRegionMax().x / 2.f;
+		ImGui::TableSetupColumn("##input_table", ImGuiTableColumnFlags_WidthFixed, width);
+		ImGui::TableSetupColumn("##output_table", ImGuiTableColumnFlags_WidthFixed, width);
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		if (ImGui::BeginTable(("##input" + std::to_string(index)).c_str(), 2)) {
+			ImGui::TableSetupColumn("Input Resource", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("Amount##input", ImGuiTableColumnFlags_WidthFixed, 300.f);
+			ImGui::TableHeadersRow();
+			for (const auto &[name, amount]: input) {
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s", name.c_str());
+				ImGui::TableNextColumn();
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("%.3f", amount);
+				ImGui::TableNextColumn();
+			}
+			ImGui::EndTable();
+		}
+		ImGui::TableNextColumn();
+		ImGui::TableSetColumnIndex(1);
+		if (ImGui::BeginTable(("##output" + std::to_string(index)).c_str(), 2)) {
+			ImGui::TableSetupColumn("Output Resource", ImGuiTableColumnFlags_WidthStretch);
+			ImGui::TableSetupColumn("Amount##output", ImGuiTableColumnFlags_WidthFixed, 300.f);
+			ImGui::TableHeadersRow();
+			u64 j = 0;
+			for (auto &[name, amount]: output) {
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				if (ImGui::Selectable((name + "##outsel_" + std::to_string(++j)).c_str()))
+					Keyboard::openForDouble([this, &context, &name, &amount](double chosen) {
+						if (chosen <= 0) {
+							context.showMessage("Invalid amount.");
+						} else if (ltna(amount, chosen)) {
+							context.showMessage("There isn't enough of that resource.");
+						} else {
+							amount -= chosen;
+							context->inventory[name] += chosen;
+							context.frameActions.push_back([this, &name] {
+								shrink(output, name);
+							});
+						}
+					}, "Amount to Remove");
+				ImGui::TableNextColumn();
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("%.3f", amount);
+				ImGui::TableNextColumn();
+			}
+			ImGui::EndTable();
+		}
+		ImGui::TableNextColumn();
+		ImGui::EndTable();
+	}
+}
+
 Processor * Processor::fromString(Game &owner, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);
 	Resource::Map input(parseMap(pieces[1])), output(parseMap(pieces[2]));
