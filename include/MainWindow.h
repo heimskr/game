@@ -2,8 +2,9 @@
 
 #include <memory>
 
-class Context;
 class Area;
+class Context;
+class Region;
 
 class MainWindow {
 	private:
@@ -19,4 +20,10 @@ class MainWindow {
 		MainWindow(Context &context_): context(context_) {}
 
 		void render(bool *open);
+		void renderRegion(Region *);
+		void renderTravel(Region *);
+		void renderExtractions();
+		void renderInventory();
+		void renderConversion();
+		void renderMarket(Region *);
 };
