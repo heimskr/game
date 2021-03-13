@@ -41,6 +41,7 @@ double Furnace::tick(double delta) {
 			if (fuel < Resource::MIN_AMOUNT)
 				break;
 		}
+		moveOutput();
 	}
 
 	shrink(input);

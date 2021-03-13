@@ -32,7 +32,16 @@ double Processor::tick(double delta) {
 	}
 
 	shrink(input);
+	moveOutput();
 	return out;
+}
+
+void Processor::moveOutput() {
+	if (autoExtract) {
+		for (auto &[name, amount]: output)
+			game->inventory[name] += amount;
+		output.clear();
+	}
 }
 
 void Processor::renderHeader(Context &context, long index) {

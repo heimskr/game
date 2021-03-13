@@ -22,5 +22,6 @@ double Centrifuge::tick(double delta) {
 		}
 
 	shrink(input);
+	moveOutput();
 	return out;
 }

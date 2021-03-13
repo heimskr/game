@@ -22,6 +22,7 @@ struct Processor {
 	virtual std::string toString() const;
 	/** Returns the amount processed. */
 	virtual double tick(double delta);
+	void moveOutput();
 	virtual void renderHeader(Context &context, long index);
 	virtual void renderBody(Context &context, long index);
 	virtual Type getType() const = 0;

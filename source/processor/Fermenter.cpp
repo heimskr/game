@@ -39,6 +39,7 @@ double Fermenter::tick(double delta) {
 			if (yeast < Resource::MIN_AMOUNT)
 				break;
 		}
+		moveOutput();
 	}
 
 	shrink(input);
