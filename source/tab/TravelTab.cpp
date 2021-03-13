@@ -21,8 +21,11 @@ void MainWindow::renderTravel(Region *region) {
 					const Region::Position pos(region->position.first + col - 1, region->position.second + row - 1);
 					std::string label = "~";
 					bool exists = false;
+					bool populated = false;
 					if (context->regions.count(pos) != 0) {
-						label = context->regions.at(pos)->name;
+						const Region &neighbor = *context->regions.at(pos);
+						label = neighbor.name;
+						populated = neighbor.occupied();
 						exists = true;
 					}
 					label += "##" + std::to_string(col) + "_" + std::to_string(row);
@@ -31,12 +34,16 @@ void MainWindow::renderTravel(Region *region) {
 						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.75f);
 					}
+					if (!populated)
+						ImGui::PushStyleColor(ImGuiCol_Text, {0.7f, 0.7f, 0.7f, 1.f});
 					if (ImGui::Button(label.c_str(), {COLUMN_WIDTH, 100.f})) {
 						if (exists)
 							context->position = pos;
 						else
 							*context.game += Region::generate(*context.game, pos);
 					}
+					if (!populated)
+						ImGui::PopStyleColor();
 					if (disabled) {
 						ImGui::PopItemFlag();
 						ImGui::PopStyleVar();
