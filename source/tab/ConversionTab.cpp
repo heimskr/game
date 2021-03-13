@@ -30,6 +30,27 @@ void MainWindow::renderConversion() {
 			context->processors.sort([](std::unique_ptr<Processor> &left, std::unique_ptr<Processor> &right) {
 				return left->getName() < right->getName();
 			});
+		ImGui::SameLine();
+		if (ImGui::Button("Distribute"))
+			context.pickInventory([this](const std::string &name) {
+				context.pickProcessorType([this, &name](Processor::Type type) {
+					u64 count = 0;
+					for (const auto &processor: context->processors)
+						if (processor->getType() == type)
+							++count;
+					if (count == 0) {
+						context.showMessage("You don't have any " + std::string(Processor::typeName(type)) + " processors.");
+					} else {
+						double &amount = context->inventory[name];
+						for (auto &processor: context->processors)
+							if (processor->getType() == type)
+								processor->input[name] += amount / count;
+						context->inventory.erase(name);
+					}
+				});
+			});
+		if (ImGui::IsItemHovered())
+			ImGui::SetTooltip("Distribute all of a given resource evenly among all processors of a given type.");
 		if (context->processors.empty()) {
 			ImGui::Text("You have no processors.");
 		} else {
