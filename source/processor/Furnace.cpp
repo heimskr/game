@@ -4,8 +4,8 @@
 #include "Resource.h"
 #include "processor/Furnace.h"
 
-Furnace::Furnace(Game &owner_, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_):
-	Processor(owner_, input_, output_), fuel(fuel_) {}
+Furnace::Furnace(Game &owner_, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract):
+	Processor(owner_, input_, output_, auto_extract), fuel(fuel_) {}
 
 Furnace::Furnace(Game &owner_): Processor(owner_) {}
 

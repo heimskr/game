@@ -221,26 +221,34 @@ void Game::tick(double delta) {
 		pair.second->tick(delta);
 	for (auto iter = extractions.begin(); iter != extractions.end();) {
 		Extraction &extraction = *iter;
-		double to_extract = std::min(extraction.rate * delta, extraction.amount);
 		double &in_inventory = inventory[extraction.resourceName];
-		if (extraction.area->resources[extraction.resourceName] <= to_extract) {
-			in_inventory += extraction.area->resources[extraction.resourceName];
-			const double floored = std::floor(in_inventory);
-			if (1 - (in_inventory - floored) < Resource::MIN_AMOUNT)
-				in_inventory = floored + 1;
-			extraction.area->resources.erase(extraction.resourceName);
-			extractions.erase(iter++);
-		} else {
+		double &in_region = extraction.area->resources[extraction.resourceName];
+		if (extraction.startAmount == 0) { // Eternal extraction
+			const double to_extract = std::min(in_region, extraction.rate * delta);
+			in_region -= to_extract;
 			in_inventory += to_extract;
-			extraction.area->resources[extraction.resourceName] -= to_extract;
-			extraction.amount -= to_extract;
-			if (extraction.amount < Resource::MIN_AMOUNT) {
+			++iter;
+		} else {
+			const double to_extract = std::min(extraction.rate * delta, extraction.amount);
+			if (in_region <= to_extract) {
+				in_inventory += in_region;
 				const double floored = std::floor(in_inventory);
 				if (1 - (in_inventory - floored) < Resource::MIN_AMOUNT)
 					in_inventory = floored + 1;
+				extraction.area->resources.erase(extraction.resourceName);
 				extractions.erase(iter++);
-			} else
-				++iter;
+			} else {
+				in_inventory += to_extract;
+				in_region -= to_extract;
+				extraction.amount -= to_extract;
+				if (extraction.amount < Resource::MIN_AMOUNT) {
+					const double floored = std::floor(in_inventory);
+					if (1 - (in_inventory - floored) < Resource::MIN_AMOUNT)
+						in_inventory = floored + 1;
+					extractions.erase(iter++);
+				} else
+					++iter;
+			}
 		}
 	}
 	for (auto &processor: processors)

@@ -8,7 +8,7 @@ class Game;
 struct Extraction {
 	Area *area;
 	std::string resourceName;
-	double startAmount;
+	const double startAmount;
 	double amount;
 	double rate;
 

@@ -131,9 +131,9 @@ void MainWindow::render(bool *open) {
 								ImGui::PushID(rname.c_str());
 								if (ImGui::Button("Extract")) {
 									Keyboard::openForDouble([&](double chosen) {
-										if (amount <= 0)
+										if (amount < 0)
 											context.showMessage("Invalid amount.");
-										else if (ltna(amount, chosen))
+										else if (0 < amount && ltna(amount, chosen))
 											context.showMessage("Not enough of that resource is available.");
 										else
 											context->extract(*area, rname, chosen);
@@ -219,13 +219,17 @@ void MainWindow::render(bool *open) {
 					if (ImGui::Button(("x##" + std::to_string(++i)).c_str()))
 						context.frameActions.push_back([this, iter]() { context->extractions.erase(iter); });
 					ImGui::SameLine();
-					ImGui::Text("Extracting %s from %s in %s (%.2f left) @ %.2f/s",
-						extraction.resourceName.c_str(), extraction.area->name.c_str(),
-						extraction.area->parent->name.c_str(), extraction.amount, extraction.rate);
 					if (0. < extraction.startAmount) {
+						ImGui::Text("Extracting %s from %s in %s (%.2f left) @ %.2f/s",
+							extraction.resourceName.c_str(), extraction.area->name.c_str(),
+							extraction.area->parent->name.c_str(), extraction.amount, extraction.rate);
 						static char buf[64];
 						snprintf(buf, 64, "%.3f/%.3f", extraction.startAmount - extraction.amount, extraction.startAmount);
 						ImGui::ProgressBar((extraction.startAmount - extraction.amount) / extraction.startAmount, {0, 0}, buf);
+					} else {
+						ImGui::Text("Extracting %s from %s in %s @ %.2f/s",
+							extraction.resourceName.c_str(), extraction.area->name.c_str(),
+							extraction.area->parent->name.c_str(), extraction.rate);
 					}
 				}
 			}
@@ -481,30 +485,7 @@ void MainWindow::render(bool *open) {
 				} else {
 					u64 i = 0;
 					for (const std::unique_ptr<Processor> &processor: context->processors) {
-						++i;
-						ImGui::Dummy({0.f, 20.f});
-						if (ImGui::Button(("+##" + std::to_string(i)).c_str()))
-							context.pickInventory([this, &processor](const std::string &name) {
-								if (context->inventory.count(name) == 0) {
-									context.showMessage("You don't have any " + name + ".");
-									return;
-								}
-								Keyboard::openForDouble([this, &processor, &name](double chosen) {
-									if (chosen <= 0) {
-										context.showMessage("Invalid amount.");
-									} else if (ltna(context->inventory[name], chosen)) {
-										context.showMessage("You don't have enough " + name + ".");
-									} else {
-										context->inventory[name] -= chosen;
-										shrink(context->inventory, name);
-										processor->input[name] += chosen;
-									}
-								}, "Resource Amount");
-							});
-						if (ImGui::IsItemHovered())
-							ImGui::SetTooltip("Add resource to processor");
-						ImGui::SameLine();
-						ImGui::Text("%s", Processor::typeName(processor->getType()));
+						processor->renderHeader(context, ++i);
 						if (ImGui::BeginTable(("Layout##" + std::to_string(i)).c_str(), 2)) {
 							const float width = ImGui::GetContentRegionMax().x / 2.f;
 							ImGui::TableSetupColumn("##input_table", ImGuiTableColumnFlags_WidthFixed, width);
