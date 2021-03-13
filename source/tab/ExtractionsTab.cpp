@@ -10,7 +10,7 @@ void MainWindow::renderExtractions() {
 		s64 i = 0;
 		for (auto iter = context->extractions.begin(), end = context->extractions.end(); iter != end; ++iter) {
 			const Extraction &extraction = *iter;
-			if (ImGui::Button(("x##" + std::to_string(++i)).c_str()))
+			if (ImGui::Button(("x##" + std::to_string(++i)).c_str(), {40.f, 0.f}))
 				context.frameActions.push_back([this, iter]() { context->extractions.erase(iter); });
 			ImGui::SameLine();
 			if (0. < extraction.startAmount) {
