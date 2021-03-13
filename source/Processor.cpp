@@ -20,6 +20,7 @@ Processor * Processor::fromString(Game &owner, const std::string &str) {
 	switch (type) {
 		case Type::Furnace:    return new Furnace(owner, parseDouble(pieces[3]), std::move(input), std::move(output));
 		case Type::Centrifuge: return new Centrifuge(owner, std::move(input), std::move(output));
+		case Type::Fermenter:  return new Furnace(owner, parseDouble(pieces[3]), std::move(input), std::move(output));
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }
@@ -28,6 +29,7 @@ Processor * Processor::ofType(Game &owner, Type type) {
 	switch (type) {
 		case Type::Furnace:    return new Furnace(owner);
 		case Type::Centrifuge: return new Centrifuge(owner);
+		case Type::Fermenter:  return new Fermenter(owner);
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }
@@ -54,6 +56,7 @@ const char * Processor::typeName(Type type) {
 	switch (type) {
 		case Type::Furnace:    return "Furnace";
 		case Type::Centrifuge: return "Centrifuge";
+		case Type::Fermenter:  return "Fermenter";
 		default: return "?";
 	}
 }

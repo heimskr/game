@@ -483,8 +483,6 @@ void MainWindow::render(bool *open) {
 					for (const std::unique_ptr<Processor> &processor: context->processors) {
 						++i;
 						ImGui::Dummy({0.f, 20.f});
-						ImGui::Text("%s", Processor::typeName(processor->getType()));
-						ImGui::SameLine();
 						if (ImGui::Button(("+##" + std::to_string(i)).c_str()))
 							context.pickInventory([this, &processor](const std::string &name) {
 								if (context->inventory.count(name) == 0) {
@@ -505,6 +503,8 @@ void MainWindow::render(bool *open) {
 							});
 						if (ImGui::IsItemHovered())
 							ImGui::SetTooltip("Add resource to processor");
+						ImGui::SameLine();
+						ImGui::Text("%s", Processor::typeName(processor->getType()));
 						if (ImGui::BeginTable(("Layout##" + std::to_string(i)).c_str(), 2)) {
 							const float width = ImGui::GetContentRegionMax().x / 2.f;
 							ImGui::TableSetupColumn("##input_table", ImGuiTableColumnFlags_WidthFixed, width);

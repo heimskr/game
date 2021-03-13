@@ -8,8 +8,8 @@
 class Game;
 
 struct Processor {
-	enum class Type {Furnace, Centrifuge};
-	static constexpr auto TYPES = std::array {Type::Furnace, Type::Centrifuge};
+	enum class Type {Furnace, Centrifuge, Fermenter};
+	static constexpr auto TYPES = std::array {Type::Furnace, Type::Centrifuge, Type::Fermenter};
 
 	Game *owner;
 	std::map<std::string, double> input, output;
