@@ -26,6 +26,7 @@ class Processor {
 		void moveOutput();
 		virtual void renderHeader(Context &context, long index);
 		virtual void renderBody(Context &context, long index);
+		virtual std::string getName() const;
 		virtual Type getType() const = 0;
 		static Processor * fromString(Game &, const std::string &);
 		static Processor * ofType(Game &, Processor::Type);

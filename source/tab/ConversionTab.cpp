@@ -25,7 +25,11 @@ void MainWindow::renderConversion() {
 				context->processors.push_back(std::unique_ptr<Processor>(Processor::ofType(*context.game, type)));
 				context.showMessage("Added a new " + std::string(Processor::typeName(type)) + ".");
 			});
-
+		ImGui::SameLine();
+		if (ImGui::Button("Sort"))
+			context->processors.sort([](std::unique_ptr<Processor> &left, std::unique_ptr<Processor> &right) {
+				return left->getName() < right->getName();
+			});
 		if (context->processors.empty()) {
 			ImGui::Text("You have no processors.");
 		} else {

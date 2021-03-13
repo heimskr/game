@@ -71,7 +71,7 @@ void Processor::renderHeader(Context &context, long index) {
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Auto-Extract");
 	ImGui::SameLine();
-	ImGui::Text("%s", Processor::typeName(getType()));
+	ImGui::Text("%s", getName().c_str());
 	headerAdditional();
 }
 
@@ -143,6 +143,10 @@ void Processor::renderBody(Context &context, long index) {
 		ImGui::TableNextColumn();
 		ImGui::EndTable();
 	}
+}
+
+std::string Processor::getName() const {
+	return typeName(getType());
 }
 
 void Processor::headerAdditional() {}
