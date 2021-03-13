@@ -47,9 +47,8 @@ void Processor::renderHeader(Context &context, long index) {
 			Keyboard::openForDouble([this, &context, &name](double chosen) {
 				if (chosen <= 0) {
 					context.showMessage("Invalid amount.");
-				} else if (ltna(context->inventory[name], chosen)) {
-					context.showMessage("You don't have enough " + name + ".");
 				} else {
+					chosen = std::min(context->inventory[name], chosen);
 					context->inventory[name] -= chosen;
 					shrink(context->inventory, name);
 					input[name] += chosen;
@@ -102,9 +101,8 @@ void Processor::renderBody(Context &context, long index) {
 					Keyboard::openForDouble([this, &context, &name, &amount](double chosen) {
 						if (chosen <= 0) {
 							context.showMessage("Invalid amount.");
-						} else if (ltna(amount, chosen)) {
-							context.showMessage("There isn't enough of that resource.");
 						} else {
+							chosen = std::min(amount, chosen);
 							amount -= chosen;
 							context->inventory[name] += chosen;
 							context.frameActions.push_back([this, &name] {
