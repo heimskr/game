@@ -36,8 +36,9 @@ double Processor::tick(double delta) {
 }
 
 void Processor::renderHeader(Context &context, long index) {
+	const std::string index_str = std::to_string(index);
 	ImGui::Dummy({0.f, 20.f});
-	if (ImGui::Button(("+##" + std::to_string(index)).c_str()))
+	if (ImGui::Button(("+##" + index_str).c_str(), {34.f, 0.f}))
 		context.pickInventory([this, &context](const std::string &name) {
 			if (context->inventory.count(name) == 0) {
 				context.showMessage("You don't have any " + name + ".");
@@ -57,6 +58,10 @@ void Processor::renderHeader(Context &context, long index) {
 		});
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Add resource to processor");
+	ImGui::SameLine();
+	ImGui::Checkbox(("##ae_" + index_str).c_str(), &autoExtract);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Auto-Extract");
 	ImGui::SameLine();
 	ImGui::Text("%s", Processor::typeName(getType()));
 }
