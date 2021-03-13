@@ -72,6 +72,7 @@ void Processor::renderHeader(Context &context, long index) {
 		ImGui::SetTooltip("Auto-Extract");
 	ImGui::SameLine();
 	ImGui::Text("%s", Processor::typeName(getType()));
+	headerAdditional();
 }
 
 void Processor::renderBody(Context &context, long index) {
@@ -130,6 +131,8 @@ void Processor::renderBody(Context &context, long index) {
 		ImGui::EndTable();
 	}
 }
+
+void Processor::headerAdditional() {}
 
 Processor * Processor::fromString(Game &game, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);

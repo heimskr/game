@@ -1,6 +1,7 @@
 #include <list>
 
 #include "Game.h"
+#include "imgui.h"
 #include "Resource.h"
 #include "processor/Fermenter.h"
 
@@ -44,4 +45,9 @@ double Fermenter::tick(double delta) {
 
 	shrink(input);
 	return out;
+}
+
+void Fermenter::headerAdditional() {
+	ImGui::SameLine();
+	ImGui::Text("(yeast: %.2f)", yeast);
 }

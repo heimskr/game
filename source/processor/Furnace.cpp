@@ -1,6 +1,7 @@
 #include <list>
 
 #include "Game.h"
+#include "imgui.h"
 #include "Resource.h"
 #include "processor/Furnace.h"
 
@@ -46,4 +47,9 @@ double Furnace::tick(double delta) {
 
 	shrink(input);
 	return out;
+}
+
+void Furnace::headerAdditional() {
+	ImGui::SameLine();
+	ImGui::Text("(fuel: %.2f)", fuel);
 }
