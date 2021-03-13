@@ -86,10 +86,23 @@ void Processor::renderBody(Context &context, long index) {
 			ImGui::TableSetupColumn("Input Resource", ImGuiTableColumnFlags_WidthStretch);
 			ImGui::TableSetupColumn("Amount##input", ImGuiTableColumnFlags_WidthFixed, 300.f);
 			ImGui::TableHeadersRow();
-			for (const auto &[name, amount]: input) {
+			u64 j = 0;
+			for (auto &[name, amount]: input) {
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s", name.c_str());
+				if (ImGui::Selectable((name + "##insel_" + std::to_string(++j)).c_str()))
+					Keyboard::openForDouble([this, &context, &name, &amount](double chosen) {
+						if (chosen <= 0) {
+							context.showMessage("Invalid amount.");
+						} else {
+							chosen = std::min(amount, chosen);
+							amount -= chosen;
+							context->inventory[name] += chosen;
+							context.frameActions.push_back([this, &name] {
+								shrink(input, name);
+							});
+						}
+					});
 				ImGui::TableNextColumn();
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("%.3f", amount);
