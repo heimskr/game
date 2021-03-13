@@ -44,44 +44,14 @@ void MainWindow::render(bool *open) {
 	} catch (const std::out_of_range &) {}
 
 	if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None)) {
-#define SELECT(n) selectedTab == (n)? ImGuiTabItemFlags_SetSelected : 0
-		if (ImGui::BeginTabItem("Region", nullptr, SELECT(0))) {
-			lastTab = 0;
-			renderRegion(region);
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Travel", nullptr, SELECT(1))) {
-			lastTab = 1;
-			renderTravel(region);
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Extractions", nullptr, SELECT(2))) {
-			lastTab = 2;
-			renderExtractions();
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Inventory", nullptr, SELECT(3))) {
-			lastTab = 3;
-			renderInventory();
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Conversion", nullptr, SELECT(4))) {
-			lastTab = 4;
-			renderConversion();
-			ImGui::EndTabItem();
-		}
-
-		if (ImGui::BeginTabItem("Market", nullptr, SELECT(5))) {
-			lastTab = 5;
-			renderMarket(region);
-			ImGui::EndTabItem();
-		}
-#undef SELECT
-
+#define TAB(_name, _n, _block) if (ImGui::BeginTabItem((_name), nullptr, selectedTab == (_n)? ImGuiTabItemFlags_SetSelected : 0)) { lastTab = (_n); _block; ImGui::EndTabItem(); }
+		TAB("Region",      0, { renderRegion(region); });
+		TAB("Travel",      1, { renderTravel(region); });
+		TAB("Extractions", 2, { renderExtractions();  });
+		TAB("Inventory",   3, { renderInventory();    });
+		TAB("Conversion",  4, { renderConversion();   });
+		TAB("Market",      5, { renderMarket(region); });
+#undef TAB
 		selectedTab = -1;
 		ImGui::EndTabBar();
 	}
