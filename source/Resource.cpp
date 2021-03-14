@@ -5,6 +5,12 @@ Resource::Resource(Game *owner_, const std::string &name_): owner(owner_), name(
 Resource::Resource(Game *owner_, const char *name_): owner(owner_), name(name_) {}
 
 Resource & Resource::add(Processor::Type type, const Conversion &conversion) {
+	switch (type) {
+		// case Processor::Type::Furnace:    types.insert("smeltable");     break;
+		case Processor::Type::Fermenter:  types.insert("fermentable");   break;
+		// case Processor::Type::Centrifuge: types.insert("centrifugable"); break;
+		default: break;
+	}
 	conversions.emplace(type, conversion);
 	return *this;
 }

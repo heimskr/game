@@ -22,24 +22,24 @@ void Game::add(const Resource &resource) {
 
 void Game::addResources() {
 	add(Resource(this, "Charcoal").setBasePrice(1.5).addTypes("fuel"));
-	add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel").setDefaultExtractionRate(0.5));
+	add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel", "smeltable").setDefaultExtractionRate(0.5));
 	add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "Charcoal"}));
-	add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid"));
-	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
+	add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable"));
+	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
 	add(Resource(this, "Iron").setBasePrice(3.).addTypes("metal", "iron"));
 	add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
 	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food"));
 	add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
-	add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food", "fermenter fill").add(Processor::Type::Fermenter, {0.1, "Mead"}));
+	add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
 	add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5));
 	add(Resource(this, "Silicon").setBasePrice(0.5).addTypes("element", "chemical"));
 	add(Resource(this, "Oxygen").setBasePrice(0.1).addTypes("element", "chemical"));
 	add(Resource(this, "Carbon").setBasePrice(0.2).addTypes("element", "chemical"));
-	add(Resource(this, "Malic Acid").setBasePrice(1.0).addTypes("molecule", "chemical"));
+	add(Resource(this, "Malic Acid").setBasePrice(1.0).addTypes("molecule", "chemical", "centrifugable"));
 	add(Resource(this, "Hydrogen").setBasePrice(0.05).addTypes("element", "chemical"));
-	add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical"));
-	add(Resource(this, "Lignin").setBasePrice(50.0).addTypes("molecule", "chemical"));
-	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermenter fill"));
+	add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical", "centrifugable"));
+	add(Resource(this, "Lignin").setBasePrice(50.0).addTypes("molecule", "chemical", "centrifugable"));
+	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 	add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
 }
 

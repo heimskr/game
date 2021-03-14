@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "imgui.h"
+#include "main.h"
 #include "Resource.h"
 #include "processor/Furnace.h"
 
@@ -52,4 +53,17 @@ double Furnace::tick(double delta) {
 void Furnace::headerAdditional(Context &, long) {
 	ImGui::SameLine();
 	ImGui::Text("(fuel: %.2f)", fuel);
+}
+
+void Furnace::headerButtons(Context &context, long index) {
+	if (ImGui::Button(("F##fill_" + std::to_string(index)).c_str(), {34.f, 0.f})) {
+		for (auto &[name, amount]: context->inventory)
+			if (context->resources.at(name).hasType("smeltable")) {
+				input[name] += amount;
+				amount = 0;
+			}
+		shrink(input);
+	}
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Fill with smeltable items and certain fuels.");
 }

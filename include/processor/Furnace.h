@@ -13,4 +13,5 @@ class Furnace: public Processor {
 
 	protected:
 		void headerAdditional(Context &, long index) override;
+		void headerButtons(Context &, long index) override;
 };

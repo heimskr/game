@@ -55,10 +55,10 @@ void Fermenter::headerAdditional(Context &, long) {
 
 void Fermenter::headerButtons(Context &context, long index) {
 	// TODO: allow player to choose a divisor (e.g., 4 to move only a fourth of all fermentables) by holding left on the
-	// d-pad when clicking the button
+	// d-pad when clicking the button (applies also for Furnace and Centrifuge)
 	if (ImGui::Button(("F##fill_" + std::to_string(index)).c_str(), {34.f, 0.f})) {
 		for (auto &[name, amount]: context->inventory)
-			if (context->resources.at(name).hasType("fermenter fill")) {
+			if (context->resources.at(name).hasType("fermentable")) {
 				input[name] += amount;
 				amount = 0;
 			}
