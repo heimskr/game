@@ -23,14 +23,18 @@ class Context {
 		bool showAreaTypePicker = false;
 		bool showProcessorTypePicker = false;
 		bool showInventoryPicker = false;
+		bool showProcessorPicker = false;
 		std::function<void(const std::string &)> onResourcePicked = [](const std::string &) {};
 		std::function<void(Area::Type)> onAreaTypePicked = [](Area::Type) {};
 		std::function<void(Processor::Type)> onProcessorTypePicked = [](Processor::Type) {};
 		std::function<void(const std::string &)> onInventoryPicked = [](const std::string &) {};
+		std::function<void(std::shared_ptr<Processor>)> onProcessorPicked = [](std::shared_ptr<Processor>) {};
 
 		std::string message;
 		bool isConfirm = false;
 		std::function<void(bool)> onChoice = [](bool) {};
+
+		std::string processorPickerMessage;
 
 		bool rightPressed = false;
 		bool downPressed = false;
@@ -43,6 +47,7 @@ class Context {
 		void pickAreaType(std::function<void(Area::Type)>);
 		void pickProcessorType(std::function<void(Processor::Type)>);
 		void pickInventory(std::function<void(const std::string &)>);
+		void pickProcessor(std::function<void(std::shared_ptr<Processor>)>, const std::string & = "");
 		void confirm(const std::string &, std::function<void(bool)>);
 		void showMessage(const std::string &);
 

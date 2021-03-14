@@ -2,7 +2,8 @@
 #include "Processor.h"
 #include "Util.h"
 
-AutomationLink::AutomationLink(Game &game_, Processor *producer_, Processor *consumer_, const std::string &resource_name, double weight_):
+AutomationLink::AutomationLink(Game &game_, Processor *producer_, Processor *consumer_,
+const std::string &resource_name, double weight_):
 	game(&game_), producer(producer_), consumer(consumer_), resourceName(resource_name), weight(weight_) {}
 
 AutomationLink::AutomationLink(Game &game_, const std::string &str): game(&game_) {

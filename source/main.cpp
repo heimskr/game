@@ -296,36 +296,70 @@ int main() {
 			}
 			if (!modal_open)
 				context.showInventoryPicker = false;
-		} else {
-			constexpr float MODAL_HEIGHT = 250.f;
-			const float modalWidth = std::max(200.f, std::min(ImGui::CalcTextSize(context.message.c_str()).x + 20.f, 1200.f));
-
-			ImGui::SetNextWindowPos(ImVec2((1280.f - modalWidth) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
-			ImGui::SetNextWindowSize(ImVec2(modalWidth, MODAL_HEIGHT), ImGuiCond_Always);
-			if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
-				ImVec2 max = ImGui::GetContentRegionMax();
-				const float child_x = max.x - ImGui::GetStyle().WindowPadding.x;
-				ImGui::BeginChild("message contents", {child_x, max.y - 80.f}, false, ImGuiWindowFlags_HorizontalScrollbar);
-				ImGui::Text("%s", context.message.c_str());
-				ImGui::EndChild();
-				if (context.isConfirm) {
-					if (ImGui::Button("Okay") || context.rightPressed) {
-						context.message.clear();
-						ImGui::CloseCurrentPopup();
-						context.onChoice(true);
+		} else if (context.showProcessorPicker) {
+			constexpr float MODAL_WIDTH = 900.f, MODAL_HEIGHT = 600.f;
+			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Once);
+			ImGui::OpenPopup("Processor Selector");
+			bool modal_open = true;
+			if (ImGui::BeginPopupModal("Processor Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
+				if (!context.processorPickerMessage.empty())
+					ImGui::Text("%s", context.processorPickerMessage.c_str());
+				if (ImGui::BeginTable("Processor Table", 2)) {
+					ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+					ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed, 300.f);
+					ImGui::TableHeadersRow();
+					u64 i = 0;
+					for (const auto &processor: context->processors) {
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						if (ImGui::Selectable((processor->name + "##processor_" + std::to_string(++i)).c_str())) {
+							context.onProcessorPicked(processor);
+							context.showProcessorPicker = false;
+							ImGui::CloseCurrentPopup();
+							break;
+						}
+						ImGui::TableNextColumn();
+						ImGui::TableSetColumnIndex(1);
+						ImGui::Text("%s", Processor::typeName(processor->getType()));
+						ImGui::TableNextColumn();
 					}
-					ImGui::SameLine();
-					if (ImGui::Button("Cancel") || context.downPressed) {
-						context.message.clear();
-						ImGui::CloseCurrentPopup();
-						context.onChoice(false);
-					}
-				} else if (ImGui::Button("Close") || context.rightPressed || context.downPressed) {
-					context.message.clear();
-					ImGui::CloseCurrentPopup();
+					ImGui::EndTable();
 				}
 				ImGui::EndPopup();
 			}
+			if (!modal_open)
+				context.showProcessorPicker = false;
+		}
+
+		constexpr float MODAL_HEIGHT = 250.f;
+		const float modalWidth = std::max(200.f, std::min(ImGui::CalcTextSize(context.message.c_str()).x + 20.f, 1200.f));
+
+		ImGui::SetNextWindowPos(ImVec2((1280.f - modalWidth) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(modalWidth, MODAL_HEIGHT), ImGuiCond_Always);
+		if (ImGui::BeginPopupModal("Message", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+			ImVec2 max = ImGui::GetContentRegionMax();
+			const float child_x = max.x - ImGui::GetStyle().WindowPadding.x;
+			ImGui::BeginChild("message contents", {child_x, max.y - 80.f}, false, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::Text("%s", context.message.c_str());
+			ImGui::EndChild();
+			if (context.isConfirm) {
+				if (ImGui::Button("Okay") || context.rightPressed) {
+					context.message.clear();
+					ImGui::CloseCurrentPopup();
+					context.onChoice(true);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel") || context.downPressed) {
+					context.message.clear();
+					ImGui::CloseCurrentPopup();
+					context.onChoice(false);
+				}
+			} else if (ImGui::Button("Close") || context.rightPressed || context.downPressed) {
+				context.message.clear();
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
 		}
 
 		ImGui::Render();
@@ -369,6 +403,12 @@ void Context::pickProcessorType(std::function<void(Processor::Type)> fn) {
 void Context::pickInventory(std::function<void(const std::string &)> fn) {
 	showInventoryPicker = true;
 	onInventoryPicked = fn;
+}
+
+void Context::pickProcessor(std::function<void(std::shared_ptr<Processor>)> fn, const std::string &message_) {
+	showProcessorPicker = true;
+	onProcessorPicked = fn;
+	processorPickerMessage = message_;
 }
 
 void Context::confirm(const std::string &str, std::function<void(bool)> fn) {
