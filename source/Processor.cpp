@@ -7,15 +7,10 @@
 #include "Keyboard.h"
 #include "imgui.h"
 
-Processor::Processor(Game &game_, const Resource::Map &input_, const Resource::Map &output_, bool auto_extract):
-	game(&game_), input(input_), output(output_), autoExtract(auto_extract) {}
+Processor::Processor(Game &game_, const Resource::Map &input_, const Resource::Map &output_, bool auto_extract, const std::string &name_):
+	game(&game_), input(input_), output(output_), autoExtract(auto_extract), name(name_) {}
 
-Processor::Processor(Game &game_): Processor(game_, {}, {}, false) {}
-
-std::string Processor::toString() const {
-	return std::to_string(static_cast<int>(getType())) + ":" + stringify(input) + ":" + stringify(output) + ":"
-		+ (autoExtract? "1" : "0");
-}
+Processor::Processor(Game &game_): Processor(game_, {}, {}, false, "Processor?") {}
 
 double Processor::tick(double delta) {
 	double out = 0.;
@@ -71,9 +66,19 @@ void Processor::renderHeader(Context &context, long index) {
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Auto-Extract");
 	ImGui::SameLine();
+	if (ImGui::Button(("R##" + index_str).c_str(), {34.f, 0.f}))
+		Keyboard::openForText([this, &context](std::string new_name) {
+			if (new_name.find_first_of(INVALID_CHARS) != std::string::npos)
+				context.showMessage("Invalid name.");
+			else
+				name = new_name;
+		}, "Processor Name", "", 64, name);
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Rename");
+	ImGui::SameLine();
 	headerButtons(context, index);
 	ImGui::SameLine();
-	ImGui::Text("%s", getName().c_str());
+	ImGui::Text("%s", name.c_str());
 	headerAdditional(context, index);
 }
 
@@ -84,7 +89,7 @@ void Processor::renderBody(Context &context, long index) {
 		ImGui::TableSetupColumn("##output_table", ImGuiTableColumnFlags_WidthFixed, width);
 		ImGui::TableNextRow();
 		ImGui::TableSetColumnIndex(0);
-		if (ImGui::BeginTable(("##input" + std::to_string(index)).c_str(), 2)) {
+		if (ImGui::BeginTable(("##input_" + std::to_string(index)).c_str(), 2)) {
 			ImGui::TableSetupColumn("Input Resource", ImGuiTableColumnFlags_WidthStretch);
 			ImGui::TableSetupColumn("Amount##input", ImGuiTableColumnFlags_WidthFixed, 300.f);
 			ImGui::TableHeadersRow();
@@ -147,23 +152,26 @@ void Processor::renderBody(Context &context, long index) {
 	}
 }
 
-std::string Processor::getName() const {
-	return typeName(getType());
-}
-
 void Processor::headerAdditional(Context &, long) {}
 void Processor::headerButtons(Context &, long) {}
+
+std::string Processor::toString() const {
+	return std::to_string(static_cast<int>(getType())) + ":" + stringify(input) + ":" + stringify(output) + ":"
+		+ (autoExtract? "1" : "0") + ":" + name;
+}
 
 Processor * Processor::fromString(Game &game, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);
 	Resource::Map input(parseMap(pieces[1])), output(parseMap(pieces[2]));
 	const bool auto_extract = parseLong(pieces[3]) != 0;
+	const std::string &name = pieces[4];
+	const std::string &extra = pieces[5];
 	const Type type = static_cast<Type>(parseLong(pieces[0]));
 	switch (type) {
-		case Type::Furnace:    return new Furnace(game, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
-		case Type::Centrifuge: return new Centrifuge(game, std::move(input), std::move(output), auto_extract);
-		case Type::Fermenter:  return new Fermenter(game, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
-		case Type::Crusher:    return new Crusher(game, std::move(input), std::move(output), auto_extract);
+		case Type::Furnace:    return new Furnace(game, parseDouble(extra), std::move(input), std::move(output), auto_extract, name);
+		case Type::Centrifuge: return new Centrifuge(game, std::move(input), std::move(output), auto_extract, name);
+		case Type::Fermenter:  return new Fermenter(game, parseDouble(extra), std::move(input), std::move(output), auto_extract, name);
+		case Type::Crusher:    return new Crusher(game, std::move(input), std::move(output), auto_extract, name);
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }

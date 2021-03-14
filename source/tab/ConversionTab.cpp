@@ -22,13 +22,15 @@ void MainWindow::renderConversion() {
 				for (const auto &[name, amount]: cost)
 					context->inventory[name] -= amount;
 				shrink(context->inventory);
-				context->processors.push_back(std::unique_ptr<Processor>(Processor::ofType(*context.game, type)));
+				std::unique_ptr<Processor> new_processor(Processor::ofType(*context.game, type));
+				new_processor->name = Processor::typeName(type);
+				context->processors.push_back(std::move(new_processor));
 				context.showMessage("Added a new " + std::string(Processor::typeName(type)) + ".");
 			});
 		ImGui::SameLine();
 		if (ImGui::Button("Sort"))
 			context->processors.sort([](std::unique_ptr<Processor> &left, std::unique_ptr<Processor> &right) {
-				return left->getName() < right->getName();
+				return left->name < right->name;
 			});
 		ImGui::SameLine();
 		if (ImGui::Button("Distribute"))

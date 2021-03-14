@@ -4,7 +4,7 @@ class Fermenter: public Processor {
 	public:
 		double yeast = 0.;
 
-		Fermenter(Game &, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract);
+		Fermenter(Game &, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract, const std::string &name_);
 		Fermenter(Game &);
 
 		virtual std::string toString() const override;

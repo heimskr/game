@@ -6,8 +6,8 @@
 #include "Resource.h"
 #include "processor/Fermenter.h"
 
-Fermenter::Fermenter(Game &game_, double yeast_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract):
-	Processor(game_, input_, output_, auto_extract), yeast(yeast_) {}
+Fermenter::Fermenter(Game &game_, double yeast_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract, const std::string &name_):
+	Processor(game_, input_, output_, auto_extract, name_), yeast(yeast_) {}
 
 Fermenter::Fermenter(Game &game_): Processor(game_) {}
 
