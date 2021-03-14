@@ -159,6 +159,8 @@ int main() {
 	auto last_time = getTime();
 	MainWindow main_window(context);
 
+	bool show_demo = false;
+
 	while (show_main_window && !done) {
 		context.rightPressed = false;
 		context.downPressed = false;
@@ -192,6 +194,8 @@ int main() {
 						context.rightPressed = true;
 					else if (button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)
 						context.downPressed = true;
+					else if (button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
+						show_demo = !show_demo;
 				}
 				ImGui_ImplSDL2_ProcessEvent(&event);
 			} else {
@@ -221,6 +225,9 @@ int main() {
 			context.showMessage("Error: " + std::string(err.what()));
 			ImGui::OpenPopup("Message");
 		}
+
+		if (show_demo)
+			ImGui::ShowDemoWindow(&show_demo);
 
 		if (context.showResourcePicker) {
 			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 300.f;
