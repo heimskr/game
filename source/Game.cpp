@@ -179,7 +179,7 @@ Region * Game::addRegion() {
 		print("Invalid size.\n");
 		return nullptr;
 	}
-	regions.insert({{x, y}, std::make_unique<Region>(this, name, Region::Position(x, y), size)});
+	regions.insert({{x, y}, std::make_unique<Region>(*this, name, Region::Position(x, y), size)});
 	print("Created new region \e[1m%s\e[22m at position (%ld, %ld) with size %lu.\n", name.c_str(), x, y, size);
 	return regions.at({x, y}).get();
 }
@@ -257,7 +257,7 @@ void Game::tick(double delta) {
 
 void Game::loadDefaults() {
 	regions.clear();
-	Region &home = *regions.insert({{0, 0}, std::make_unique<Region>(this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
+	Region &home = *regions.insert({{0, 0}, std::make_unique<Region>(*this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
 	home.greed = 0.25;
 	home.money = 10'000;
 	auto forest = std::make_shared<ForestArea>(&home, 32);

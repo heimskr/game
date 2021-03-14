@@ -29,7 +29,7 @@ namespace Stonks {
 	bool totalSellPrice(const Region &region, const std::string &resource_name, double amount, size_t &out) {
 		const Resource::Map non_owned = region.allNonOwnedResources();
 		double region_amount = non_owned.count(resource_name)? non_owned.at(resource_name) : 0.;
-		const double base = region.owner->resources.at(resource_name).basePrice;
+		const double base = region.game->resources.at(resource_name).basePrice;
 		double price = 0.;
 		double region_money = region.money;
 		const double greed = region.greed;
@@ -62,7 +62,7 @@ namespace Stonks {
 	size_t totalBuyPrice(const Region &region, const std::string &resource_name, double amount) {
 		const Resource::Map non_owned = region.allNonOwnedResources();
 		double region_amount = non_owned.count(resource_name)? non_owned.at(resource_name) : 0.;
-		const double base = region.owner->resources.at(resource_name).basePrice;
+		const double base = region.game->resources.at(resource_name).basePrice;
 		double price = 0.;
 		double region_money = region.money;
 		while (1. <= amount) {

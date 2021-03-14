@@ -24,7 +24,7 @@ class Region {
 		static constexpr const char *INVALID_CHARS = ":;?";
 		using Position = std::pair<s64, s64>;
 
-		Game *owner;
+		Game *game;
 		std::string name;
 		Position position;
 		size_t size = 0;
@@ -34,7 +34,7 @@ class Region {
 		/** To get the buy price for a good, take the sell price and divide it by 1 plus the region's greed value. */
 		double greed = 0.5;
 
-		Region(Game *, const std::string &name_, const Position &, size_t size_);
+		Region(Game &, const std::string &name_, const Position &, size_t size_);
 
 		void tick(double delta);
 

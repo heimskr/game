@@ -52,7 +52,7 @@ bool Area::reduceSize(size_t new_size) {
 size_t Area::totalPopulation() const {
 	size_t out = 0;
 	for (const auto &pair: resources)
-		if (Resource::hasType(*parent->owner, pair.first, "sapient"))
+		if (Resource::hasType(*parent->game, pair.first, "sapient"))
 			out += static_cast<size_t>(pair.second);
 	return out;
 }

@@ -8,7 +8,7 @@ FarmlandArea::FarmlandArea(Region *region, size_t size, const std::string &resou
 }
 
 FarmlandArea::FarmlandArea(Region *region, size_t size):
-	FarmlandArea(region, size, region->owner->randomResource("farmable")) {}
+	FarmlandArea(region, size, region->game->randomResource("farmable")) {}
 
 std::string FarmlandArea::description() const {
 	return "An area where food is grown.";

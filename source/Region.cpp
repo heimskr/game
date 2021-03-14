@@ -6,8 +6,8 @@
 #include "Util.h"
 #include "area/Areas.h"
 
-Region::Region(Game *owner_, const std::string &name_, const Position &position_, size_t size_):
-		owner(owner_), name(), position(position_), size(size_) {
+Region::Region(Game &game_, const std::string &name_, const Position &position_, size_t size_):
+		game(&game_), name(), position(position_), size(size_) {
 	setName(name_);
 }
 
@@ -94,32 +94,32 @@ std::shared_ptr<Area> Region::getArea(Area::Type type) {
 }
 
 bool Region::hasNeighbor() const {
-	return owner->regions.count(position + Position( 0, -1)) != 0
-	    || owner->regions.count(position + Position( 1,  0)) != 0
-	    || owner->regions.count(position + Position( 0,  1)) != 0
-	    || owner->regions.count(position + Position(-1,  0)) != 0;
+	return game->regions.count(position + Position( 0, -1)) != 0
+	    || game->regions.count(position + Position( 1,  0)) != 0
+	    || game->regions.count(position + Position( 0,  1)) != 0
+	    || game->regions.count(position + Position(-1,  0)) != 0;
 }
 
 bool Region::hasNeighbor(Direction direction) const {
 	const Position offset = getOffset(direction);
-	return owner->regions.count(position + offset) != 0;
+	return game->regions.count(position + offset) != 0;
 }
 
 Region * Region::getNeighbor(Direction direction) const {
 	const Position offset = getOffset(direction);
-	return owner->regions.count(position + offset) == 0? nullptr : owner->regions.at(position + offset).get();
+	return game->regions.count(position + offset) == 0? nullptr : game->regions.at(position + offset).get();
 }
 
 std::unordered_set<Direction> Region::validDirections() const {
 	std::unordered_set<Direction> out;
 	out.reserve(4);
-	if (owner->regions.count(position + Position( 0, -1)) != 0)
+	if (game->regions.count(position + Position( 0, -1)) != 0)
 		out.insert(Direction::North);
-	if (owner->regions.count(position + Position( 1,  0)) != 0)
+	if (game->regions.count(position + Position( 1,  0)) != 0)
 		out.insert(Direction::East);
-	if (owner->regions.count(position + Position( 0,  1)) != 0)
+	if (game->regions.count(position + Position( 0,  1)) != 0)
 		out.insert(Direction::South);
-	if (owner->regions.count(position + Position(-1,  0)) != 0)
+	if (game->regions.count(position + Position(-1,  0)) != 0)
 		out.insert(Direction::West);
 	return out;
 }
@@ -128,7 +128,7 @@ void Region::erase(Area &area) {
 	if (areas.count(area.name) == 0)
 		return;
 
-	owner->eraseExtractions(area);
+	game->eraseExtractions(area);
 	areas.erase(area.name);
 }
 
@@ -155,7 +155,7 @@ Region & Region::setMoney(size_t money_) {
 }
 
 Region & Region::setPosition(const std::pair<s64, s64> &position_) {
-	owner->updatePosition(*this, position_);
+	game->updatePosition(*this, position_);
 	return *this;
 }
 
@@ -200,7 +200,7 @@ std::unique_ptr<Region> Region::fromString(Game &game, const std::string &str) {
 	const size_t size = parseUlong(by_colon[3]);
 	const size_t money = parseUlong(by_colon[4]);
 	const double greed = parseDouble(by_colon[5]);
-	std::unique_ptr<Region> region = std::make_unique<Region>(&game, name, std::make_pair(x, y), size);
+	std::unique_ptr<Region> region = std::make_unique<Region>(game, name, std::make_pair(x, y), size);
 	region->money = money;
 	region->greed = greed;
 	region->areas.clear();
@@ -219,7 +219,7 @@ Region::Position operator+(const Region::Position &left, const Region::Position 
 
 std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t size) {
 	NameGen::Language language = NameGen::makeRandomLanguage();
-	std::unique_ptr<Region> region = std::make_unique<Region>(&game, language.makeName(), pos, size);
+	std::unique_ptr<Region> region = std::make_unique<Region>(game, language.makeName(), pos, size);
 	region->money = randomRange(100ul, 10000ul);
 	region->greed = randomRangeDouble(0.1, 1.0);
 	size_t remaining_size = size;
