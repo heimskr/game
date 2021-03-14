@@ -80,6 +80,7 @@ void MainWindow::renderMarket(Region *region) {
 												context->inventory[name] -= original_chosen;
 												region->money -= total_price;
 												context->money += total_price;
+												shrink(context->inventory, name);
 											}
 										});
 									}

@@ -10,7 +10,7 @@ void MainWindow::renderTravel(Region *region) {
 	} else {
 		ImGui::Text("Your position is (%ld, %ld).", region->position.first, region->position.second);
 		if (ImGui::BeginTable("Map", 3)) {
-			constexpr float COLUMN_WIDTH = 250.f;
+			constexpr float COLUMN_WIDTH = 250.f, COLUMN_HEIGHT = 100.f;
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
@@ -35,7 +35,7 @@ void MainWindow::renderTravel(Region *region) {
 						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.75f);
 					}
-					if (ImGui::Button(label.c_str(), {COLUMN_WIDTH, 100.f})) {
+					if (ImGui::Button(label.c_str(), {COLUMN_WIDTH, COLUMN_HEIGHT})) {
 						if (exists)
 							context->position = pos;
 						else
@@ -48,9 +48,9 @@ void MainWindow::renderTravel(Region *region) {
 					}
 					if (populated) {
 						const ImVec2 text_size = ImGui::CalcTextSize(bare_label.c_str());
-						const ImVec2 min = {
-							button_start.x + (COLUMN_WIDTH - text_size.x) / 2.f,
-							button_start.y + 50.f + text_size.y / 2.f
+						const ImVec2 min {
+							button_start.x + (COLUMN_WIDTH  - text_size.x) / 2.f,
+							button_start.y + (COLUMN_HEIGHT + text_size.y) / 2.f
 						};
 						const ImVec2 max = {min.x + text_size.x, min.y};
 						ImGui::GetWindowDrawList()->AddLine(min, max, 0xffffffff);
