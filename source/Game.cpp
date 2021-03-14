@@ -38,7 +38,7 @@ void Game::addResources() {
 	add(Resource(this, "Malic Acid").setBasePrice(1.0).addTypes("molecule", "chemical", "centrifugable"));
 	add(Resource(this, "Hydrogen").setBasePrice(0.05).addTypes("element", "chemical"));
 	add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical", "centrifugable"));
-	add(Resource(this, "Lignin").setBasePrice(50.0).addTypes("molecule", "chemical", "centrifugable"));
+	add(Resource(this, "Lignin").setBasePrice(10.0).addTypes("molecule", "chemical", "centrifugable"));
 	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 	add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
 	add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
