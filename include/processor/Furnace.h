@@ -12,5 +12,5 @@ class Furnace: public Processor {
 		Type getType() const override { return Type::Furnace; }
 
 	protected:
-		void headerAdditional() override;
+		void headerAdditional(Context &, long index) override;
 };

@@ -71,8 +71,10 @@ void Processor::renderHeader(Context &context, long index) {
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Auto-Extract");
 	ImGui::SameLine();
+	headerButtons(context, index);
+	ImGui::SameLine();
 	ImGui::Text("%s", getName().c_str());
-	headerAdditional();
+	headerAdditional(context, index);
 }
 
 void Processor::renderBody(Context &context, long index) {
@@ -149,7 +151,8 @@ std::string Processor::getName() const {
 	return typeName(getType());
 }
 
-void Processor::headerAdditional() {}
+void Processor::headerAdditional(Context &, long) {}
+void Processor::headerButtons(Context &, long) {}
 
 Processor * Processor::fromString(Game &game, const std::string &str) {
 	const std::vector<std::string> pieces = split(str, ":", false);

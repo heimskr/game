@@ -2,6 +2,7 @@
 
 #include "Game.h"
 #include "imgui.h"
+#include "main.h"
 #include "Resource.h"
 #include "processor/Fermenter.h"
 
@@ -47,7 +48,22 @@ double Fermenter::tick(double delta) {
 	return out;
 }
 
-void Fermenter::headerAdditional() {
+void Fermenter::headerAdditional(Context &, long) {
 	ImGui::SameLine();
 	ImGui::Text("(yeast: %.2f)", yeast);
+}
+
+void Fermenter::headerButtons(Context &context, long index) {
+	// TODO: allow player to choose a divisor (e.g., 4 to move only a fourth of all fermentables) by holding left on the
+	// d-pad when clicking the button
+	if (ImGui::Button(("F##fill_" + std::to_string(index)).c_str(), {34.f, 0.f})) {
+		for (auto &[name, amount]: context->inventory)
+			if (context->resources.at(name).hasType("fermenter fill")) {
+				input[name] += amount;
+				amount = 0;
+			}
+		shrink(input);
+	}
+	if (ImGui::IsItemHovered())
+		ImGui::SetTooltip("Fill with fermentable items.");
 }

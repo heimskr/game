@@ -24,8 +24,8 @@ class Processor {
 		/** Returns the amount processed. */
 		virtual double tick(double delta);
 		void moveOutput();
-		virtual void renderHeader(Context &context, long index);
-		virtual void renderBody(Context &context, long index);
+		virtual void renderHeader(Context &, long index);
+		virtual void renderBody(Context &, long index);
 		virtual std::string getName() const;
 		virtual Type getType() const = 0;
 		static Processor * fromString(Game &, const std::string &);
@@ -33,5 +33,6 @@ class Processor {
 		static const char * typeName(Type);
 
 	protected:
-		virtual void headerAdditional();
+		virtual void headerAdditional(Context &, long index);
+		virtual void headerButtons(Context &, long index);
 };

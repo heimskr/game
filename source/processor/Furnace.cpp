@@ -49,7 +49,7 @@ double Furnace::tick(double delta) {
 	return out;
 }
 
-void Furnace::headerAdditional() {
+void Furnace::headerAdditional(Context &, long) {
 	ImGui::SameLine();
 	ImGui::Text("(fuel: %.2f)", fuel);
 }

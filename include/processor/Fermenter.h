@@ -12,5 +12,6 @@ class Fermenter: public Processor {
 		Type getType() const override { return Type::Fermenter; }
 
 	protected:
-		void headerAdditional() override;
+		void headerAdditional(Context &, long index) override;
+		void headerButtons(Context &, long index) override;
 };

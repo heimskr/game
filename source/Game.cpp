@@ -30,7 +30,7 @@ void Game::addResources() {
 	add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
 	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food"));
 	add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
-	add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
+	add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food", "fermenter fill").add(Processor::Type::Fermenter, {0.1, "Mead"}));
 	add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5));
 	add(Resource(this, "Silicon").setBasePrice(0.5).addTypes("element", "chemical"));
 	add(Resource(this, "Oxygen").setBasePrice(0.1).addTypes("element", "chemical"));
@@ -39,7 +39,7 @@ void Game::addResources() {
 	add(Resource(this, "Hydrogen").setBasePrice(0.05).addTypes("element", "chemical"));
 	add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical"));
 	add(Resource(this, "Lignin").setBasePrice(50.0).addTypes("molecule", "chemical"));
-	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism"));
+	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermenter fill"));
 	add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
 }
 
