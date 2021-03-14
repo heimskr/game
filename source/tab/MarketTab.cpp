@@ -132,7 +132,7 @@ void MainWindow::renderMarket(Region *region) {
 						ImGui::Text(str);
 						ImGui::TableNextColumn();
 						ImGui::TableSetColumnIndex(3);
-						if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f})) {
+						if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f}))
 							Keyboard::openForDouble([&](double chosen) {
 								if (chosen < 0. || ltna(amount, chosen)) {
 									context.showMessage("Error: Invalid amount.");
@@ -154,7 +154,6 @@ void MainWindow::renderMarket(Region *region) {
 									}
 								}
 							}, "Amount to Buy");
-						}
 						ImGui::TableNextColumn();
 					}
 					ImGui::EndTable();
