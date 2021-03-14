@@ -10,7 +10,7 @@ void MainWindow::renderTravel(Region *region) {
 	} else {
 		ImGui::Text("Your position is (%ld, %ld).", region->position.first, region->position.second);
 		if (ImGui::BeginTable("Map", 3)) {
-			constexpr float COLUMN_WIDTH = 200.f;
+			constexpr float COLUMN_WIDTH = 250.f;
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
@@ -28,25 +28,32 @@ void MainWindow::renderTravel(Region *region) {
 						populated = neighbor.occupied();
 						exists = true;
 					}
+					const std::string bare_label = label;
 					label += "##" + std::to_string(col) + "_" + std::to_string(row);
 					const bool disabled = row == 1 && col == 1;
 					if (disabled) {
 						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.75f);
 					}
-					if (!populated)
-						ImGui::PushStyleColor(ImGuiCol_Text, {0.7f, 0.7f, 0.7f, 1.f});
 					if (ImGui::Button(label.c_str(), {COLUMN_WIDTH, 100.f})) {
 						if (exists)
 							context->position = pos;
 						else
 							*context.game += Region::generate(*context.game, pos);
 					}
-					if (!populated)
-						ImGui::PopStyleColor();
+					const ImVec2 button_start = ImGui::GetItemRectMin();
 					if (disabled) {
 						ImGui::PopItemFlag();
 						ImGui::PopStyleVar();
+					}
+					if (populated) {
+						const ImVec2 text_size = ImGui::CalcTextSize(bare_label.c_str());
+						const ImVec2 min = {
+							button_start.x + (COLUMN_WIDTH - text_size.x) / 2.f,
+							button_start.y + 50.f + text_size.y / 2.f
+						};
+						const ImVec2 max = {min.x + text_size.x, min.y};
+						ImGui::GetWindowDrawList()->AddLine(min, max, 0xffffffff);
 					}
 					ImGui::TableNextColumn();
 				}
