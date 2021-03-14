@@ -32,6 +32,9 @@ class Context {
 		bool isConfirm = false;
 		std::function<void(bool)> onChoice = [](bool) {};
 
+		bool rightPressed = false;
+		bool downPressed = false;
+
 		void newGame();
 		void load();
 		void save();

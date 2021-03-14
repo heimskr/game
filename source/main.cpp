@@ -160,6 +160,8 @@ int main() {
 	MainWindow main_window(context);
 
 	while (show_main_window && !done) {
+		context.rightPressed = false;
+		context.downPressed = false;
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				done = true;
@@ -180,10 +182,17 @@ int main() {
 				}
 				ImGui_ImplSDL2_ProcessEvent(&event);
 			} else if (event.type == SDL_CONTROLLERBUTTONDOWN) {
-				if (event.cbutton.which == 0 && event.cbutton.button == SDL_CONTROLLER_BUTTON_START) {
-					SDL_Event quitEvent;
-					quitEvent.type = SDL_QUIT;
-					SDL_PushEvent(&quitEvent);
+				if (event.cbutton.which == 0) {
+					const u8 button = event.cbutton.button;
+					if (button == SDL_CONTROLLER_BUTTON_START) {
+						SDL_Event quitEvent;
+						quitEvent.type = SDL_QUIT;
+						SDL_PushEvent(&quitEvent);
+					} else if (button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT) {
+						context.rightPressed = true;
+					} else if (button == SDL_CONTROLLER_BUTTON_DPAD_DOWN) {
+						context.downPressed = true;
+					}
 				}
 				ImGui_ImplSDL2_ProcessEvent(&event);
 			} else {
@@ -294,20 +303,18 @@ int main() {
 				ImGui::Text("%s", context.message.c_str());
 				ImGui::EndChild();
 				if (context.isConfirm) {
-					if (ImGui::Button("Okay")) {
+					if (ImGui::Button("Okay") || context.rightPressed) {
 						context.message.clear();
 						ImGui::CloseCurrentPopup();
 						context.onChoice(true);
 					}
-
 					ImGui::SameLine();
-
-					if (ImGui::Button("Cancel")) {
+					if (ImGui::Button("Cancel") || context.downPressed) {
 						context.message.clear();
 						ImGui::CloseCurrentPopup();
 						context.onChoice(false);
 					}
-				} else if (ImGui::Button("Close")) {
+				} else if (ImGui::Button("Close") || context.rightPressed || context.downPressed) {
 					context.message.clear();
 					ImGui::CloseCurrentPopup();
 				}
