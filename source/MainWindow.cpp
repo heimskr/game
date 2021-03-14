@@ -51,6 +51,7 @@ void MainWindow::render(bool *open) {
 		TAB("Inventory",   3, { renderInventory();    });
 		TAB("Conversion",  4, { renderConversion();   });
 		TAB("Market",      5, { renderMarket(region); });
+		TAB("Automation",  6, { renderAutomation();   });
 #undef TAB
 		selectedTab = -1;
 		ImGui::EndTabBar();

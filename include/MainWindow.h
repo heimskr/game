@@ -11,7 +11,7 @@ class MainWindow {
 		bool insert(std::shared_ptr<Area>, const std::string &, double);
 
 	public:
-		constexpr static int TAB_COUNT = 6;
+		constexpr static int TAB_COUNT = 7;
 		Context &context;
 		int selectedTab = 0;
 		int lastTab = 0;
@@ -26,4 +26,5 @@ class MainWindow {
 		void renderInventory();
 		void renderConversion();
 		void renderMarket(Region *);
+		void renderAutomation();
 };

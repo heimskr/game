@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 
+#include "AutomationLink.h"
 #include "Extraction.h"
 #include "RecipeManager.h"
 #include "Region.h"
@@ -22,7 +23,9 @@ class Game {
 		std::map<std::string, double> inventory;
 		std::map<Region::Position, std::unique_ptr<Region>> regions;
 		std::list<Extraction> extractions;
-		std::list<std::unique_ptr<Processor>> processors;
+		std::list<std::shared_ptr<Processor>> processors;
+		std::unordered_map<std::string, std::shared_ptr<Processor>> processorsByID;
+		std::list<AutomationLink> automationLinks;
 		Region::Position position;
 		size_t money = 0;
 		bool cheatsEnabled = false;

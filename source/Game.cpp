@@ -279,7 +279,7 @@ void Game::loadDefaults() {
 	home += mountain;
 	home += lake;
 	home += farmland;
-	processors.push_back(std::make_unique<Furnace>(*this));
+	processors.push_back(std::make_shared<Furnace>(*this));
 	Logger::info("Loaded default data.");
 }
 
@@ -306,14 +306,14 @@ std::string Game::toString() const {
 	for (const Extraction &extraction: extractions)
 		out << extraction.toString() << "\n";
 	out << "\n[Processors]\n";
-	for (const std::unique_ptr<Processor> &processor: processors)
+	for (const std::shared_ptr<Processor> &processor: processors)
 		out << processor->toString() << "\n";
 	return out.str();
 }
 
 std::shared_ptr<Game> Game::fromString(const std::string &str) {
 	std::vector<std::string> lines = split(str, "\n", true);
-	enum class Mode {None, Regions, Inventory, Position, Extractions, Processors};
+	enum class Mode {None, Regions, Inventory, Position, Extractions, Processors, Automations};
 	Mode mode = Mode::None;
 
 	std::shared_ptr<Game> out = std::make_shared<Game>();
@@ -334,6 +334,8 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				mode = Mode::Extractions;
 			else if (line == "[Processors]")
 				mode = Mode::Processors;
+			else if (line == "[Automations]")
+				mode = Mode::Automations;
 			else {
 				Logger::error("Invalid line: \"%s\"", line.c_str());
 				for (char ch: line)
@@ -369,8 +371,14 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				case Mode::Extractions:
 					out->extractions.push_back(Extraction::fromString(*out, line));
 					break;
-				case Mode::Processors:
-					out->processors.push_back(std::unique_ptr<Processor>(Processor::fromString(*out, line)));
+				case Mode::Processors: {
+					std::shared_ptr<Processor> processor(Processor::fromString(*out, line));
+					out->processors.push_back(processor);
+					out->processorsByID.emplace(processor->id, processor);
+					break;
+				}
+				case Mode::Automations:
+					out->automationLinks.emplace_back(*out, line);
 					break;
 				default: throw std::runtime_error("Invalid mode: " + std::to_string(static_cast<int>(mode)));
 			}

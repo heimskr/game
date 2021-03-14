@@ -22,14 +22,15 @@ void MainWindow::renderConversion() {
 				for (const auto &[name, amount]: cost)
 					context->inventory[name] -= amount;
 				shrink(context->inventory);
-				std::unique_ptr<Processor> new_processor(Processor::ofType(*context.game, type));
+				std::shared_ptr<Processor> new_processor(Processor::ofType(*context.game, type));
 				new_processor->name = Processor::typeName(type);
 				context->processors.push_back(std::move(new_processor));
+				context->processorsByID.emplace(new_processor->id, new_processor);
 				context.showMessage("Added a new " + std::string(Processor::typeName(type)) + ".");
 			});
 		ImGui::SameLine();
 		if (ImGui::Button("Sort"))
-			context->processors.sort([](std::unique_ptr<Processor> &left, std::unique_ptr<Processor> &right) {
+			context->processors.sort([](std::shared_ptr<Processor> &left, std::shared_ptr<Processor> &right) {
 				return left->name < right->name;
 			});
 		ImGui::SameLine();
@@ -57,7 +58,7 @@ void MainWindow::renderConversion() {
 			ImGui::Text("You have no processors.");
 		} else {
 			u64 i = 0;
-			for (const std::unique_ptr<Processor> &processor: context->processors) {
+			for (const auto &processor: context->processors) {
 				processor->renderHeader(context, ++i);
 				processor->renderBody(context, ++i);
 			}
