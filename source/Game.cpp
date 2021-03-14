@@ -308,6 +308,9 @@ std::string Game::toString() const {
 	out << "\n[Processors]\n";
 	for (const std::shared_ptr<Processor> &processor: processors)
 		out << processor->toString() << "\n";
+	out << "\n[Automations]\n";
+	for (const AutomationLink &link: automationLinks)
+		out << link.toString() << "\n";
 	return out.str();
 }
 
