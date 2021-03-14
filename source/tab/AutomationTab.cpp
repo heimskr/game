@@ -18,8 +18,8 @@ void MainWindow::renderAutomation() {
 						if (weight <= 0) {
 							context.showMessage("Invalid weight.");
 						} else {
-							context->automationLinks.emplace_back(*context.game, source.get(), destination.get(),
-								resource_name, weight);
+							context->automationLinks.emplace_back(*context.game, source, destination, resource_name,
+								weight);
 							context.showMessage("Linked " + source->name + " to " + destination->name + " for "
 								 + resource_name + ".");
 						}
@@ -27,5 +27,29 @@ void MainWindow::renderAutomation() {
 				}, "Select destination processor:");
 			});
 		}, "Select source processor:");
+	}
+
+	if (ImGui::BeginTable("Automations", 4)) {
+		ImGui::TableSetupColumn("Source", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("Destination", ImGuiTableColumnFlags_WidthStretch);
+		ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthAlwaysAutoResize);
+		ImGui::TableSetupColumn("Weight", ImGuiTableColumnFlags_WidthAlwaysAutoResize);
+		ImGui::TableHeadersRow();
+		for (const AutomationLink &link: context->automationLinks) {
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%s", link.producer->name.c_str());
+			ImGui::TableNextColumn();
+			ImGui::TableSetColumnIndex(1);
+			ImGui::Text("%s", link.consumer->name.c_str());
+			ImGui::TableNextColumn();
+			ImGui::TableSetColumnIndex(2);
+			ImGui::Text("%s", link.resourceName.c_str());
+			ImGui::TableNextColumn();
+			ImGui::TableSetColumnIndex(3);
+			ImGui::Text("%.2f", link.weight);
+			ImGui::TableNextColumn();
+		}
+		ImGui::EndTable();
 	}
 }
