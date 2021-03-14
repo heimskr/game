@@ -35,6 +35,12 @@ void MainWindow::renderTravel(Region *region) {
 						ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.75f);
 					}
+					const bool is_center = pos.first == 0 && pos.second == 0;
+					if (is_center) {
+						ImGui::PushStyleColor(ImGuiCol_Button, {0.f, 0.4f, 0.f, 1.f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0.f, 0.6f, 0.f, 1.f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0.f, 0.5f, 0.f, 1.f});
+					}
 					if (ImGui::Button(label.c_str(), {COLUMN_WIDTH, COLUMN_HEIGHT})) {
 						if (exists)
 							context->position = pos;
@@ -42,6 +48,11 @@ void MainWindow::renderTravel(Region *region) {
 							*context.game += Region::generate(*context.game, pos);
 					}
 					const ImVec2 button_start = ImGui::GetItemRectMin();
+					if (is_center) {
+						ImGui::PopStyleColor();
+						ImGui::PopStyleColor();
+						ImGui::PopStyleColor();
+					}
 					if (disabled) {
 						ImGui::PopItemFlag();
 						ImGui::PopStyleVar();

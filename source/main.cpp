@@ -188,11 +188,10 @@ int main() {
 						SDL_Event quitEvent;
 						quitEvent.type = SDL_QUIT;
 						SDL_PushEvent(&quitEvent);
-					} else if (button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT) {
+					} else if (button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
 						context.rightPressed = true;
-					} else if (button == SDL_CONTROLLER_BUTTON_DPAD_DOWN) {
+					else if (button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)
 						context.downPressed = true;
-					}
 				}
 				ImGui_ImplSDL2_ProcessEvent(&event);
 			} else {
