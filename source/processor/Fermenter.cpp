@@ -6,10 +6,10 @@
 #include "Resource.h"
 #include "processor/Fermenter.h"
 
-Fermenter::Fermenter(Game &game_, double yeast_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract, const std::string &name_):
-	Processor(game_, input_, output_, auto_extract, name_), yeast(yeast_) {}
-
-Fermenter::Fermenter(Game &game_): Processor(game_) {}
+Fermenter & Fermenter::setYeast(double yeast_) {
+	yeast = yeast_;
+	return *this;
+}
 
 std::string Fermenter::toString() const {
 	return Processor::toString() + ":" + std::to_string(yeast);

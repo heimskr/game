@@ -6,10 +6,10 @@
 #include "Resource.h"
 #include "processor/Furnace.h"
 
-Furnace::Furnace(Game &game_, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract, const std::string &name_):
-	Processor(game_, input_, output_, auto_extract, name_), fuel(fuel_) {}
-
-Furnace::Furnace(Game &game_): Processor(game_) {}
+Furnace & Furnace::setFuel(double fuel_) {
+	fuel = fuel_;
+	return *this;
+}
 
 std::string Furnace::toString() const {
 	return Processor::toString() + ":" + std::to_string(fuel);

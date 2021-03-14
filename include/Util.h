@@ -53,3 +53,4 @@ bool approx(double, double);
 bool lte(double, double);
 /** Less than and not approximate */
 bool ltna(double, double);
+std::string makeUUID();

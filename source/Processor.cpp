@@ -7,10 +7,52 @@
 #include "Keyboard.h"
 #include "imgui.h"
 
-Processor::Processor(Game &game_, const Resource::Map &input_, const Resource::Map &output_, bool auto_extract, const std::string &name_):
-	game(&game_), input(input_), output(output_), autoExtract(auto_extract), name(name_) {}
+Processor::Processor(Game &game_): game(&game_) {}
 
-Processor::Processor(Game &game_): Processor(game_, {}, {}, false, "Processor?") {}
+Processor & Processor::setInput(const std::map<std::string, double> &input_) {
+	input = input_;
+	return *this;
+}
+
+Processor & Processor::setOutput(const std::map<std::string, double> &output_) {
+	output = output_;
+	return *this;
+}
+
+Processor & Processor::setInput(std::map<std::string, double> &&input_) {
+	input = std::move(input_);
+	return *this;
+}
+
+Processor & Processor::setOutput(std::map<std::string, double> &&output_) {
+	output = std::move(output_);
+	return *this;
+}
+
+Processor & Processor::setAutoExtract(bool auto_extract) {
+	autoExtract = auto_extract;
+	return *this;
+}
+
+Processor & Processor::setName(const std::string &name_) {
+	name = name_;
+	return *this;
+}
+
+Processor & Processor::setName(std::string &&name_) {
+	name = std::move(name_);
+	return *this;
+}
+
+Processor & Processor::setID(const std::string &id_) {
+	id = id_;
+	return *this;
+}
+
+Processor & Processor::setID(std::string &&id_) {
+	id = std::move(id_);
+	return *this;
+}
 
 double Processor::tick(double delta) {
 	double out = 0.;
@@ -79,6 +121,8 @@ void Processor::renderHeader(Context &context, long index) {
 	headerButtons(context, index);
 	ImGui::SameLine();
 	ImGui::Text("%s", name.c_str());
+	if (context->cheatsEnabled && ImGui::IsItemHovered())
+		ImGui::SetTooltip("ID: %s", id.c_str());
 	headerAdditional(context, index);
 }
 
@@ -157,23 +201,29 @@ void Processor::headerButtons(Context &, long) {}
 
 std::string Processor::toString() const {
 	return std::to_string(static_cast<int>(getType())) + ":" + stringify(input) + ":" + stringify(output) + ":"
-		+ (autoExtract? "1" : "0") + ":" + name;
+		+ (autoExtract? "1" : "0") + ":" + name + ":" + id;
 }
 
 Processor * Processor::fromString(Game &game, const std::string &str) {
-	const std::vector<std::string> pieces = split(str, ":", false);
+	std::vector<std::string> pieces = split(str, ":", false);
 	Resource::Map input(parseMap(pieces[1])), output(parseMap(pieces[2]));
 	const bool auto_extract = parseLong(pieces[3]) != 0;
-	const std::string &name = pieces[4];
-	const std::string &extra = pieces[5];
+	std::string &name = pieces[4];
+	std::string &id = pieces[5];
+	const std::string &extra = pieces[6];
 	const Type type = static_cast<Type>(parseLong(pieces[0]));
+	Processor *out = nullptr;
 	switch (type) {
-		case Type::Furnace:    return new Furnace(game, parseDouble(extra), std::move(input), std::move(output), auto_extract, name);
-		case Type::Centrifuge: return new Centrifuge(game, std::move(input), std::move(output), auto_extract, name);
-		case Type::Fermenter:  return new Fermenter(game, parseDouble(extra), std::move(input), std::move(output), auto_extract, name);
-		case Type::Crusher:    return new Crusher(game, std::move(input), std::move(output), auto_extract, name);
+		case Type::Furnace:    out = &((new Furnace(game))->setFuel(parseDouble(extra))); break;
+		case Type::Centrifuge: out = new Centrifuge(game); break;
+		case Type::Fermenter:  out = &((new Fermenter(game))->setYeast(parseDouble(extra))); break;
+		case Type::Crusher:    out = new Crusher(game); break;
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
+
+	out->setInput(std::move(input)).setOutput(std::move(output)).setAutoExtract(auto_extract).setName(std::move(name));
+	out->setID(std::move(id));
+	return out;
 }
 
 Processor * Processor::ofType(Game &game, Type type) {

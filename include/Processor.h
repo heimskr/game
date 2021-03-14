@@ -17,10 +17,19 @@ class Processor {
 		Game *game;
 		std::map<std::string, double> input, output;
 		bool autoExtract = false;
-		std::string name;
+		std::string name, id;
 
-		Processor(Game &, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract, const std::string &name_);
 		Processor(Game &);
+
+		Processor & setInput(const std::map<std::string, double> &);
+		Processor & setOutput(const std::map<std::string, double> &);
+		Processor & setInput(std::map<std::string, double> &&);
+		Processor & setOutput(std::map<std::string, double> &&);
+		Processor & setAutoExtract(bool);
+		Processor & setName(const std::string &);
+		Processor & setName(std::string &&);
+		Processor & setID(const std::string &);
+		Processor & setID(std::string &&);
 
 		virtual std::string toString() const;
 		/** Returns the amount processed. */

@@ -4,8 +4,9 @@ class Furnace: public Processor {
 	public:
 		double fuel = 0.;
 
-		Furnace(Game &, double fuel_, const std::map<std::string, double> &input_, const std::map<std::string, double> &output_, bool auto_extract, const std::string &name_);
-		Furnace(Game &);
+		using Processor::Processor;
+
+		Furnace & setFuel(double);
 
 		virtual std::string toString() const override;
 		double tick(double delta) override;

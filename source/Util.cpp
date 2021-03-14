@@ -1,5 +1,6 @@
 #include <cmath>
 #include <list>
+#include <random>
 #include <stdexcept>
 
 #include "Resource.h"
@@ -173,4 +174,24 @@ bool lte(double left, double right) {
 
 bool ltna(double left, double right) {
 	return (left < right) && !approx(left, right);
+}
+
+std::string makeUUID() {
+	// https://stackoverflow.com/a/58467162/227663
+	static std::random_device dev;
+	static std::mt19937 rng(dev());
+
+	std::uniform_int_distribution<int> dist(0, 15);
+
+	constexpr const char *v = "0123456789abcdef";
+	constexpr bool dash[] = {0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0};
+
+	std::string out;
+	for (int i = 0; i < 16; ++i) {
+		if (dash[i])
+			out += "-";
+		out += v[dist(rng)];
+		out += v[dist(rng)];
+	}
+	return out;
 }
