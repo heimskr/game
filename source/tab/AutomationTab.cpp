@@ -29,26 +29,41 @@ void MainWindow::renderAutomation() {
 		}, "Select source processor:");
 	}
 
-	if (ImGui::BeginTable("Automations", 4)) {
+	if (context->automationLinks.empty()) {
+		ImGui::Text("No automation links have been set up.");
+		return;
+	}
+
+	if (ImGui::BeginTable("Automations", 5)) {
+		ImGui::TableSetupColumn("##remove", ImGuiTableColumnFlags_WidthFixed, 40.f);
 		ImGui::TableSetupColumn("Source", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Destination", ImGuiTableColumnFlags_WidthStretch);
 		ImGui::TableSetupColumn("Resource", ImGuiTableColumnFlags_WidthAlwaysAutoResize);
 		ImGui::TableSetupColumn("Weight", ImGuiTableColumnFlags_WidthAlwaysAutoResize);
 		ImGui::TableHeadersRow();
+		u64 i = 0;
 		for (const AutomationLink &link: context->automationLinks) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%s", link.producer->name.c_str());
+			if (ImGui::Button(("-##remove_" + std::to_string(i)).c_str(), {34.f, 0.f})) {
+				context.frameActions.push_back([this, i]() {
+					context->automationLinks.erase(std::next(context->automationLinks.begin(), i));
+				});
+			}
 			ImGui::TableNextColumn();
 			ImGui::TableSetColumnIndex(1);
-			ImGui::Text("%s", link.consumer->name.c_str());
+			ImGui::Text("%s", link.producer->name.c_str());
 			ImGui::TableNextColumn();
 			ImGui::TableSetColumnIndex(2);
-			ImGui::Text("%s", link.resourceName.c_str());
+			ImGui::Text("%s", link.consumer->name.c_str());
 			ImGui::TableNextColumn();
 			ImGui::TableSetColumnIndex(3);
+			ImGui::Text("%s", link.resourceName.c_str());
+			ImGui::TableNextColumn();
+			ImGui::TableSetColumnIndex(4);
 			ImGui::Text("%.2f", link.weight);
 			ImGui::TableNextColumn();
+			++i;
 		}
 		ImGui::EndTable();
 	}
