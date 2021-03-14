@@ -3,7 +3,7 @@
 #include "Util.h"
 #include "processor/Processors.h"
 #include "Game.h"
-#include "Main.h"
+#include "main.h"
 #include "Keyboard.h"
 #include "imgui.h"
 
@@ -163,6 +163,7 @@ Processor * Processor::fromString(Game &game, const std::string &str) {
 		case Type::Furnace:    return new Furnace(game, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
 		case Type::Centrifuge: return new Centrifuge(game, std::move(input), std::move(output), auto_extract);
 		case Type::Fermenter:  return new Fermenter(game, parseDouble(pieces[4]), std::move(input), std::move(output), auto_extract);
+		case Type::Crusher:    return new Crusher(game, std::move(input), std::move(output), auto_extract);
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }
@@ -172,6 +173,7 @@ Processor * Processor::ofType(Game &game, Type type) {
 		case Type::Furnace:    return new Furnace(game);
 		case Type::Centrifuge: return new Centrifuge(game);
 		case Type::Fermenter:  return new Fermenter(game);
+		case Type::Crusher:    return new Crusher(game);
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 }
@@ -181,6 +183,7 @@ const char * Processor::typeName(Type type) {
 		case Type::Furnace:    return "Furnace";
 		case Type::Centrifuge: return "Centrifuge";
 		case Type::Fermenter:  return "Fermenter";
+		case Type::Crusher:    return "Crusher";
 		default: return "?";
 	}
 }

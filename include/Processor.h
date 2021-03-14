@@ -10,8 +10,8 @@ class Game;
 
 class Processor {
 	public:
-		enum class Type {Furnace, Centrifuge, Fermenter};
-		static constexpr auto TYPES = std::array {Type::Furnace, Type::Centrifuge, Type::Fermenter};
+		enum class Type {Furnace, Centrifuge, Fermenter, Crusher};
+		static constexpr auto TYPES = std::array {Type::Furnace, Type::Centrifuge, Type::Fermenter, Type::Crusher};
 
 		Game *game;
 		std::map<std::string, double> input, output;

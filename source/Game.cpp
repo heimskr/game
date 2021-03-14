@@ -41,6 +41,7 @@ void Game::addResources() {
 	add(Resource(this, "Lignin").setBasePrice(50.0).addTypes("molecule", "chemical", "centrifugable"));
 	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 	add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
+	add(Resource(this, "Sand").setBasePrice(0.6));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {
@@ -51,6 +52,7 @@ void Game::addProcessorCosts() {
 	add(Processor::Type::Furnace,    {{"Iron", 100.}});
 	add(Processor::Type::Centrifuge, {{"Iron", 200.}});
 	add(Processor::Type::Fermenter,  {{"Iron", 100.}}); // TODO: change to Glass
+	add(Processor::Type::Crusher,    {{"Iron", 300.}});
 }
 
 void Game::addAll() {
