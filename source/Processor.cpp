@@ -77,7 +77,7 @@ void Processor::renderHeader(Context &context, long index) {
 
 void Processor::renderBody(Context &context, long index) {
 	if (ImGui::BeginTable(("Layout##" + std::to_string(index)).c_str(), 2)) {
-		const float width = ImGui::GetContentRegionMax().x / 2.f;
+		const float width = ImGui::GetContentRegionMax().x / 2.f - ImGui::GetStyle().WindowPadding.x;
 		ImGui::TableSetupColumn("##input_table", ImGuiTableColumnFlags_WidthFixed, width);
 		ImGui::TableSetupColumn("##output_table", ImGuiTableColumnFlags_WidthFixed, width);
 		ImGui::TableNextRow();

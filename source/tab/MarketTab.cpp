@@ -40,7 +40,7 @@ void MainWindow::renderMarket(Region *region) {
 				ImGui::Text(("Your money: " + std::to_string(context->money)).c_str());
 			}
 			if (ImGui::BeginTable("Market Layout", 2)) {
-				const float width = ImGui::GetContentRegionMax().x;
+				const float width = ImGui::GetContentRegionMax().x - ImGui::GetStyle().WindowPadding.x * 2.f;
 				ImGui::TableSetupColumn("Player", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
 				ImGui::TableSetupColumn("Region", ImGuiTableColumnFlags_WidthFixed, width / 2.f);
 
