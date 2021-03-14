@@ -55,6 +55,7 @@ void Region::subtractResourceFromNonOwned(const std::string &resource_name, doub
 			} else {
 				area.resources.erase(resource_name);
 				amount -= area_amount;
+				shrink(area.resources, resource_name);
 			}
 		}
 	}
