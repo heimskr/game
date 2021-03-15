@@ -44,6 +44,7 @@ void Game::addResources() {
 	add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
 	add(Resource(this, "Glass").setBasePrice(1.));
 	add(Resource(this, "Crude Oil").setBasePrice(5.));
+	add(Resource(this, "Microchip").setBasePrice(50.).addTypes("rare spawnable"));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {

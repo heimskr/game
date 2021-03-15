@@ -13,6 +13,11 @@ Area & Area::setResources(const Resource::Map &resources_) {
 	return *this;
 }
 
+Area & Area::setResources(Resource::Map &&resources_) {
+	resources = std::move(resources_);
+	return *this;
+}
+
 Area & Area::setSize(size_t size_) {
 	size = size_;
 	return *this;
@@ -27,6 +32,13 @@ Area & Area::setName(const std::string &name_) {
 	if (name_.find_first_of(INVALID_CHARS) != std::string::npos)
 		throw std::invalid_argument("Invalid area name");
 	name = name_;
+	return *this;
+}
+
+Area & Area::setName(std::string &&name_) {
+	if (name_.find_first_of(INVALID_CHARS) != std::string::npos)
+		throw std::invalid_argument("Invalid area name");
+	name = std::move(name_);
 	return *this;
 }
 
@@ -72,10 +84,10 @@ std::string Area::toString() const {
 }
 
 std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
-	const std::vector<std::string> pieces = split(str, ":", false);
+	std::vector<std::string> pieces = split(str, ":", false);
 	if (pieces.size() < 4)
 		throw std::runtime_error("Invalid Area string");
-	const std::string &name = pieces[0];
+	std::string &name = pieces[0];
 	const size_t size = parseLong(pieces[1]);
 	const bool player_owned = pieces[2] == "1";
 	const Type type = static_cast<Type>(parseLong(pieces[3]));
@@ -87,8 +99,9 @@ std::shared_ptr<Area> Area::fromString(Region &region, const std::string &str) {
 		case Type::Lake:     area = std::make_shared<LakeArea>(&region);     break;
 		case Type::Empty:    area = std::make_shared<EmptyArea>(&region);    break;
 		case Type::Farmland: area = std::make_shared<FarmlandArea>(&region, 0, pieces[5]); break;
+		case Type::OilField: area = std::make_shared<OilFieldArea>(&region); break;
 		default: throw std::invalid_argument("Unknown Area type: " + std::to_string(static_cast<unsigned>(type)));
 	}
-	area->setName(name).setSize(size).setPlayerOwned(player_owned).setResources(parseMap(pieces[4]));
+	area->setName(std::move(name)).setSize(size).setPlayerOwned(player_owned).setResources(std::move(parseMap(pieces[4])));
 	return area;
 }

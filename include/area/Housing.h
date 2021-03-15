@@ -8,4 +8,5 @@ class HousingArea: public Area {
 		Type getType() const override { return Type::Housing; }
 		std::string description() const override;
 		void tick(double delta) override;
+		void spawnGoods();
 };

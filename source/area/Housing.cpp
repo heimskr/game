@@ -4,6 +4,7 @@
 
 HousingArea::HousingArea(Region *region, size_t size): Area(region, size) {
 	resources.emplace("Human", static_cast<double>(size / 4));
+	spawnGoods();
 }
 
 std::string HousingArea::description() const {
@@ -26,4 +27,18 @@ void HousingArea::tick(double delta) {
 		for (const auto &subtraction: subtractions)
 			parent->subtractResourceFromNonOwned(*subtraction.first, subtraction.second);
 	}
+}
+
+void HousingArea::spawnGoods() {
+	for (const auto &[name, resource]: parent->game->resources)
+		if (resource.hasType("rare spawnable")) {
+			if (chance(0.1))
+				resources[name] += randomRange(1, 7) % 5;
+		} else if (resource.hasType("uncommon spawnable")) {
+			if (chance(0.25))
+				resources[name] += randomRange(2, 10);
+		} else if (resource.hasType("common spawnable")) {
+			if (chance(0.5))
+				resources[name] += randomRange(5, 20);
+		}
 }

@@ -24,9 +24,11 @@ class Area {
 		Area(Region *, size_t = 0);
 
 		Area & setResources(const Resource::Map &);
+		Area & setResources(Resource::Map &&);
 		Area & setSize(size_t);
 		Area & setPlayerOwned(bool);
 		Area & setName(const std::string &);
+		Area & setName(std::string &&);
 
 		bool reduceSize(size_t new_size);
 
