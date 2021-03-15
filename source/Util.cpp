@@ -1,34 +1,12 @@
 #include <cmath>
 #include <list>
-#include <random>
 #include <stdexcept>
 
 #include "Resource.h"
 #include "Util.h"
 
-PrintConsole *console = nullptr;
-std::vector<PrintConsole> savedConsoles;
-
-void saveConsole() {
-	if (console)
-		savedConsoles.push_back(*console);
-}
-
-void restoreConsole() {
-	if (console && !savedConsoles.empty()) {
-		*console = savedConsoles.back();
-		savedConsoles.pop_back();
-	}
-}
-
-void defaultConsole() {
-	if (console) {
-		saveConsole();
-		console->consoleWidth = 80;
-		console->consoleHeight = 45;
-		consoleSelect(console);
-	}
-}
+std::random_device rngdev;
+std::mt19937 rng(rngdev());
 
 std::vector<std::string> split(const std::string &str, const std::string &delimiter, bool condense) {
 	if (str.empty())
@@ -113,13 +91,13 @@ bool chance(double probability) {
 size_t randomRange(size_t min, size_t max) {
 	if (max <= min)
 		return min;
-	return min + (rand() % (max - min + 1));
+	return std::uniform_int_distribution<size_t>(min, max)(rng);
 }
 
 double randomRangeDouble(double min, double max) {
 	if (max <= min)
 		return min;
-	return min + static_cast<double>(rand()) / RAND_MAX * (max - min);
+	return std::uniform_real_distribution<double>(min, max)(rng);
 }
 
 std::string stringify(const std::map<std::string, double> &map) {

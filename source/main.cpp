@@ -40,7 +40,7 @@ int main() {
 	} catch (const std::exception &err) {
 		consoleInit(nullptr);
 		printf("Error: %s\n", err.what());
-		consoleUpdate(console);
+		consoleUpdate(nullptr);
 		PadState pad;
 		padConfigureInput(1, HidNpadStyleSet_NpadStandard);
 		padInitializeDefault(&pad);

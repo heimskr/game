@@ -81,32 +81,6 @@ std::string Game::randomResource(const Resource::Type &type) const {
 	return choices.at(randomRange(0ul, choices.size() - 1ul));
 }
 
-void Game::listRegions() {
-	if (regions.empty()) {
-		print("No regions.\n");
-	} else {
-		Region *current = nullptr;
-		try {
-			current = &currentRegion();
-		} catch (const std::out_of_range &) {
-		} catch (const std::exception &err) {
-			Logger::error("Error in currentRegion: %s", err.what());
-		}
-		print("Regions:\n");
-		for (const auto &pair: regions) {
-			if (pair.second.get() == current)
-				print("- \e[33;4m%s\e[39;24m at (%ld, %ld)\n", pair.second->name.c_str(), pair.first.first, pair.first.second);
-			else
-				print("- \e[36m%s\e[39m at (%ld, %ld)\n", pair.second->name.c_str(), pair.first.first, pair.first.second);
-			for (const auto &area_pair: pair.second->areas) {
-				const Area &area = *area_pair.second;
-				print("  - \e[35m%s\e[39m (%lu%s): %s\n",
-					area_pair.first.c_str(), area.size, area.playerOwned? ", owned" : "", area.description().c_str());
-			}
-		}
-	}
-}
-
 bool Game::updatePosition(Region &region, const Region::Position &new_position) {
 	if (regions.count(region.position) == 0)
 		return false;
@@ -152,47 +126,6 @@ bool Game::updateName(Region &region, const std::string &new_name) {
 		throw std::invalid_argument("Invalid region name.");
 	region.name = new_name;
 	return true;
-}
-
-Region * Game::addRegion() {
-	std::string name;
-	if (!Keyboard::openForText([&](std::string entered_name) {
-		name = std::move(entered_name);
-	}, "Region Name", "", 64, NameGen::makeRandomLanguage().makeName())) {
-		print("Invalid name.\n");
-		return nullptr;
-	}
-	for (const auto &pair: regions)
-		if (pair.second->name == name) {
-			print("A region with that name already exists.\n");
-			return nullptr;
-		}
-	if (name.find_first_of(Region::INVALID_CHARS) != std::string::npos) {
-		print("Invalid region name.\n");
-		return nullptr;
-	}
-	s64 x, y;
-	std::tie(x, y) = suggestPosition(true);
-	size_t size;
-	if (!Keyboard::openForNumber([&](s64 x_) { x = x_; }, "Region X Coordinate", "", 64, std::to_string(x), "-")) {
-		print("Invalid x coordinate.\n");
-		return nullptr;
-	}
-	if (!Keyboard::openForNumber([&](s64 y_) { y = y_; }, "Region Y Coordinate", "", 64, std::to_string(y), "-")) {
-		print("Invalid y coordinate.\n");
-		return nullptr;
-	}
-	if (regions.count({x, y}) != 0) {
-		print("A region already exists at (%ld, %ld).\n", x, y);
-		return nullptr;
-	}
-	if (!Keyboard::openForNumber([&](s64 size_) { size = static_cast<size_t>(size_); }, "Region Size", "", 64, std::to_string((rand() % 64) + 32))) {
-		print("Invalid size.\n");
-		return nullptr;
-	}
-	regions.insert({{x, y}, std::make_unique<Region>(*this, name, Region::Position(x, y), size)});
-	print("Created new region \e[1m%s\e[22m at position (%ld, %ld) with size %lu.\n", name.c_str(), x, y, size);
-	return regions.at({x, y}).get();
 }
 
 Region & Game::currentRegion() {

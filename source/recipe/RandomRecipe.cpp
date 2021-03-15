@@ -10,7 +10,7 @@ RandomRecipe::RandomRecipe(const std::vector<RandomOutput> &outputs_):
 	outputs(outputs_), probabilitySum(getSum(outputs_)) {}
 
 RandomRecipe::RandomRecipe(std::vector<RandomOutput> &&outputs_):
-	outputs(std::move(outputs_)), probabilitySum(getSum(outputs_)) {}
+	outputs(std::move(outputs_)), probabilitySum(getSum(outputs)) {}
 
 std::pair<std::string, double> RandomRecipe::choose() const {
 	if (outputs.empty())

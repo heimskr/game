@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <switch/runtime/devices/console.h>
 
-extern PrintConsole *console;
-
 namespace Logger {
 	template <typename ...Args>
 	void info(Args &&...args) {
@@ -12,7 +10,7 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-		consoleUpdate(console);
+		consoleUpdate(nullptr);
 	}
 
 	template <typename ...Args>
@@ -21,7 +19,7 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-		consoleUpdate(console);
+		consoleUpdate(nullptr);
 	}
 
 	template <typename ...Args>
@@ -30,7 +28,7 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-		consoleUpdate(console);
+		consoleUpdate(nullptr);
 	}
 
 	template <typename ...Args>
@@ -39,6 +37,6 @@ namespace Logger {
 		fprintf(stderr, std::forward<Args>(args)...);
 		fprintf(stderr, "\n");
 		fflush(stderr);
-		consoleUpdate(console);
+		consoleUpdate(nullptr);
 	}
 }

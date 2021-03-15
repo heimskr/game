@@ -11,9 +11,9 @@ double Centrifuge::tick(double delta) {
 
 	const auto &recipes = game->recipes.centrifuge;
 
-	for (auto &[name, amount]: input)
-		if (recipes.count(name) != 0) {
-			const std::pair<std::string, double> choice = recipes.at(name).choose();
+	for (auto &[rname, amount]: input)
+		if (recipes.count(rname) != 0) {
+			const std::pair<std::string, double> choice = recipes.at(rname).choose();
 			// TODO: possibly allow centrifuge recipes to consume more than 1 of the resource per second
 			const double to_convert = std::min(amount, delta);
 			amount -= to_convert;

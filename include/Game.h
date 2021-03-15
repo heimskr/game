@@ -43,8 +43,6 @@ class Game {
 		Region::Position suggestPosition(bool is_free, s64 x = 0, s64 y = 0);
 		bool updateName(Region &, const std::string &);
 
-		void listRegions();
-		Region * addRegion();
 		Region & currentRegion();
 		bool erase(Region &);
 		void eraseExtractions(const Area &);

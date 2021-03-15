@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <random>
 #include <sstream>
 #include <string>
 #include <switch.h>
@@ -11,17 +12,13 @@
 
 #define PRINTPOS do { fprintf(stderr, "%s:%d\n", __FILE__, __LINE__); fflush(stderr); } while(0)
 
-extern PrintConsole *console;
-extern int oldConsoleWidth, oldConsoleHeight;
-
-void saveConsole();
-void restoreConsole();
-void defaultConsole();
+extern std::random_device rngdev;
+extern std::mt19937 rng;
 
 template <typename ...Args>
 void print(Args &&...args) {
 	printf(std::forward<Args>(args)...);
-	consoleUpdate(console);
+	consoleUpdate(nullptr);
 }
 
 template <typename T>
