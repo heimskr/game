@@ -84,7 +84,7 @@ void Game::listRegions() {
 		Region *current = nullptr;
 		try {
 			current = &currentRegion();
-		} catch (const std::exception &) {}
+		} catch (const std::out_of_range &) {}
 		print("Regions:\n");
 		for (const auto &pair: regions) {
 			if (pair.second.get() == current)

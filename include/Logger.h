@@ -8,33 +8,37 @@ extern PrintConsole *console;
 namespace Logger {
 	template <typename ...Args>
 	void info(Args &&...args) {
-		printf("\e[2m[\e[22;36mi\e[39;2m]\e[22m \e[39m");
-		printf(std::forward<Args>(args)...);
-		printf("\n");
+		fprintf(stderr, "\e[2m[\e[22;36mi\e[39;2m]\e[22m \e[39m");
+		fprintf(stderr, std::forward<Args>(args)...);
+		fprintf(stderr, "\n");
+		fflush(stderr);
 		consoleUpdate(console);
 	}
 
 	template <typename ...Args>
 	void error(Args &&...args) {
-		printf("\e[2m[\e[22;31m!\e[39;2m]\e[22m \e[39m");
-		printf(std::forward<Args>(args)...);
-		printf("\n");
+		fprintf(stderr, "\e[2m[\e[22;31m!\e[39;2m]\e[22m \e[39m");
+		fprintf(stderr, std::forward<Args>(args)...);
+		fprintf(stderr, "\n");
+		fflush(stderr);
 		consoleUpdate(console);
 	}
 
 	template <typename ...Args>
 	void warn(Args &&...args) {
-		printf("\e[2m[\e[22;33m!\e[39;2m]\e[22m \e[39m");
-		printf(std::forward<Args>(args)...);
-		printf("\n");
+		fprintf(stderr, "\e[2m[\e[22;33m!\e[39;2m]\e[22m \e[39m");
+		fprintf(stderr, std::forward<Args>(args)...);
+		fprintf(stderr, "\n");
+		fflush(stderr);
 		consoleUpdate(console);
 	}
 
 	template <typename ...Args>
 	void success(Args &&...args) {
-		printf("\e[2m[\e[22;32m\x02\e[39;2m]\e[22m \e[39m");
-		printf(std::forward<Args>(args)...);
-		printf("\n");
+		fprintf(stderr, "\e[2m[\e[22;32m\x02\e[39;2m]\e[22m \e[39m");
+		fprintf(stderr, std::forward<Args>(args)...);
+		fprintf(stderr, "\n");
+		fflush(stderr);
 		consoleUpdate(console);
 	}
 }
