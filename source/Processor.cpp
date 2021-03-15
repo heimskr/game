@@ -169,14 +169,14 @@ void Processor::renderBody(Context &context, long index) {
 			ImGui::TableHeadersRow();
 			u64 j = 0;
 			if (output.empty()) {
+				const float text_size = ImGui::CalcTextSize("Y").y;
+				const float padding = 2.f * ImGui::GetStyle().FramePadding.y;
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
-				ImGui::PushStyleColor(ImGuiCol_Text, {0.f, 0.f, 0.f, 0.f});
-				ImGui::Text("Y");
-				ImGui::PopStyleColor();
+				ImGui::Dummy({0.f, text_size + padding});
 				ImGui::NextColumn();
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text(" ");
+				ImGui::Dummy({0.f, text_size + padding});
 				ImGui::NextColumn();
 			} else {
 				for (auto &[name, amount]: output) {
