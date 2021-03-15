@@ -4,7 +4,7 @@
 #include "Resource.h"
 #include "processor/Refinery.h"
 
-std::array<RefineryMode, 3> refineryModes = {RefineryMode::Clarify, RefineryMode::Congeal, RefineryMode::Polymerize};
+std::array<RefineryMode, 2> refineryModes = {RefineryMode::Clarify, RefineryMode::Polymerize};
 
 Refinery & Refinery::setMode(RefineryMode mode_) {
 	mode = mode_;
@@ -60,7 +60,6 @@ void Refinery::headerButtons(Context &context, long index) {
 const char * stringify(RefineryMode mode) {
 	switch (mode) {
 		case RefineryMode::Clarify:    return "Clarify";
-		case RefineryMode::Congeal:    return "Congeal";
 		case RefineryMode::Polymerize: return "Polymerize";
 		default: return "???";
 	}

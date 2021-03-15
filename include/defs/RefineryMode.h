@@ -2,6 +2,6 @@
 
 #include <array>
 
-enum class RefineryMode {Clarify, Congeal, Polymerize};
-extern std::array<RefineryMode, 3> refineryModes;
+enum class RefineryMode {Clarify, Polymerize};
+extern std::array<RefineryMode, 2> refineryModes;
 const char * stringify(RefineryMode);
