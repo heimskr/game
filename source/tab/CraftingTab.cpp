@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "imgui.h"
+#include "Keyboard.h"
 #include "main.h"
 #include "MainWindow.h"
 
@@ -33,9 +34,20 @@ void MainWindow::renderCrafting() {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 			if (i < inv_size) {
-				if (ImGui::Selectable((inv_iter->first + "##input").c_str())) {
-					context.showMessage("Remove " + inv_iter->first + " from input");
-				}
+				if (ImGui::Selectable((inv_iter->first + "##input").c_str()))
+					Keyboard::openForDouble([this, inv_iter](double chosen) {
+						if (chosen == 0)
+							chosen = inv_iter->second;
+						if (chosen <= 0) {
+							context.showMessage("Invalid amount.");
+							return;
+						}
+						inv_iter->second -= chosen;
+						context->inventory[inv_iter->first] += chosen;
+						context.frameActions.push_back([this] {
+							shrink(context->craftingInventory);
+						});
+					});
 			} else
 				ImGui::Dummy({0.f, 0.f});
 			ImGui::TableNextColumn();
@@ -47,9 +59,9 @@ void MainWindow::renderCrafting() {
 			ImGui::TableNextColumn();
 			ImGui::TableSetColumnIndex(2);
 			if (i < out_size) {
-				if (ImGui::Selectable((out_iter->first + "##output").c_str())) {
-					context.showMessage("Remove " + out_iter->first + " from output");
-				}
+				if (ImGui::Selectable((out_iter->first + "##output").c_str()))
+					/* Remove items according to recipe from crafting inventory and move to regular inventory,
+					 * then recalculate outputs */;
 			} else
 				ImGui::Dummy({0.f, 0.f});
 			ImGui::TableNextColumn();
@@ -66,4 +78,8 @@ void MainWindow::renderCrafting() {
 		}
 		ImGui::EndTable();
 	}
+}
+
+void MainWindow::computeCraftingOutput() {
+
 }

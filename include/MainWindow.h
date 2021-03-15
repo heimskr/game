@@ -30,4 +30,5 @@ class MainWindow {
 		void renderMarket(Region *);
 		void renderAutomation();
 		void renderCrafting();
+		void computeCraftingOutput();
 };
