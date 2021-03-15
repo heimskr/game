@@ -7,9 +7,7 @@
 #include "Keyboard.h"
 #include "imgui.h"
 
-Processor::Processor(Game &game_): game(&game_) {
-	Logger::info("%s:%d", __FILE__, __LINE__);
-}
+Processor::Processor(Game &game_): game(&game_) {}
 
 Processor & Processor::setInput(const std::map<std::string, double> &input_) {
 	input = input_;
@@ -247,9 +245,7 @@ Processor * Processor::fromString(Game &game, const std::string &str) {
 }
 
 Processor * Processor::ofType(Game &game, Type type) {
-	Logger::info("%s:%d", __FILE__, __LINE__);
 	Processor *out;
-	Logger::info("%s:%d", __FILE__, __LINE__);
 	switch (type) {
 		case Type::Furnace:    out = new Furnace(game);    break;
 		case Type::Centrifuge: out = new Centrifuge(game); break;
@@ -258,9 +254,7 @@ Processor * Processor::ofType(Game &game, Type type) {
 		case Type::Refinery:   out = new Refinery(game);   break;
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
-	Logger::info("%s:%d", __FILE__, __LINE__);
 	out->setID(std::move(makeUUID()));
-	Logger::info("%s:%d", __FILE__, __LINE__);
 	return out;
 }
 

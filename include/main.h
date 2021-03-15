@@ -9,6 +9,7 @@
 
 #include "Area.h"
 #include "Processor.h"
+#include "defs/RefineryMode.h"
 
 class Game;
 
@@ -24,17 +25,20 @@ class Context {
 		bool showProcessorTypePicker = false;
 		bool showInventoryPicker = false;
 		bool showProcessorPicker = false;
+		bool showRefineryModePicker = false;
 		std::function<void(const std::string &)> onResourcePicked = [](const std::string &) {};
 		std::function<void(Area::Type)> onAreaTypePicked = [](Area::Type) {};
 		std::function<void(Processor::Type)> onProcessorTypePicked = [](Processor::Type) {};
 		std::function<void(const std::string &)> onInventoryPicked = [](const std::string &) {};
 		std::function<void(std::shared_ptr<Processor>)> onProcessorPicked = [](std::shared_ptr<Processor>) {};
+		std::function<void(RefineryMode)> onRefineryModePicked = [](RefineryMode) {};
 
 		std::string message;
 		bool isConfirm = false;
 		std::function<void(bool)> onChoice = [](bool) {};
 
 		std::string processorPickerMessage;
+		std::string refineryModePickerMessage;
 
 		bool rightPressed = false;
 		bool downPressed = false;
@@ -48,6 +52,7 @@ class Context {
 		void pickProcessorType(std::function<void(Processor::Type)>);
 		void pickInventory(std::function<void(const std::string &)>);
 		void pickProcessor(std::function<void(std::shared_ptr<Processor>)>, const std::string & = "");
+		void pickRefineryMode(std::function<void(RefineryMode)>, const std::string & = "");
 		void confirm(const std::string &, std::function<void(bool)>);
 		void showMessage(const std::string &);
 

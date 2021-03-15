@@ -331,6 +331,26 @@ int main() {
 			}
 			if (!modal_open)
 				context.showProcessorPicker = false;
+		} else if (context.showRefineryModePicker) {
+			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 300.f;
+			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Once);
+			ImGui::OpenPopup("Refinery Mode Selector");
+			bool modal_open = true;
+			if (ImGui::BeginPopupModal("Refinery Mode Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
+				if (!context.refineryModePickerMessage.empty())
+					ImGui::Text("%s", context.refineryModePickerMessage.c_str());
+				for (const RefineryMode mode: refineryModes)
+					if (ImGui::Selectable(stringify(mode))) {
+						context.onRefineryModePicked(mode);
+						context.showRefineryModePicker = false;
+						ImGui::CloseCurrentPopup();
+						break;
+					}
+				ImGui::EndPopup();
+			}
+			if (!modal_open)
+				context.showRefineryModePicker = false;
 		}
 
 		constexpr float MODAL_HEIGHT = 250.f;
@@ -410,6 +430,12 @@ void Context::pickProcessor(std::function<void(std::shared_ptr<Processor>)> fn, 
 	showProcessorPicker = true;
 	onProcessorPicked = fn;
 	processorPickerMessage = message_;
+}
+
+void Context::pickRefineryMode(std::function<void(RefineryMode)> fn, const std::string &message_) {
+	showRefineryModePicker = true;
+	onRefineryModePicked = fn;
+	refineryModePickerMessage = message_;
 }
 
 void Context::confirm(const std::string &str, std::function<void(bool)> fn) {

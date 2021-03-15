@@ -14,5 +14,6 @@ class Refinery: public Processor {
 		Type getType() const override { return Type::Refinery; }
 
 	protected:
+		void headerAdditional(Context &, long index) override;
 		void headerButtons(Context &, long index) override;
 };

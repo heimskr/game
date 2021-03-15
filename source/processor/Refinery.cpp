@@ -4,6 +4,8 @@
 #include "Resource.h"
 #include "processor/Refinery.h"
 
+std::array<RefineryMode, 3> refineryModes = {RefineryMode::Clarify, RefineryMode::Congeal, RefineryMode::Polymerize};
+
 Refinery & Refinery::setMode(RefineryMode mode_) {
 	mode = mode_;
 	return *this;
@@ -42,10 +44,26 @@ double Refinery::tick(double delta) {
 	return out;
 }
 
+void Refinery::headerAdditional(Context &context, long index) {
+	ImGui::SameLine();
+	ImGui::Text("(%s)", stringify(mode));
+}
+
 void Refinery::headerButtons(Context &context, long index) {
 	if (ImGui::Button(("M##mode_" + std::to_string(index)).c_str(), {34.f, 0.f})) {
-
+		context.pickRefineryMode([this, &context](RefineryMode mode_) {
+			mode = mode_;
+		});
 	}
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Set refinery mode.");
+}
+
+const char * stringify(RefineryMode mode) {
+	switch (mode) {
+		case RefineryMode::Clarify:    return "Clarify";
+		case RefineryMode::Congeal:    return "Congeal";
+		case RefineryMode::Polymerize: return "Polymerize";
+		default: return "???";
+	}
 }
