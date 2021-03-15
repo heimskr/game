@@ -269,7 +269,7 @@ std::unique_ptr<Region> Region::generate(Game &game, const Position &pos, size_t
 		remaining_size -= farmland_size;
 	}
 
-	if (remaining_size && chance(1.)) {
+	if (remaining_size && chance(0.2)) {
 		const size_t oilfield_size = randomRange(5, remaining_size * 2 / 3);
 		auto oilfield = std::make_shared<OilFieldArea>(region.get(), oilfield_size);
 		oilfield->setName("Oil Field").setPlayerOwned(!populated);

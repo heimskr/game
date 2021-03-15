@@ -43,6 +43,7 @@ void Game::addResources() {
 	add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
 	add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
 	add(Resource(this, "Glass").setBasePrice(1.));
+	add(Resource(this, "Crude Oil").setBasePrice(5.));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {
@@ -84,7 +85,10 @@ void Game::listRegions() {
 		Region *current = nullptr;
 		try {
 			current = &currentRegion();
-		} catch (const std::out_of_range &) {}
+		} catch (const std::out_of_range &) {
+		} catch (const std::exception &err) {
+			Logger::error("Error in currentRegion: %s", err.what());
+		}
 		print("Regions:\n");
 		for (const auto &pair: regions) {
 			if (pair.second.get() == current)

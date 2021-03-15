@@ -10,16 +10,13 @@ void MainWindow::renderTravel(Region *region) {
 	} else {
 		ImGui::Text("Your position is (%ld, %ld).", region->position.first, region->position.second);
 		if (ImGui::BeginTable("Map", 3)) {
-			Logger::info("<table>");
 			constexpr float COLUMN_WIDTH = 250.f, COLUMN_HEIGHT = 100.f;
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
 			ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, COLUMN_WIDTH);
 			for (int row = 0; row < 3; ++row) {
-				Logger::info("<row>");
 				ImGui::TableNextRow();
 				for (int col = 0; col < 3; ++col) {
-					Logger::info("<column>");
 					ImGui::TableSetColumnIndex(col);
 					const Region::Position pos(region->position.first + col - 1, region->position.second + row - 1);
 					std::string label = "~";
@@ -44,19 +41,14 @@ void MainWindow::renderTravel(Region *region) {
 						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0.f, 0.6f, 0.f, 1.f});
 						ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0.f, 0.5f, 0.f, 1.f});
 					}
-					Logger::info("<button>");
 					if (ImGui::Button(label.c_str(), {COLUMN_WIDTH, COLUMN_HEIGHT})) {
 						context.frameActions.push_back([this, pos, exists] {
-							if (exists) {
+							if (exists)
 								context->position = pos;
-							} else {
-								Logger::info("Generating...");
+							else
 								*context.game += Region::generate(*context.game, pos);
-								Logger::info("Generated.");
-							}
 						});
 					}
-					Logger::info("</button>");
 					const ImVec2 button_start = ImGui::GetItemRectMin();
 					if (is_center) {
 						ImGui::PopStyleColor();
@@ -77,12 +69,9 @@ void MainWindow::renderTravel(Region *region) {
 						ImGui::GetWindowDrawList()->AddLine(min, max, 0xffffffff);
 					}
 					ImGui::TableNextColumn();
-					Logger::info("</column>");
 				}
-				Logger::info("</row>");
 			}
 			ImGui::EndTable();
-			Logger::info("</table>");
 		}
 	}
 }

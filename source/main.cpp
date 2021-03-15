@@ -222,8 +222,6 @@ int main() {
 			if (!context.message.empty())
 				ImGui::OpenPopup("Message");
 		} catch (const std::exception &err) {
-			fprintf(stderr, "Error: %s", err.what());
-			fflush(stderr);
 			Logger::error("Error: %s", err.what());
 			context.showMessage("Error: " + std::string(err.what()));
 			ImGui::OpenPopup("Message");
@@ -369,12 +367,9 @@ int main() {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		SDL_GL_SwapWindow(window);
 
-		Logger::info("Starting frame actions.");
 		for (const auto &fn: context.frameActions)
 			fn();
-		Logger::info("Finished frame actions.");
 		context.frameActions.clear();
-		Logger::info("Cleared frame actions.");
 	}
 
 	ImGui::DestroyContext();
