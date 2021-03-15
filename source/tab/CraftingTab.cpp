@@ -74,9 +74,16 @@ void MainWindow::renderCrafting() {
 			ImGui::TableNextColumn();
 			ImGui::TableSetColumnIndex(2);
 			if (i < out_size) {
-				if (ImGui::Selectable(((*out_iter)->output + "##output_" + std::to_string(i)).c_str()))
-					/* Remove items according to recipe from crafting inventory and move to regular inventory,
-					 * then recalculate outputs */;
+				const CraftingRecipe &recipe = **out_iter;
+				if (ImGui::Selectable((recipe.output + "##output_" + std::to_string(i)).c_str())) {
+					for (const auto &[name, amount]: recipe.inputs)
+						context->craftingInventory[name] -= amount;
+					context->inventory[recipe.output] += recipe.amount;
+					context.frameActions.push_back([this] {
+						shrink(context->craftingInventory);
+						computeCraftingOutput();
+					});
+				}
 			} else
 				ImGui::Dummy({0.f, 0.f});
 			ImGui::TableNextColumn();
