@@ -19,9 +19,12 @@ double Refinery::tick(double delta) {
 	const auto &recipes = game->recipes.refinery;
 
 	for (const RefineryRecipe &recipe: recipes) {
+		if (recipe.mode != mode)
+			continue;
+
 		bool enough = true;
 		for (const auto &[name, amount]: recipe.inputs) {
-			if (input.count(name) != 0 && ltna(input.at(name) * delta, amount * delta)) {
+			if (input.count(name) == 0 || ltna(input.at(name) * delta, amount * delta)) {
 				enough = false;
 				break;
 			}
@@ -41,7 +44,7 @@ double Refinery::tick(double delta) {
 
 void Refinery::headerButtons(Context &context, long index) {
 	if (ImGui::Button(("M##mode_" + std::to_string(index)).c_str(), {34.f, 0.f})) {
-		
+
 	}
 	if (ImGui::IsItemHovered())
 		ImGui::SetTooltip("Set refinery mode.");
