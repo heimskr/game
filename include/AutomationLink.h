@@ -18,4 +18,6 @@ struct AutomationLink {
 
 	std::string toString() const;
 	void tick();
+	void setup();
+	void cleanup();
 };

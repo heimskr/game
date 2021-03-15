@@ -25,3 +25,11 @@ void AutomationLink::tick() {
 	consumer->input[resourceName] += producer->output.at(resourceName);
 	producer->output.erase(resourceName);
 }
+
+void AutomationLink::setup() {
+	producer->frozen.insert(resourceName);
+}
+
+void AutomationLink::cleanup() {
+	producer->frozen.erase(resourceName);
+}

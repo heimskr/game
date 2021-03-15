@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_set>
 
 class Context;
 class Game;
@@ -16,6 +17,8 @@ class Processor {
 
 		Game *game;
 		std::map<std::string, double> input, output;
+		/** Resources in this set won't be auto-extracted. */
+		std::unordered_set<std::string> frozen;
 		bool autoExtract = false;
 		std::string name, id;
 

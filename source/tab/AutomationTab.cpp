@@ -47,7 +47,9 @@ void MainWindow::renderAutomation() {
 			ImGui::TableSetColumnIndex(0);
 			if (ImGui::Button(("-##remove_" + std::to_string(i)).c_str(), {34.f, 0.f}))
 				context.frameActions.push_back([this, i]() {
-					context->automationLinks.erase(std::next(context->automationLinks.begin(), i));
+					auto iter = std::next(context->automationLinks.begin(), i);
+					iter->cleanup();
+					context->automationLinks.erase(iter);
 				});
 			ImGui::TableNextColumn();
 			ImGui::TableSetColumnIndex(1);

@@ -75,9 +75,14 @@ double Processor::tick(double delta) {
 
 void Processor::moveOutput() {
 	if (autoExtract) {
+		std::list<const std::string *> to_remove;
 		for (auto &[name, amount]: output)
-			game->inventory[name] += amount;
-		output.clear();
+			if (frozen.count(name) == 0) {
+				game->inventory[name] += amount;
+				to_remove.push_back(&name);
+			}
+		for (const std::string *name: to_remove)
+			output.erase(*name);
 	}
 }
 

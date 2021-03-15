@@ -318,6 +318,7 @@ std::string Game::toString() const {
 
 std::shared_ptr<Game> Game::fromString(const std::string &str) {
 	std::vector<std::string> lines = split(str, "\n", true);
+	/** Compliant saves must follow this order beginning at Regions. */
 	enum class Mode {None, Regions, Inventory, Position, Extractions, Processors, Automations};
 	Mode mode = Mode::None;
 
@@ -384,6 +385,7 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				}
 				case Mode::Automations:
 					out->automationLinks.emplace_back(*out, line);
+					out->automationLinks.back().setup();
 					break;
 				default: throw std::runtime_error("Invalid mode: " + std::to_string(static_cast<int>(mode)));
 			}
