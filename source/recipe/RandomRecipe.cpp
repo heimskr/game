@@ -6,8 +6,11 @@
 RandomOutput::RandomOutput(const std::string &name_, double amount_, double chance_):
 	name(name_), amount(amount_), chance(chance_) {}
 
-RandomRecipe::RandomRecipe(const std::list<RandomOutput> &outputs_):
+RandomRecipe::RandomRecipe(const std::vector<RandomOutput> &outputs_):
 	outputs(outputs_), probabilitySum(getSum(outputs_)) {}
+
+RandomRecipe::RandomRecipe(std::vector<RandomOutput> &&outputs_):
+	outputs(std::move(outputs_)), probabilitySum(getSum(outputs_)) {}
 
 std::pair<std::string, double> RandomRecipe::choose() const {
 	if (outputs.empty())

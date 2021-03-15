@@ -1,8 +1,8 @@
 #pragma once
 
-#include <list>
 #include <string>
 #include <utility>
+#include <vector>
 
 struct RandomOutput {
 	std::string name;
@@ -13,10 +13,11 @@ struct RandomOutput {
 
 class RandomRecipe {
 	public:
-		const std::list<RandomOutput> outputs;
+		const std::vector<RandomOutput> outputs;
 		const double probabilitySum;
 
-		RandomRecipe(const std::list<RandomOutput> &outputs_);
+		RandomRecipe(const std::vector<RandomOutput> &outputs_);
+		RandomRecipe(std::vector<RandomOutput> &&outputs_);
 
 		std::pair<std::string, double> choose() const;
 

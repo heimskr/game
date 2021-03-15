@@ -11,9 +11,11 @@ class Game;
 
 class Processor {
 	public:
-		enum class Type {Furnace, Centrifuge, Fermenter, Crusher};
-		static constexpr auto TYPES = std::array {Type::Furnace, Type::Centrifuge, Type::Fermenter, Type::Crusher};
+		enum class Type {Furnace, Centrifuge, Fermenter, Crusher, Refinery};
 		static constexpr const char *INVALID_CHARS = ":;/";
+		static constexpr auto TYPES = std::array {
+			Type::Furnace, Type::Centrifuge, Type::Fermenter, Type::Crusher, Type::Refinery
+		};
 
 		Game *game;
 		std::map<std::string, double> input, output;
