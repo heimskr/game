@@ -84,6 +84,18 @@ void MainWindow::renderCrafting() {
 						computeCraftingOutput();
 					});
 				}
+				if (ImGui::IsItemHovered()) {
+					std::stringstream ss;
+					bool first = true;
+					for (const auto &[name, amount]: recipe.inputs) {
+						if (first)
+							first = false;
+						else
+							ss << "\n";
+						ss << name << " x " << std::to_string(amount);
+					}
+					ImGui::SetTooltip("%s", ss.str().c_str());
+				}
 			} else
 				ImGui::Dummy({0.f, 0.f});
 			ImGui::TableNextColumn();

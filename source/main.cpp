@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <memory>
+#include <sstream>
 
 constexpr uint32_t WINDOW_WIDTH  = 1280;
 constexpr uint32_t WINDOW_HEIGHT = 720;
@@ -255,13 +256,26 @@ int main() {
 			ImGui::OpenPopup("Processor Type Selector");
 			bool modal_open = true;
 			if (ImGui::BeginPopupModal("Processor Type Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
-				for (Processor::Type type: Processor::TYPES)
+				for (Processor::Type type: Processor::TYPES) {
 					if (ImGui::Selectable(Processor::typeName(type))) {
 						context.onProcessorTypePicked(type);
 						context.showProcessorTypePicker = false;
 						ImGui::CloseCurrentPopup();
 						break;
 					}
+					if (ImGui::IsItemHovered() && context->processorCosts.count(type) != 0) {
+						std::stringstream ss;
+						bool first = true;
+						for (const auto &[name, amount]: context->processorCosts.at(type)) {
+							if (first)
+								first = false;
+							else
+								ss << "\n";
+							ss << name << " x " << std::to_string(amount);
+						}
+						ImGui::SetTooltip("%s", ss.str().c_str());
+					}
+				}
 				ImGui::EndPopup();
 			}
 			if (!modal_open)
