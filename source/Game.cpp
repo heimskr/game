@@ -45,6 +45,7 @@ void Game::addResources() {
 	add(Resource(this, "Glass").setBasePrice(1.));
 	add(Resource(this, "Crude Oil").setBasePrice(5.));
 	add(Resource(this, "Microchip").setBasePrice(50.).addTypes("rare spawnable"));
+	add(Resource(this, "Plastic").setBasePrice(2.5));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {
@@ -54,9 +55,10 @@ void Game::add(Processor::Type type, const Resource::Map &cost) {
 void Game::addProcessorCosts() {
 	// TODO: Make multiple tiers of furnaces
 	add(Processor::Type::Furnace,    {{"Stone", 100.}});
-	add(Processor::Type::Centrifuge, {{"Iron", 200.}});
-	add(Processor::Type::Fermenter,  {{"Iron", 100.}}); // TODO: change to Glass
-	add(Processor::Type::Crusher,    {{"Iron", 300.}});
+	add(Processor::Type::Centrifuge, {{"Iron",  200.}});
+	add(Processor::Type::Fermenter,  {{"Glass", 100.}});
+	add(Processor::Type::Crusher,    {{"Iron",  300.}});
+	add(Processor::Type::Refinery,   {{"Iron",  500.}, {"Microchip", 2.}});
 }
 
 void Game::addAll() {

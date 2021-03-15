@@ -24,7 +24,7 @@ void MainWindow::renderConversion() {
 				shrink(context->inventory);
 				std::shared_ptr<Processor> new_processor(Processor::ofType(*context.game, type));
 				new_processor->name = Processor::typeName(type);
-				context->processors.push_back(std::move(new_processor));
+				context->processors.push_back(new_processor);
 				context->processorsByID.emplace(new_processor->id, new_processor);
 				context.showMessage("Added a new " + std::string(Processor::typeName(type)) + ".");
 			});

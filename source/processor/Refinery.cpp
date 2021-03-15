@@ -1,27 +1,38 @@
-#include <list>
-
 #include "Game.h"
 #include "imgui.h"
 #include "main.h"
 #include "Resource.h"
 #include "processor/Refinery.h"
 
+Refinery & Refinery::setMode(RefineryMode mode_) {
+	mode = mode_;
+	return *this;
+}
+
+std::string Refinery::toString() const {
+	return Processor::toString() + ":" + std::to_string(static_cast<int>(mode));
+}
+
 double Refinery::tick(double delta) {
 	double out = 0.;
 
 	const auto &recipes = game->recipes.refinery;
 
-	// for (auto &[name, amount]: input)
-	// 	if (recipes.count(name) != 0) {
-	// 		const std::pair<std::string, double> choice = recipes.at(name).choose();
-	// 		// TODO: possibly allow refinery recipes to consume more than 1 of the resource per second
-	// 		const double to_convert = std::min(amount, delta);
-	// 		amount -= to_convert;
-	// 		if (!choice.first.empty()) {
-	// 			output[choice.first] += to_convert * choice.second;
-	// 			out += to_convert;
-	// 		}
-	// 	}
+	for (const RefineryRecipe &recipe: recipes) {
+		bool enough = true;
+		for (const auto &[name, amount]: recipe.inputs) {
+			if (input.count(name) != 0 && ltna(input.at(name) * delta, amount * delta)) {
+				enough = false;
+				break;
+			}
+		}
+		if (!enough)
+			continue;
+		for (const auto &[name, amount]: recipe.inputs)
+			input[name] -= amount * delta;
+		for (const auto &[name, amount]: recipe.outputs)
+			output[name] += amount * delta;
+	}
 
 	shrink(input);
 	moveOutput();
@@ -29,14 +40,9 @@ double Refinery::tick(double delta) {
 }
 
 void Refinery::headerButtons(Context &context, long index) {
-	if (ImGui::Button(("F##fill_" + std::to_string(index)).c_str(), {34.f, 0.f})) {
-		for (auto &[name, amount]: context->inventory)
-			if (context->resources.at(name).hasType("crushable")) {
-				input[name] += amount;
-				amount = 0;
-			}
-		shrink(input);
+	if (ImGui::Button(("M##mode_" + std::to_string(index)).c_str(), {34.f, 0.f})) {
+		
 	}
 	if (ImGui::IsItemHovered())
-		ImGui::SetTooltip("Fill with crushable items.");
+		ImGui::SetTooltip("Set refinery mode.");
 }

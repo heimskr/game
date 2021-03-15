@@ -8,7 +8,7 @@ class Furnace: public Processor {
 
 		Furnace & setFuel(double);
 
-		virtual std::string toString() const override;
+		std::string toString() const override;
 		double tick(double delta) override;
 		Type getType() const override { return Type::Furnace; }
 
