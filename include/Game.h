@@ -30,6 +30,8 @@ class Game {
 		size_t money = 0;
 		bool cheatsEnabled = false;
 
+		bool craftingOutputReady = false;
+
 		Game();
 
 		void add(const Resource &);

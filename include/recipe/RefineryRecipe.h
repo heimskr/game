@@ -1,8 +1,8 @@
 #pragma once
 
-#include <list>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "recipe/RandomRecipe.h"
 #include "defs/RefineryMode.h"

@@ -21,5 +21,7 @@ void RecipeManager::addAll() {
 	using RM = RefineryMode;
 	using RG = RefineryRecipe::Group;
 	refinery.reserve(1);
-	refinery.emplace_back(RM::Polymerize, RG {{"Crude Oil", 1.}}, RG {{"Plastic", 3.}});
+	refinery.emplace_back(RM::Polymerize, std::move(RG {{"Crude Oil", 1.}}), std::move(RG {{"Plastic", 3.}}));
+
+	crafting.emplace_back(std::move(Resource::Map {{"Plastic", 100.}, {"Silicon", 50.}}), "Microchip", 1.);
 }

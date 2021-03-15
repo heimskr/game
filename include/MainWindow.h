@@ -4,6 +4,7 @@
 
 class Area;
 class Context;
+class CraftingRecipe;
 class Region;
 
 class MainWindow {
@@ -16,7 +17,8 @@ class MainWindow {
 		int selectedTab = 0;
 		int lastTab = 0;
 
-		std::map<std::string, double> craftingOutput;
+		std::vector<const CraftingRecipe *> craftingOutput;
+		bool craftingOutputReady = false;
 
 		MainWindow() = delete;
 		MainWindow(Context &context_): context(context_) {}
