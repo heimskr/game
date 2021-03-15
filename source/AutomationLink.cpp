@@ -20,5 +20,8 @@ std::string AutomationLink::toString() const {
 }
 
 void AutomationLink::tick() {
-
+	if (producer->output.count(resourceName) == 0)
+		return;
+	consumer->input[resourceName] += producer->output.at(resourceName);
+	producer->output.erase(resourceName);
 }

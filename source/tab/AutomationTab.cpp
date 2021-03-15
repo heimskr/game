@@ -45,11 +45,10 @@ void MainWindow::renderAutomation() {
 		for (const AutomationLink &link: context->automationLinks) {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
-			if (ImGui::Button(("-##remove_" + std::to_string(i)).c_str(), {34.f, 0.f})) {
+			if (ImGui::Button(("-##remove_" + std::to_string(i)).c_str(), {34.f, 0.f}))
 				context.frameActions.push_back([this, i]() {
 					context->automationLinks.erase(std::next(context->automationLinks.begin(), i));
 				});
-			}
 			ImGui::TableNextColumn();
 			ImGui::TableSetColumnIndex(1);
 			ImGui::Text("%s", link.producer->name.c_str());

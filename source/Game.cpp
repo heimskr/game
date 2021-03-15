@@ -257,6 +257,8 @@ void Game::tick(double delta) {
 	}
 	for (auto &processor: processors)
 		processor->tick(delta);
+	for (auto &link: automationLinks)
+		link.tick();
 }
 
 void Game::loadDefaults() {
