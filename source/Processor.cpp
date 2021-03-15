@@ -168,26 +168,38 @@ void Processor::renderBody(Context &context, long index) {
 			ImGui::TableSetupColumn("Amount##output", ImGuiTableColumnFlags_WidthFixed, 300.f);
 			ImGui::TableHeadersRow();
 			u64 j = 0;
-			for (auto &[name, amount]: output) {
+			if (output.empty()) {
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
-				if (ImGui::Selectable((name + "##outsel_" + std::to_string(++j)).c_str()))
-					Keyboard::openForDouble([this, &context, &name, &amount](double chosen) {
-						if (chosen <= 0) {
-							context.showMessage("Invalid amount.");
-						} else {
-							chosen = std::min(amount, chosen);
-							amount -= chosen;
-							context->inventory[name] += chosen;
-							context.frameActions.push_back([this, &name] {
-								shrink(output, name);
-							});
-						}
-					}, "Amount to Remove");
-				ImGui::TableNextColumn();
+				ImGui::PushStyleColor(ImGuiCol_Text, {0.f, 0.f, 0.f, 0.f});
+				ImGui::Text("Y");
+				ImGui::PopStyleColor();
+				ImGui::NextColumn();
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("%.3f", amount);
-				ImGui::TableNextColumn();
+				ImGui::Text(" ");
+				ImGui::NextColumn();
+			} else {
+				for (auto &[name, amount]: output) {
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					if (ImGui::Selectable((name + "##outsel_" + std::to_string(++j)).c_str()))
+						Keyboard::openForDouble([this, &context, &name, &amount](double chosen) {
+							if (chosen <= 0) {
+								context.showMessage("Invalid amount.");
+							} else {
+								chosen = std::min(amount, chosen);
+								amount -= chosen;
+								context->inventory[name] += chosen;
+								context.frameActions.push_back([this, &name] {
+									shrink(output, name);
+								});
+							}
+						}, "Amount to Remove");
+					ImGui::TableNextColumn();
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%.3f", amount);
+					ImGui::TableNextColumn();
+				}
 			}
 			ImGui::EndTable();
 		}
