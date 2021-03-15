@@ -59,8 +59,10 @@ void MainWindow::renderCrafting() {
 			else
 				ImGui::Dummy({0.f, 0.f});
 			ImGui::TableNextColumn();
-			++inv_iter;
-			++out_iter;
+			if (i < inv_size)
+				++inv_iter;
+			if (i < out_size)
+				++out_iter;
 		}
 		ImGui::EndTable();
 	}
