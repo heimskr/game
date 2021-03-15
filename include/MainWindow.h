@@ -11,10 +11,12 @@ class MainWindow {
 		bool insert(std::shared_ptr<Area>, const std::string &, double);
 
 	public:
-		constexpr static int TAB_COUNT = 7;
+		constexpr static int TAB_COUNT = 8;
 		Context &context;
 		int selectedTab = 0;
 		int lastTab = 0;
+
+		std::map<std::string, double> craftingOutput;
 
 		MainWindow() = delete;
 		MainWindow(Context &context_): context(context_) {}
@@ -27,4 +29,5 @@ class MainWindow {
 		void renderConversion();
 		void renderMarket(Region *);
 		void renderAutomation();
+		void renderCrafting();
 };

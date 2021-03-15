@@ -20,7 +20,7 @@ class Game {
 		std::map<Processor::Type, Resource::Map> processorCosts;
 		RecipeManager recipes = {*this};
 
-		std::map<std::string, double> inventory;
+		std::map<std::string, double> inventory, craftingInventory;
 		std::map<Region::Position, std::unique_ptr<Region>> regions;
 		std::list<Extraction> extractions;
 		std::list<std::shared_ptr<Processor>> processors;

@@ -55,7 +55,7 @@ void MainWindow::renderMarket(Region *region) {
 				ImGui::TableSetColumnIndex(0);
 				if (ImGui::BeginTable("Player Table", 4)) {
 					const float column_width = half_width / 3.f - 50.f;
-					ImGui::TableSetupColumn("##sell", ImGuiTableColumnFlags_WidthFixed, 50.f);
+					ImGui::TableSetupColumn("##sell", ImGuiTableColumnFlags_WidthFixed, 42.f);
 					ImGui::TableSetupColumn("Your Resources", ImGuiTableColumnFlags_WidthStretch);
 					ImGui::TableSetupColumn("Amount##player", ImGuiTableColumnFlags_WidthFixed, column_width);
 					ImGui::TableSetupColumn("Price##player", ImGuiTableColumnFlags_WidthFixed, column_width);
@@ -117,7 +117,7 @@ void MainWindow::renderMarket(Region *region) {
 					ImGui::TableSetupColumn("Region Resources", ImGuiTableColumnFlags_WidthStretch);
 					ImGui::TableSetupColumn("Amount##region", ImGuiTableColumnFlags_WidthFixed, column_width);
 					ImGui::TableSetupColumn("Price##region", ImGuiTableColumnFlags_WidthFixed, column_width);
-					ImGui::TableSetupColumn("##Buy", ImGuiTableColumnFlags_WidthFixed, 50.f);
+					ImGui::TableSetupColumn("##Buy", ImGuiTableColumnFlags_WidthFixed, 42.f);
 					ImGui::TableHeadersRow();
 					for (const auto &[name, amount]: non_owned) {
 						ImGui::TableNextRow();

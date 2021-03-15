@@ -240,8 +240,11 @@ std::string Game::toString() const {
 		out << pair.second->toString() << "\n";
 	out << "\n[Inventory]\n";
 	out << "money=" << money << "\n";
-	for (const auto &pair: inventory)
-		out << pair.first << "=" << pair.second << "\n";
+	for (const auto &[name, amount]: inventory)
+		out << name << "=" << amount << "\n";
+	out << "\n[CraftingInventory]\n";
+	for (const auto &[name, amount]: craftingInventory)
+		out << name << "=" << amount << "\n";
 	out << "\n[Position]\n";
 	out << position.first << "," << position.second << "\n";
 	out << "\n[Extractions]\n";
@@ -259,7 +262,7 @@ std::string Game::toString() const {
 std::shared_ptr<Game> Game::fromString(const std::string &str) {
 	std::vector<std::string> lines = split(str, "\n", true);
 	/** Compliant saves must follow this order beginning at Regions. */
-	enum class Mode {None, Regions, Inventory, Position, Extractions, Processors, Automations};
+	enum class Mode {None, Regions, Inventory, CraftingInventory, Position, Extractions, Processors, Automations};
 	Mode mode = Mode::None;
 
 	std::shared_ptr<Game> out = std::make_shared<Game>();
@@ -274,6 +277,8 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 				mode = Mode::Regions;
 			else if (line == "[Inventory]")
 				mode = Mode::Inventory;
+			else if (line == "[CraftingInventory]")
+				mode = Mode::CraftingInventory;
 			else if (line == "[Position]")
 				mode = Mode::Position;
 			else if (line == "[Extractions]")
@@ -295,7 +300,8 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 					out->regions.emplace(region->position, std::move(region));
 					break;
 				}
-				case Mode::Inventory: {
+				case Mode::Inventory:
+				case Mode::CraftingInventory: {
 					const size_t equals = line.find('=');
 					if (equals == std::string::npos)
 						throw std::invalid_argument("Invalid Inventory line");
@@ -304,7 +310,7 @@ std::shared_ptr<Game> Game::fromString(const std::string &str) {
 					if (type == "money")
 						out->money = amount;
 					else
-						out->inventory.emplace(type, amount);
+						(mode == Mode::CraftingInventory? out->craftingInventory : out->inventory).emplace(type, amount);
 					break;
 				}
 				case Mode::Position: {
