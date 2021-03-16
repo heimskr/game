@@ -228,14 +228,16 @@ Processor * Processor::fromString(Game &game, const std::string &str) {
 	std::string &name = pieces[4];
 	std::string &id = pieces[5];
 	const std::string &extra = pieces[6];
+	const std::string &extra2 = pieces[7];
 	const Type type = static_cast<Type>(parseLong(pieces[0]));
 	Processor *out = nullptr;
 	switch (type) {
-		case Type::Furnace:    out = &((new Furnace(game))->setFuel(parseDouble(extra))); break;
-		case Type::Centrifuge: out = new Centrifuge(game); break;
-		case Type::Fermenter:  out = &((new Fermenter(game))->setYeast(parseDouble(extra))); break;
-		case Type::Crusher:    out = new Crusher(game); break;
-		case Type::Refinery:   out = &((new Refinery(game))->setMode(static_cast<RefineryMode>(parseLong(extra)))); break;
+		case Type::Furnace:       out = &((new Furnace(game))->setFuel(parseDouble(extra))); break;
+		case Type::Centrifuge:    out = new Centrifuge(game); break;
+		case Type::Fermenter:     out = &((new Fermenter(game))->setYeast(parseDouble(extra))); break;
+		case Type::Crusher:       out = new Crusher(game); break;
+		case Type::Refinery:      out = &((new Refinery(game))->setMode(static_cast<RefineryMode>(parseLong(extra)))); break;
+		case Type::RocketFurnace: out = &((new RocketFurnace(game))->setHydrogen(parseDouble(extra)).setOxygen(parseDouble(extra2))); break;
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 
@@ -247,11 +249,12 @@ Processor * Processor::fromString(Game &game, const std::string &str) {
 Processor * Processor::ofType(Game &game, Type type) {
 	Processor *out;
 	switch (type) {
-		case Type::Furnace:    out = new Furnace(game);    break;
-		case Type::Centrifuge: out = new Centrifuge(game); break;
-		case Type::Fermenter:  out = new Fermenter(game);  break;
-		case Type::Crusher:    out = new Crusher(game);    break;
-		case Type::Refinery:   out = new Refinery(game);   break;
+		case Type::Furnace:       out = new Furnace(game);       break;
+		case Type::Centrifuge:    out = new Centrifuge(game);    break;
+		case Type::Fermenter:     out = new Fermenter(game);     break;
+		case Type::Crusher:       out = new Crusher(game);       break;
+		case Type::Refinery:      out = new Refinery(game);      break;
+		case Type::RocketFurnace: out = new RocketFurnace(game); break;
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 	out->setID(std::move(makeUUID()));
@@ -260,11 +263,12 @@ Processor * Processor::ofType(Game &game, Type type) {
 
 const char * Processor::typeName(Type type) {
 	switch (type) {
-		case Type::Furnace:    return "Furnace";
-		case Type::Centrifuge: return "Centrifuge";
-		case Type::Fermenter:  return "Fermenter";
-		case Type::Crusher:    return "Crusher";
-		case Type::Refinery:   return "Refinery";
+		case Type::Furnace:       return "Furnace";
+		case Type::Centrifuge:    return "Centrifuge";
+		case Type::Fermenter:     return "Fermenter";
+		case Type::Crusher:       return "Crusher";
+		case Type::Refinery:      return "Refinery";
+		case Type::RocketFurnace: return "Rocket Furnace";
 		default: return "?";
 	}
 }

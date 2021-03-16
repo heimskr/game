@@ -25,7 +25,7 @@ void Game::addResources() {
 	add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel", "smeltable").setDefaultExtractionRate(0.5));
 	add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "Charcoal"}));
 	add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable"));
-	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
+	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
 	add(Resource(this, "Iron").setBasePrice(3.).addTypes("metal", "iron"));
 	add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
 	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food"));
@@ -41,7 +41,7 @@ void Game::addResources() {
 	add(Resource(this, "Lignin").setBasePrice(10.0).addTypes("molecule", "chemical", "centrifugable"));
 	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 	add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
-	add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
+	add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
 	add(Resource(this, "Glass").setBasePrice(1.));
 	add(Resource(this, "Crude Oil").setBasePrice(5.));
 	add(Resource(this, "Microchip").setBasePrice(300.).addTypes("rare spawnable"));
@@ -54,11 +54,12 @@ void Game::add(Processor::Type type, const Resource::Map &cost) {
 
 void Game::addProcessorCosts() {
 	// TODO: Make multiple tiers of furnaces
-	add(Processor::Type::Furnace,    {{"Stone", 100.}});
-	add(Processor::Type::Centrifuge, {{"Iron",  200.}});
-	add(Processor::Type::Fermenter,  {{"Glass", 100.}});
-	add(Processor::Type::Crusher,    {{"Iron",  300.}});
-	add(Processor::Type::Refinery,   {{"Iron",  500.}, {"Microchip", 2.}});
+	add(Processor::Type::Furnace,       {{"Stone", 100.}});
+	add(Processor::Type::Centrifuge,    {{"Iron",  200.}});
+	add(Processor::Type::Fermenter,     {{"Glass", 100.}});
+	add(Processor::Type::Crusher,       {{"Iron",  300.}});
+	add(Processor::Type::Refinery,      {{"Iron",  500.}, {"Microchip", 2.}});
+	add(Processor::Type::RocketFurnace, {{"Iron",  500.}, {"Plastic", 500.}, {"Microchip", 10.}});
 }
 
 void Game::addAll() {
