@@ -13,10 +13,10 @@ std::string MountainArea::description() const {
 }
 
 void MountainArea::tick(double delta) {
-	if ((resources["Coal"] += static_cast<double>(size) * 0.001 * delta) > static_cast<double>(size) * COAL_MAX)
+	if ((resources["Coal"] += static_cast<double>(size) * 0.0005 * delta) > static_cast<double>(size) * COAL_MAX)
 		 resources["Coal"]  = static_cast<double>(size) * COAL_MAX;
-	if ((resources["Iron Ore"] += static_cast<double>(size) * 0.001 * delta) > static_cast<double>(size) * IRON_MAX)
+	if ((resources["Iron Ore"] += static_cast<double>(size) * 0.0005 * delta) > static_cast<double>(size) * IRON_MAX)
 		 resources["Iron Ore"]  = static_cast<double>(size) * IRON_MAX;
-	if ((resources["Stone"] += static_cast<double>(size) * 0.001 * delta) > static_cast<double>(size) * STONE_MAX)
+	if ((resources["Stone"] += static_cast<double>(size) * 0.0005 * delta) > static_cast<double>(size) * STONE_MAX)
 		 resources["Stone"]  = static_cast<double>(size) * STONE_MAX;
 }

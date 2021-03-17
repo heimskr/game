@@ -4,7 +4,8 @@
 
 class LakeArea: public Area {
 	private:
-		static constexpr double WATER_MAX = 25.0;
+		static constexpr double WATER_MAX = 25.;
+		static constexpr double FISH_DENSITY = 10.;
 
 	public:
 		LakeArea(Region *, size_t = 0);

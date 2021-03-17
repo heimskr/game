@@ -15,6 +15,8 @@ void RecipeManager::addAll() {
 	centrifuge.emplace("Cellulose",  std::move(ROV {{"Carbon", 6., 6.}, {"Hydrogen", 10., 10.}, {"Oxygen", 5., 5.}}));
 	centrifuge.emplace("Lignin",     std::move(ROV {{"Carbon", 81., 81.}, {"Hydrogen", 92., 92.}, {"Oxygen", 28., 28.}}));
 	centrifuge.emplace("Water",      std::move(ROV {{"", 0., 95.}, {"Yeast", 1., 5.}}));
+	centrifuge.emplace("Fish",       std::move(ROV {{"", 0., 80.}, {"Blood", 5., 20.}}));
+	centrifuge.emplace("Blood",      std::move(ROV {{"Iron", 1., 1.}}));
 
 	crusher.emplace("Stone", std::move(ROV {{"Sand", 2., 1.}}));
 

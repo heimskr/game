@@ -28,7 +28,7 @@ void Game::addResources() {
 	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
 	add(Resource(this, "Iron").setBasePrice(3.).addTypes("metal", "iron"));
 	add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
-	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food"));
+	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food", "centrifugable"));
 	add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
 	add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
 	add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5));
@@ -46,6 +46,8 @@ void Game::addResources() {
 	add(Resource(this, "Crude Oil").setBasePrice(5.));
 	add(Resource(this, "Microchip").setBasePrice(300.).addTypes("rare spawnable"));
 	add(Resource(this, "Plastic").setBasePrice(2.5));
+	add(Resource(this, "Fish").setBasePrice(5.).addTypes("living"));
+	add(Resource(this, "Blood").setBasePrice(10.).addTypes("liquid"));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {
@@ -53,7 +55,6 @@ void Game::add(Processor::Type type, const Resource::Map &cost) {
 }
 
 void Game::addProcessorCosts() {
-	// TODO: Make multiple tiers of furnaces
 	add(Processor::Type::Furnace,       {{"Stone", 100.}});
 	add(Processor::Type::Centrifuge,    {{"Iron",  200.}});
 	add(Processor::Type::Fermenter,     {{"Glass", 100.}});
