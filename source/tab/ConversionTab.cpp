@@ -39,8 +39,11 @@ void MainWindow::renderConversion() {
 			context.pickInventory([this](const std::string &name) {
 				double amount = context->inventory[name];
 				if (context.rightDown)
-					Keyboard::openForDouble([&amount](double chosen) {
-						amount = chosen;
+					Keyboard::openForDouble([this, &amount](double chosen) {
+						if (chosen <= 0 || ltna(amount, chosen))
+							context.showMessage("Invalid amount.");
+						else
+							amount = chosen;
 					}, "Amount to Distribute");
 				context.pickProcessorType([this, &name](Processor::Type type) {
 					u64 count = 0;
