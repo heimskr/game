@@ -163,8 +163,6 @@ int main() {
 	bool show_demo = false;
 
 	while (show_main_window && !done) {
-		context.rightPressed = false;
-		context.downPressed = false;
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				done = true;
@@ -192,11 +190,26 @@ int main() {
 						quitEvent.type = SDL_QUIT;
 						SDL_PushEvent(&quitEvent);
 					} else if (button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
-						context.rightPressed = true;
+						context.rightDown = true;
 					else if (button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)
-						context.downPressed = true;
+						context.downDown = true;
 					else if (button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
-						show_demo = !show_demo;
+						context.leftDown = true;
+					else if (button == SDL_CONTROLLER_BUTTON_DPAD_UP)
+						context.upDown = true;
+				}
+				ImGui_ImplSDL2_ProcessEvent(&event);
+			} else if (event.type == SDL_CONTROLLERBUTTONUP) {
+				if (event.cbutton.which == 0) {
+					const u8 button = event.cbutton.button;
+					if (button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
+						context.rightDown = false;
+					else if (button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)
+						context.downDown = false;
+					else if (button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
+						context.leftDown = false;
+					else if (button == SDL_CONTROLLER_BUTTON_DPAD_UP)
+						context.upDown = false;
 				}
 				ImGui_ImplSDL2_ProcessEvent(&event);
 			} else {
@@ -379,18 +392,18 @@ int main() {
 			ImGui::Text("%s", context.message.c_str());
 			ImGui::EndChild();
 			if (context.isConfirm) {
-				if (ImGui::Button("Okay") || context.rightPressed) {
+				if (ImGui::Button("Okay") || context.rightDown) {
 					context.message.clear();
 					ImGui::CloseCurrentPopup();
 					context.onChoice(true);
 				}
 				ImGui::SameLine();
-				if (ImGui::Button("Cancel") || context.downPressed) {
+				if (ImGui::Button("Cancel") || context.downDown) {
 					context.message.clear();
 					ImGui::CloseCurrentPopup();
 					context.onChoice(false);
 				}
-			} else if (ImGui::Button("Close") || context.rightPressed || context.downPressed) {
+			} else if (ImGui::Button("Close") || context.rightDown || context.downDown) {
 				context.message.clear();
 				ImGui::CloseCurrentPopup();
 			}

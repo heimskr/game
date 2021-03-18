@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "imgui.h"
+#include "Keyboard.h"
 #include "main.h"
 #include "MainWindow.h"
 
@@ -36,6 +37,11 @@ void MainWindow::renderConversion() {
 		ImGui::SameLine();
 		if (ImGui::Button("Distribute"))
 			context.pickInventory([this](const std::string &name) {
+				double amount = context->inventory[name];
+				if (context.rightDown)
+					Keyboard::openForDouble([&amount](double chosen) {
+						amount = chosen;
+					}, "Amount to Distribute");
 				context.pickProcessorType([this, &name](Processor::Type type) {
 					u64 count = 0;
 					for (const auto &processor: context->processors)
@@ -48,12 +54,13 @@ void MainWindow::renderConversion() {
 						for (auto &processor: context->processors)
 							if (processor->getType() == type)
 								processor->input[name] += amount / count;
-						context->inventory.erase(name);
+						context->inventory[name] -= amount;
+						shrink(context->inventory);
 					}
 				});
 			});
 		if (ImGui::IsItemHovered())
-			ImGui::SetTooltip("Distribute all of a given resource evenly among all processors of a given type.");
+			ImGui::SetTooltip("Distribute a given resource evenly among all processors of a given type.");
 		if (context->processors.empty()) {
 			ImGui::Text("You have no processors.");
 		} else {

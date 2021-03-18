@@ -40,8 +40,10 @@ class Context {
 		std::string processorPickerMessage;
 		std::string refineryModePickerMessage;
 
-		bool rightPressed = false;
-		bool downPressed = false;
+		bool rightDown = false;
+		bool downDown = false;
+		bool leftDown = false;
+		bool upDown = false;
 
 		void newGame();
 		void load();

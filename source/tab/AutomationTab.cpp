@@ -19,8 +19,7 @@ void MainWindow::renderAutomation() {
 							context.showMessage("Invalid weight.");
 						} else {
 							context->automationLinks.emplace_back(*context.game, source, destination, resource_name,
-								weight);
-							context->automationLinks.back().setup();
+								weight).setup();
 							context.showMessage("Linked " + source->name + " to " + destination->name + " for "
 								 + resource_name + ".");
 						}
