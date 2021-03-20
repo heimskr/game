@@ -238,6 +238,7 @@ Processor * Processor::fromString(Game &game, const std::string &str) {
 		case Type::Crusher:       out = new Crusher(game); break;
 		case Type::Refinery:      out = &((new Refinery(game))->setMode(static_cast<RefineryMode>(parseLong(extra)))); break;
 		case Type::RocketFurnace: out = &((new RocketFurnace(game))->setHydrogen(parseDouble(extra)).setOxygen(parseDouble(extra2))); break;
+		case Type::Electrolyzer:  out = new Electrolyzer(game); break;
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 
@@ -255,6 +256,7 @@ Processor * Processor::ofType(Game &game, Type type) {
 		case Type::Crusher:       out = new Crusher(game);       break;
 		case Type::Refinery:      out = new Refinery(game);      break;
 		case Type::RocketFurnace: out = new RocketFurnace(game); break;
+		case Type::Electrolyzer:  out = new Electrolyzer(game);  break;
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
 	out->setID(std::move(makeUUID()));
@@ -269,6 +271,7 @@ const char * Processor::typeName(Type type) {
 		case Type::Crusher:       return "Crusher";
 		case Type::Refinery:      return "Refinery";
 		case Type::RocketFurnace: return "Rocket Furnace";
+		case Type::Electrolyzer:  return "Electrolyzer";
 		default: return "?";
 	}
 }

@@ -26,7 +26,7 @@ void Game::addResources() {
 	add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "Charcoal"}));
 	add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable"));
 	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
-	add(Resource(this, "Iron").setBasePrice(3.).addTypes("metal", "iron"));
+	add(Resource(this, "Iron").setBasePrice(3.).addTypes("metal", "chemical", "iron"));
 	add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
 	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food", "centrifugable"));
 	add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
@@ -61,6 +61,7 @@ void Game::addProcessorCosts() {
 	add(Processor::Type::Crusher,       {{"Iron",  300.}});
 	add(Processor::Type::Refinery,      {{"Iron",  500.}, {"Microchip", 2.}});
 	add(Processor::Type::RocketFurnace, {{"Iron",  500.}, {"Plastic", 500.}, {"Microchip", 10.}});
+	add(Processor::Type::Electrolyzer,  {{"Iron",  500.}, {"Glass", 500.}});
 }
 
 void Game::addAll() {

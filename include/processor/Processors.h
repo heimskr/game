@@ -6,3 +6,4 @@
 #include "processor/Crusher.h"
 #include "processor/Refinery.h"
 #include "processor/RocketFurnace.h"
+#include "processor/Electrolyzer.h"

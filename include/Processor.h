@@ -11,10 +11,11 @@ class Game;
 
 class Processor {
 	public:
-		enum class Type {Furnace, Centrifuge, Fermenter, Crusher, Refinery, RocketFurnace};
+		enum class Type {Furnace, Centrifuge, Fermenter, Crusher, Refinery, RocketFurnace, Electrolyzer};
 		static constexpr const char *INVALID_CHARS = ":;/";
 		static constexpr auto TYPES = std::array {
-			Type::Furnace, Type::Centrifuge, Type::Fermenter, Type::Crusher, Type::Refinery, Type::RocketFurnace
+			Type::Furnace, Type::Centrifuge, Type::Fermenter, Type::Crusher, Type::Refinery, Type::RocketFurnace,
+			Type::Electrolyzer
 		};
 
 		Game *game;

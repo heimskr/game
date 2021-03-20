@@ -23,7 +23,13 @@ void MainWindow::renderConversion() {
 				for (const auto &[name, amount]: cost)
 					context->inventory[name] -= amount;
 				shrink(context->inventory);
-				std::shared_ptr<Processor> new_processor(Processor::ofType(*context.game, type));
+				std::shared_ptr<Processor> new_processor;
+				try {
+					new_processor = std::shared_ptr<Processor>(Processor::ofType(*context.game, type));
+				} catch (const std::invalid_argument &err) {
+					context.showMessage("Error: " + std::string(err.what()));
+					return;
+				}
 				new_processor->name = Processor::typeName(type);
 				context->processors.push_back(new_processor);
 				context->processorsByID.emplace(new_processor->id, new_processor);
