@@ -37,3 +37,8 @@ Resource & Resource::setBasePrice(double base_price) {
 	basePrice = base_price;
 	return *this;
 }
+
+Resource & Resource::setDescription(const std::string &description_) {
+	description = description_;
+	return *this;
+}

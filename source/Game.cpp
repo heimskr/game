@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -20,8 +21,10 @@ void Game::add(const Resource &resource) {
 	resources.emplace(resource.name, resource);
 }
 
-long double operator""_m(long double price) {
-	return price / 0.424 * 3.;
+static constexpr double ELEMENT_BASE = 3.;
+
+long double operator""_e(long double price) {
+	return price / 0.424 * ELEMENT_BASE;
 	// 0.424: Price of iron (USD/kg).
 	// I still need to decide whether units in this game represent mass or volume.
 }
@@ -50,31 +53,32 @@ void Game::addResources() {
 	add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "Charcoal"}));
 	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 
-	add(Resource(this, "Aluminum").setBasePrice(1.79_m).addTypes("element", "chemical", "metal"));
-	add(Resource(this, "Beryllium").setBasePrice(1.).addTypes("element", "chemical", "metal"));
-	add(Resource(this, "Calcium").setBasePrice(0.3).addTypes("element", "chemical"));
-	add(Resource(this, "Carbon").setBasePrice(0.2).addTypes("element", "chemical"));
-	add(Resource(this, "Copper").setBasePrice(2.5).addTypes("element", "chemical", "metal"));
-	add(Resource(this, "Fluorine").setBasePrice(3.1).addTypes("element", "chemical"));
-	add(Resource(this, "Hydrogen").setBasePrice(0.05).addTypes("element", "chemical"));
-	add(Resource(this, "Iron").setBasePrice(3.).addTypes("element", "chemical", "metal", "iron"));
-	add(Resource(this, "Lithium").setBasePrice(3.).addTypes("element", "chemical"));
-	add(Resource(this, "Rubidium").setBasePrice(10.).addTypes("element", "chemical", "metal"));
-	add(Resource(this, "Magnesium").setBasePrice(4.).addTypes("element", "chemical", "metal"));
-	add(Resource(this, "Manganese").setBasePrice(107.).addTypes("element", "chemical", "metal"));
-	add(Resource(this, "Oxygen").setBasePrice(0.1).addTypes("element", "chemical"));
-	add(Resource(this, "Silicon").setBasePrice(0.5).addTypes("element", "chemical"));
+	add(Resource(this, "Aluminum").setBasePrice(1.79_e).addTypes("element", "chemical", "metal"));
+	add(Resource(this, "Beryllium").setBasePrice(857._e).addTypes("element", "chemical", "metal"));
+	add(Resource(this, "Calcium").setBasePrice(2.28_e).addTypes("element", "chemical"));
+	add(Resource(this, "Carbon").setBasePrice(0.122_e).addTypes("element", "chemical"));
+	add(Resource(this, "Copper").setBasePrice(6._e).addTypes("element", "chemical", "metal"));
+	add(Resource(this, "Fluorine").setBasePrice(2._e).addTypes("element", "chemical"));
+	add(Resource(this, "Hydrogen").setBasePrice(1.39_e).addTypes("element", "chemical"));
+	add(Resource(this, "Iron").setBasePrice(ELEMENT_BASE).addTypes("element", "chemical", "metal", "iron"));
+	add(Resource(this, "Lithium").setBasePrice(83.5_e).addTypes("element", "chemical"));
+	add(Resource(this, "Rubidium").setBasePrice(15'500._e).addTypes("element", "chemical", "metal"));
+	add(Resource(this, "Magnesium").setBasePrice(2.32_e).addTypes("element", "chemical", "metal"));
+	add(Resource(this, "Manganese").setBasePrice(1.82_e).addTypes("element", "chemical", "metal"));
+	add(Resource(this, "Oxygen").setBasePrice(0.154_e).addTypes("element", "chemical"));
+	add(Resource(this, "Potassium").setBasePrice(12.85_e).addTypes("element", "chemical"));
+	add(Resource(this, "Silicon").setBasePrice(1.7_e).addTypes("element", "chemical"));
 
-	add(Resource(this, "Ammolite").setBasePrice(1.5).addTypes("mineral"));     // CaCO_3
-	add(Resource(this, "Azurite").setBasePrice(2.).addTypes("mineral"));       // Cu_3(CO_3)_2(OH)_2
-	add(Resource(this, "Chrysoberyl").setBasePrice(3.).addTypes("mineral"));   // BeAl_2O_4
-	add(Resource(this, "Fluorite").setBasePrice(2.).addTypes("mineral"));      // CaF_2
-	add(Resource(this, "Lepidolite").setBasePrice(2.).addTypes("mineral"));    // K(Li,Al)_3(Al,Si,Rb)_4O_{10}(F,OH)_2
-	add(Resource(this, "Malachite").setBasePrice(2.).addTypes("mineral"));     // Cu_2CO_3(OH)_2
-	add(Resource(this, "Opal").setBasePrice(2.).addTypes("mineral"));          // SiO_2 + H_2O
-	add(Resource(this, "Peridot").setBasePrice(2.5).addTypes("mineral"));      // (Mg, Fe)_2SiO_4
-	add(Resource(this, "Pyrope").setBasePrice(2.).addTypes("mineral"));        // Mg_3Al_2(SiO_4)_3
-	add(Resource(this, "Rhodochrosite").setBasePrice(2.).addTypes("mineral")); // MnCO_3
+	add(Resource(this, "Ammolite").setBasePrice(21.).addTypes("mineral").setDescription("CaCO₃"));
+	add(Resource(this, "Azurite").setBasePrice(158.).addTypes("mineral").setDescription("Cu₃(CO₃)₂(OH)₂"));
+	add(Resource(this, "Chrysoberyl").setBasePrice(6094.).addTypes("mineral").setDescription("BeAl₂O₄"));
+	add(Resource(this, "Fluorite").setBasePrice(45.).addTypes("mineral").setDescription("CaF₂"));
+	add(Resource(this, "Lepidolite").setBasePrice(440742.).addTypes("mineral").setDescription("K(Li,Al)₃(Al,Si,Rb)₄O₁₀(F,OH)₂"));
+	add(Resource(this, "Malachite").setBasePrice(111.).addTypes("mineral").setDescription("Cu₂CO₃(OH)₂"));
+	add(Resource(this, "Opal").setBasePrice(35.).addTypes("mineral").setDescription("SiO₂ + H₂O"));
+	add(Resource(this, "Peridot").setBasePrice(56.).addTypes("mineral").setDescription("(Mg,Fe)₂SiO₄"));
+	add(Resource(this, "Pyrope").setBasePrice(124.).addTypes("mineral").setDescription("Mg₃Al₂(SiO₄)₃"));
+	add(Resource(this, "Rhodochrosite").setBasePrice(18.).addTypes("mineral").setDescription("MnCO₃"));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {

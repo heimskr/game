@@ -126,6 +126,7 @@ int main() {
 
 		strcpy(config.Name, "Nintendo Ext");
 		static const ImWchar ranges[] = {
+			0x2070, 0x209c,
 			0xe000, 0xe06b,
 			0xe070, 0xe07e,
 			0xe080, 0xe099,

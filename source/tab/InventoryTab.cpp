@@ -47,6 +47,9 @@ void MainWindow::renderInventory() {
 				ImGui::TableNextColumn();
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("%s", name.c_str());
+				const std::string &description = context->resources.at(name).description;
+				if (!description.empty() && ImGui::IsItemHovered())
+					ImGui::SetTooltip("%s", description.c_str());
 				ImGui::TableNextColumn();
 				ImGui::TableSetColumnIndex(2);
 				ImGui::Text("%.2f", amount);

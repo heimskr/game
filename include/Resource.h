@@ -31,6 +31,7 @@ class Resource {
 		std::string name;
 		std::set<Type> types;
 		std::unordered_map<Processor::Type, Conversion> conversions;
+		std::string description;
 		bool discrete = false;
 		double defaultExtractionRate = 1.0;
 		double basePrice = 1.0;
@@ -52,6 +53,7 @@ class Resource {
 		Resource & setDiscrete(bool);
 		Resource & setDefaultExtractionRate(double);
 		Resource & setBasePrice(double);
+		Resource & setDescription(const std::string &);
 
 		bool operator==(const Resource &other) { return name == other.name; }
 		bool operator!=(const Resource &other) { return name != other.name; }
