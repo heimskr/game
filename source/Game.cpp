@@ -31,26 +31,26 @@ long double operator""_e(long double price) {
 
 void Game::addResources() {
 	add(Resource(this, "Apple").setBasePrice(0.5).addTypes("farmable", "food", "centrifugable"));
-	add(Resource(this, "Blood").setBasePrice(10.).addTypes("liquid"));
-	add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical", "centrifugable"));
+	add(Resource(this, "Blood").setBasePrice(10.).addTypes("liquid", "electrolyzable"));
+	add(Resource(this, "Cellulose").setBasePrice(1.0).addTypes("molecule", "chemical", "electrolyzable"));
 	add(Resource(this, "Charcoal").setBasePrice(1.5).addTypes("fuel"));
-	add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel", "smeltable").setDefaultExtractionRate(0.5));
+	add(Resource(this, "Coal").setBasePrice(2.).addTypes("fuel", "smeltable", "electrolyzable").setDefaultExtractionRate(0.5));
 	add(Resource(this, "Crude Oil").setBasePrice(5.));
-	add(Resource(this, "Fish").setBasePrice(5.).addTypes("living"));
+	add(Resource(this, "Fish").setBasePrice(5.).addTypes("living", "centrifugable"));
 	add(Resource(this, "Glass").setBasePrice(1.));
 	add(Resource(this, "Honey").setBasePrice(0.75).addTypes("farmable", "food").add(Processor::Type::Fermenter, {0.1, "Mead"}));
 	add(Resource(this, "Human").setBasePrice(9999.).addTypes("alive", "sapient"));
 	add(Resource(this, "Iron Ore").setBasePrice(2.).addTypes("ore", "iron", "smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.5, "Iron"}).setDefaultExtractionRate(0.5));
-	add(Resource(this, "Lignin").setBasePrice(10.0).addTypes("molecule", "chemical", "centrifugable"));
-	add(Resource(this, "Malic Acid").setBasePrice(1.0).addTypes("molecule", "chemical", "centrifugable"));
+	add(Resource(this, "Lignin").setBasePrice(10.0).addTypes("molecule", "chemical", "electrolyzable"));
+	add(Resource(this, "Malic Acid").setBasePrice(1.0).addTypes("molecule", "chemical", "electrolyzable"));
 	add(Resource(this, "Mead").setBasePrice(25.).addTypes("drink", "alcohol"));
 	add(Resource(this, "Microchip").setBasePrice(300.).addTypes("rare spawnable"));
 	add(Resource(this, "Plastic").setBasePrice(2.5));
 	add(Resource(this, "Sand").setBasePrice(0.6).addTypes("smeltable", "rocket smeltable").add(Processor::Type::Furnace, {0.25, "Glass"}));
-	add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5));
-	add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable"));
+	add(Resource(this, "Stone").setBasePrice(0.1).setDefaultExtractionRate(0.5).addTypes("centrifugable"));
+	add(Resource(this, "Water").setBasePrice(0.05).addTypes("liquid", "centrifugable", "electrolyzable"));
 	add(Resource(this, "Wheat").setBasePrice(0.5).addTypes("farmable"));
-	add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural").add(Processor::Type::Furnace, {1., "Charcoal"}));
+	add(Resource(this, "Wood").setBasePrice(1.).addTypes("fuel", "natural", "centrifugable").add(Processor::Type::Furnace, {1., "Charcoal"}));
 	add(Resource(this, "Yeast").setBasePrice(1.).addTypes("alive", "microorganism", "fermentable"));
 
 	add(Resource(this, "Aluminum").setBasePrice(1.79_e).addTypes("element", "chemical", "metal"));
@@ -69,16 +69,16 @@ void Game::addResources() {
 	add(Resource(this, "Potassium").setBasePrice(12.85_e).addTypes("element", "chemical"));
 	add(Resource(this, "Silicon").setBasePrice(1.7_e).addTypes("element", "chemical"));
 
-	add(Resource(this, "Ammolite").setBasePrice(21.).addTypes("mineral").setDescription("CaCO₃"));
-	add(Resource(this, "Azurite").setBasePrice(158.).addTypes("mineral").setDescription("Cu₃(CO₃)₂(OH)₂"));
-	add(Resource(this, "Chrysoberyl").setBasePrice(6094.).addTypes("mineral").setDescription("BeAl₂O₄"));
-	add(Resource(this, "Fluorite").setBasePrice(45.).addTypes("mineral").setDescription("CaF₂"));
-	add(Resource(this, "Lepidolite").setBasePrice(440742.).addTypes("mineral").setDescription("K(Li,Al)₃(Al,Si,Rb)₄O₁₀(F,OH)₂"));
-	add(Resource(this, "Malachite").setBasePrice(111.).addTypes("mineral").setDescription("Cu₂CO₃(OH)₂"));
-	add(Resource(this, "Opal").setBasePrice(35.).addTypes("mineral").setDescription("SiO₂ + H₂O"));
-	add(Resource(this, "Peridot").setBasePrice(56.).addTypes("mineral").setDescription("(Mg,Fe)₂SiO₄"));
-	add(Resource(this, "Pyrope").setBasePrice(124.).addTypes("mineral").setDescription("Mg₃Al₂(SiO₄)₃"));
-	add(Resource(this, "Rhodochrosite").setBasePrice(18.).addTypes("mineral").setDescription("MnCO₃"));
+	add(Resource(this, "Ammolite").setBasePrice(21.).addTypes("mineral", "electrolyzable").setDescription("CaCO₃"));
+	add(Resource(this, "Azurite").setBasePrice(158.).addTypes("mineral", "electrolyzable").setDescription("Cu₃(CO₃)₂(OH)₂"));
+	add(Resource(this, "Chrysoberyl").setBasePrice(6094.).addTypes("mineral", "electrolyzable").setDescription("BeAl₂O₄"));
+	add(Resource(this, "Fluorite").setBasePrice(45.).addTypes("mineral", "electrolyzable").setDescription("CaF₂"));
+	add(Resource(this, "Lepidolite").setBasePrice(440742.).addTypes("mineral", "electrolyzable").setDescription("K(Li,Al)₃(Al,Si,Rb)₄O₁₀(F,OH)₂"));
+	add(Resource(this, "Malachite").setBasePrice(111.).addTypes("mineral", "electrolyzable").setDescription("Cu₂CO₃(OH)₂"));
+	add(Resource(this, "Opal").setBasePrice(35.).addTypes("mineral", "electrolyzable").setDescription("SiO₂ + H₂O"));
+	add(Resource(this, "Peridot").setBasePrice(56.).addTypes("mineral", "electrolyzable").setDescription("(Mg,Fe)₂SiO₄"));
+	add(Resource(this, "Pyrope").setBasePrice(124.).addTypes("mineral", "electrolyzable").setDescription("Mg₃Al₂(SiO₄)₃"));
+	add(Resource(this, "Rhodochrosite").setBasePrice(18.).addTypes("mineral", "electrolyzable").setDescription("MnCO₃"));
 }
 
 void Game::add(Processor::Type type, const Resource::Map &cost) {
