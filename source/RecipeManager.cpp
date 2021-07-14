@@ -8,12 +8,12 @@ RecipeManager::RecipeManager(Game &game_): game(&game_) {
 void RecipeManager::addAll() {
 	using ROV = std::vector<RandomOutput>;
 	centrifuge.emplace("Stone",      std::move(ROV {
-		{"", 0., 10.},
+		{"", 0., 100.},
 		{"Ammolite",    1., 1.},
 		{"Azurite",     1., 1.},
-		{"Chrysoberyl", 1., 1.},
+		{"Chrysoberyl", 1., 0.01},
 		{"Fluorite",    1., 1.},
-		{"Lepidolite",  1., 1.},
+		{"Lepidolite",  1., 0.001},
 		{"Malachite",   1., 1.},
 		{"Opal",        1., 1.},
 		{"Peridot",     1., 1.},
@@ -40,4 +40,15 @@ void RecipeManager::addAll() {
 	electrolyzer.emplace("Cellulose",  std::move(MOV {{"Carbon", 6.}, {"Hydrogen", 10.}, {"Oxygen", 5.}}));
 	electrolyzer.emplace("Lignin",     std::move(MOV {{"Carbon", 81.}, {"Hydrogen", 92.}, {"Oxygen", 28.}}));
 	electrolyzer.emplace("Blood",      std::move(MOV {{"Iron", 1.}}));
+
+	electrolyzer.emplace("Ammolite",      std::move(MOV {{"Calcium", 1.}, {"Carbon", 1.}, {"Oxygen", 3.}}));
+	electrolyzer.emplace("Azurite",       std::move(MOV {{"Copper", 3.}, {"Carbon", 2.}, {"Oxygen", 8.}, {"Hydrogen", 2.}}));
+	electrolyzer.emplace("Chrysoberyl",   std::move(MOV {{"Beryllium", 1.}, {"Aluminum", 2.}, {"Oxygen", 4.}}));
+	electrolyzer.emplace("Fluorite",      std::move(MOV {{"Calcium", 1.}, {"Fluorine", 2.}}));
+	electrolyzer.emplace("Lepidolite",    std::move(MOV {{"Potassium", 1.}, {"Lithium", 3.}, {"Aluminum", 7.}, {"Silicon", 4.}, {"Rubidium", 4.}, {"Oxygen", 12.}, {"Fluorine", 2.}, {"Hydrogen", 2.}}));
+	electrolyzer.emplace("Malachite",     std::move(MOV {{"Copper", 2.}, {"Carbon", 1.}, {"Oxygen", 5.}, {"Hydrogen", 2.}}));
+	electrolyzer.emplace("Opal",          std::move(MOV {{"Silicon", 1.}, {"Oxygen", 3.}, {"Hydrogen", 2.}}));
+	electrolyzer.emplace("Peridot",       std::move(MOV {{"Magnesium", 2.}, {"Iron", 2.}, {"Silicon", 1.}, {"Oxygen", 2.}}));
+	electrolyzer.emplace("Pyrope",        std::move(MOV {{"Magnesium", 3.}, {"Aluminum", 2.}, {"Silicon", 3.}, {"Oxygen", 12.}}));
+	electrolyzer.emplace("Rhodochrosite", std::move(MOV {{"Manganese", 1.}, {"Carbon", 1.}, {"Oxygen", 3.}}));
 }
