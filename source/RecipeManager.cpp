@@ -7,7 +7,18 @@ RecipeManager::RecipeManager(Game &game_): game(&game_) {
 
 void RecipeManager::addAll() {
 	using ROV = std::vector<RandomOutput>;
-	centrifuge.emplace("Stone",      std::move(ROV {{"", 0., 8.}, {"Silicon", 1., 1.}, {"Oxygen", 2., 1.}}));
+	centrifuge.emplace("Stone",      std::move(ROV {
+		{"", 0., 10.},
+		{"Ammolite",    1., 1.},
+		{"Azurite",     1., 1.},
+		{"Chrysoberyl", 1., 1.},
+		{"Fluorite",    1., 1.},
+		{"Lepidolite",  1., 1.},
+		{"Malachite",   1., 1.},
+		{"Opal",        1., 1.},
+		{"Peridot",     1., 1.},
+		{"Pyrope",      1., 1.},
+	}));
 	centrifuge.emplace("Apple",      std::move(ROV {{"", 0., 75.}, {"Malic Acid", 1., 25.}}));
 	centrifuge.emplace("Wood",       std::move(ROV {{"Cellulose", 1., 98.}, {"Lignin", 1., 2.}}));
 	centrifuge.emplace("Water",      std::move(ROV {{"", 0., 95.}, {"Yeast", 1., 5.}}));
