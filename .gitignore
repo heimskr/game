@@ -5,6 +5,7 @@ build
 *.nacp
 *.nro
 *.old
+trader
 
 # Prerequisites
 *.d

@@ -93,11 +93,12 @@ int main() {
 	if (gladLoadGL() == 0)
 		throw std::runtime_error("gladLoadGL failed");
 
+#ifdef __SWITCH__
 	if (SDL_GameControllerOpen(0) == nullptr) {
 		printf("[%s:%d]\n", __FILE__, __LINE__);
 		throw std::runtime_error(SDL_GetError());
 	}
-
+#endif
 
 	SDL_Event event;
 	bool done = false;
