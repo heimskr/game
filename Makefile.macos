@@ -1,20 +1,31 @@
-COMPILER ?= clang++
-SOURCES  := $(shell find source -name \*.cpp) $(shell find macos/src -name \*.c) $(shell find libs -name \*.cpp)
-OBJECTS  := $(SOURCES:.cpp=.o)
+CPP      := clang++
+CC       := clang
+CPPSRC   := $(shell find source -name \*.cpp) $(shell find libs -name \*.cpp)
+CPPOBJ   := $(patsubst source/%.cpp,build/%.o,$(CPPSRC))
+CSRC     := $(shell find macos/src -name \*.c)
+COBJ     := $(patsubst macos/src/%.c,build/%.o,$(CSRC))
 OUTPUT   := trader
-CPPFLAGS := -Wall -Wextra -std=c++20 -Iinclude -Ilibs/imgui -Imacos/include -Wno-format-security $(shell pkg-config --cflags sdl2)
+CPPFLAGS := -Wall -Wextra -g -O0 -std=c++20 -Iinclude -Ilibs/imgui -Imacos/include -Wno-format-security $(shell pkg-config --cflags sdl2)
+CFLAGS   := -Wall -Wextra -g -O0 -Imacos/include
 LDFLAGS  := $(shell pkg-config --libs sdl2)
 
 .PHONY: all clean
 
 all: $(OUTPUT)
 
-%.o: %.cpp
-	@ mkdir -p build/$(dir $<)
-	$(COMPILER) $(CPPFLAGS) -c $(patsubst src/,build/,$<) -o $@
+build/%.o: source/%.cpp
+	@ mkdir -p $(dir $(patsubst source/%,build/%,$@))
+	$(CPP) $(CPPFLAGS) -c $< -o $@
 
-$(OUTPUT): $(OBJECTS)
-	$(COMPILER) $(CPPFLAGS) $^ -o $@ $(LDFLAGS)
+build/%.o: macos/src/%.c
+	@ mkdir -p $(dir $(patsubst macos/src/%,build/%,$@))
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OUTPUT): $(CPPOBJ) $(COBJ)
+	$(CPP) $(CPPFLAGS) $^ -o $@ $(LDFLAGS)
 
 clean:
-	rm -rf build/*
+	rm -rf build/* trader
+
+dbg: $(OUTPUT)
+	lldb ./$(OUTPUT)

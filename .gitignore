@@ -6,6 +6,7 @@ build
 *.nro
 *.old
 trader
+*.dSYM
 
 # Prerequisites
 *.d
