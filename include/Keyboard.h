@@ -26,6 +26,8 @@
 #include <switch/types.h>
 #endif
 
+class Context;
+
 class Keyboard {
 	public:
 		static constexpr int MAX_LENGTH = 64;

@@ -14,7 +14,7 @@ void MainWindow::renderAutomation() {
 		context.pickProcessor([this](std::shared_ptr<Processor> source) {
 			context.pickResource([this, source](const std::string &resource_name) {
 				context.pickProcessor([this, source, resource_name](std::shared_ptr<Processor> destination) {
-					Keyboard::openForDouble([this, &source, &resource_name, &destination](double weight) {
+					Keyboard::openForDouble(context, [this, &source, &resource_name, &destination](double weight) {
 						if (weight <= 0) {
 							context.showMessage("Invalid weight.");
 						} else {

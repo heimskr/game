@@ -20,19 +20,19 @@ void MainWindow::renderMarket(Region *region) {
 				ImGui::Text("Greed:");
 				ImGui::SameLine();
 				if (ImGui::Selectable((std::to_string(region->greed) + "##region_greed").c_str()))
-					Keyboard::openForDouble([region](double chosen) {
+					Keyboard::openForDouble(context, [region](double chosen) {
 						region->greed = chosen;
 					}, "Region Greed");
 				ImGui::Text("Region money:");
 				ImGui::SameLine();
 				if (ImGui::Selectable((std::to_string(region->money) + "##region_money").c_str()))
-					Keyboard::openForNumber([region](size_t chosen) {
+					Keyboard::openForNumber(context, [region](size_t chosen) {
 						region->money = chosen;
 					}, "Amount of Money");
 				ImGui::Text("Your money:");
 				ImGui::SameLine();
 				if (ImGui::Selectable((std::to_string(context->money) + "##player_money").c_str()))
-					Keyboard::openForNumber([this](size_t chosen) {
+					Keyboard::openForNumber(context, [this](size_t chosen) {
 						context->money = chosen;
 					}, "Amount of Money");
 			} else {
@@ -60,11 +60,13 @@ void MainWindow::renderMarket(Region *region) {
 					ImGui::TableSetupColumn("Amount##player", ImGuiTableColumnFlags_WidthFixed, column_width);
 					ImGui::TableSetupColumn("Price##player", ImGuiTableColumnFlags_WidthFixed, column_width);
 					ImGui::TableHeadersRow();
-					for (const auto &[name, amount]: context->inventory) {
+					for (const auto &pair: context->inventory) {
+						const std::string &name = pair.first;
+						const double &amount = pair.second;
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
 						if (ImGui::Button(("S##" + name).c_str(), {40.f, 0.f})) {
-							Keyboard::openForDouble([&](double chosen) {
+							Keyboard::openForDouble(context, [&](double chosen) {
 								if (chosen <= 0. || ltna(amount, chosen)) {
 									context.showMessage("Error: Invalid amount.");
 								} else {
@@ -119,7 +121,9 @@ void MainWindow::renderMarket(Region *region) {
 					ImGui::TableSetupColumn("Price##region", ImGuiTableColumnFlags_WidthFixed, column_width);
 					ImGui::TableSetupColumn("##Buy", ImGuiTableColumnFlags_WidthFixed, 42.f);
 					ImGui::TableHeadersRow();
-					for (const auto &[name, amount]: non_owned) {
+					for (const auto &pair: non_owned) {
+						const std::string &name = pair.first;
+						const double &amount = pair.second;
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
 						ImGui::Text(name.c_str());
@@ -134,7 +138,7 @@ void MainWindow::renderMarket(Region *region) {
 						ImGui::TableNextColumn();
 						ImGui::TableSetColumnIndex(3);
 						if (ImGui::Button(("B##" + name).c_str(), {40.f, 0.f}))
-							Keyboard::openForDouble([&](double chosen) {
+							Keyboard::openForDouble(context, [&](double chosen) {
 								if (chosen < 0. || ltna(amount, chosen)) {
 									context.showMessage("Error: Invalid amount.");
 								} else {

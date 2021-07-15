@@ -95,7 +95,7 @@ void Processor::renderHeader(Context &context, long index) {
 				context.showMessage("You don't have any " + name + ".");
 				return;
 			}
-			Keyboard::openForDouble([this, &context, &name](double chosen) {
+			Keyboard::openForDouble(context, [this, &context, &name](double chosen) {
 				if (chosen <= 0) {
 					context.showMessage("Invalid amount.");
 				} else {
@@ -114,7 +114,7 @@ void Processor::renderHeader(Context &context, long index) {
 		ImGui::SetTooltip("Auto-Extract");
 	ImGui::SameLine();
 	if (ImGui::Button(("R##" + index_str).c_str(), {34.f, 0.f}))
-		Keyboard::openForText([this, &context](std::string new_name) {
+		Keyboard::openForText(context, [this, &context](std::string new_name) {
 			if (new_name.find_first_of(INVALID_CHARS) != std::string::npos)
 				context.showMessage("Invalid name.");
 			else
@@ -143,11 +143,13 @@ void Processor::renderBody(Context &context, long index) {
 			ImGui::TableSetupColumn("Amount##input", ImGuiTableColumnFlags_WidthFixed, 300.f);
 			ImGui::TableHeadersRow();
 			u64 j = 0;
-			for (auto &[name, amount]: input) {
+			for (auto &pair: input) {
+				const std::string &name = pair.first;
+				double &amount = pair.second;
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
 				if (ImGui::Selectable((name + "##insel_" + std::to_string(++j)).c_str()))
-					Keyboard::openForDouble([this, &context, &name, &amount](double chosen) {
+					Keyboard::openForDouble(context, [this, &context, &name, &amount](double chosen) {
 						if (chosen <= 0) {
 							context.showMessage("Invalid amount.");
 						} else {
@@ -184,11 +186,13 @@ void Processor::renderBody(Context &context, long index) {
 				ImGui::Dummy({0.f, text_size + padding});
 				ImGui::NextColumn();
 			} else {
-				for (auto &[name, amount]: output) {
+				for (auto &pair: output) {
+					const std::string &name = pair.first;
+					double &amount = pair.second;
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					if (ImGui::Selectable((name + "##outsel_" + std::to_string(++j)).c_str()))
-						Keyboard::openForDouble([this, &context, &name, &amount](double chosen) {
+						Keyboard::openForDouble(context, [this, &context, &name, &amount](double chosen) {
 							if (chosen <= 0) {
 								context.showMessage("Invalid amount.");
 							} else {
@@ -259,7 +263,7 @@ Processor * Processor::ofType(Game &game, Type type) {
 		case Type::Electrolyzer:  out = new Electrolyzer(game);  break;
 		default: throw std::invalid_argument("Invalid Processor type: " + std::to_string(static_cast<int>(type)));
 	}
-	out->setID(std::move(makeUUID()));
+	out->setID(makeUUID());
 	return out;
 }
 

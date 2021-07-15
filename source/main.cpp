@@ -36,17 +36,24 @@ constexpr uint32_t WINDOW_HEIGHT = 720;
 
 int main() {
 	try {
+#ifdef __SWITCH__
 		socketInitializeDefault();
 		nxlinkStdio();
+#endif
 		std::srand(std::time(nullptr));
 
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0)
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER) < 0) {
+			printf("[%s:%d]\n", __FILE__, __LINE__);
 			throw std::runtime_error(SDL_GetError());
+		}
 
 		FS::init();
 	} catch (const std::exception &err) {
+#ifdef __SWITCH__
 		consoleInit(nullptr);
+#endif
 		printf("Error: %s\n", err.what());
+#ifdef __SWITCH__
 		consoleUpdate(nullptr);
 		PadState pad;
 		padConfigureInput(1, HidNpadStyleSet_NpadStandard);
@@ -59,6 +66,7 @@ int main() {
 		}
 		socketExit();
 		consoleExit(nullptr);
+#endif
 		exit(EXIT_FAILURE);
 	}
 
@@ -72,8 +80,10 @@ int main() {
 
 	int w = 1280, h = 720;
 	SDL_Window *window = SDL_CreateWindow("TradeGame", 0, 0, w, h, SDL_WINDOW_OPENGL);
-	if (!window)
+	if (!window) {
+		printf("[%s:%d]\n", __FILE__, __LINE__);
 		throw std::runtime_error(SDL_GetError());
+	}
 
 	SDL_GLContext gl_context = SDL_GL_CreateContext(window);
 	SDL_SetWindowSize(window, w, h);
@@ -83,8 +93,10 @@ int main() {
 	if (gladLoadGL() == 0)
 		throw std::runtime_error("gladLoadGL failed");
 
-	if (SDL_GameControllerOpen(0) == nullptr)
+	if (SDL_GameControllerOpen(0) == nullptr) {
+		printf("[%s:%d]\n", __FILE__, __LINE__);
 		throw std::runtime_error(SDL_GetError());
+	}
 
 
 	SDL_Event event;
@@ -112,6 +124,7 @@ int main() {
 
 	io.Fonts->AddFontDefault();
 	{
+#ifdef __SWITCH__
 		plInitialize(PlServiceType_System);
 
 		PlFontData fonts_std;
@@ -152,6 +165,10 @@ int main() {
 		io.Fonts->Build();
 
 		plExit();
+#else
+		io.Fonts->AddFontDefault();
+		io.Fonts->Build();
+#endif
 	}
 
 	ImGuiStyle &style = ImGui::GetStyle();
@@ -446,7 +463,9 @@ int main() {
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 
+#ifdef __SWITCH__
 	socketExit();
+#endif
 	return EXIT_SUCCESS;
 }
 

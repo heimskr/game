@@ -1,18 +1,20 @@
 COMPILER ?= clang++
-SOURCES  := $(shell find source -name \*.cpp)
+SOURCES  := $(shell find source -name \*.cpp) $(shell find macos/src -name \*.c) $(shell find libs -name \*.cpp)
 OBJECTS  := $(SOURCES:.cpp=.o)
 OUTPUT   := trader
-CPPFLAGS := -Wall -Wextra -std=c++20 -Iinclude -Ilibs/imgui -Wno-format-security $(shell pkg-config --cflags sdl2)
+CPPFLAGS := -Wall -Wextra -std=c++20 -Iinclude -Ilibs/imgui -Imacos/include -Wno-format-security $(shell pkg-config --cflags sdl2)
+LDFLAGS  := $(shell pkg-config --libs sdl2)
 
 .PHONY: all clean
 
 all: $(OUTPUT)
 
 %.o: %.cpp
+	@ mkdir -p build/$(dir $<)
 	$(COMPILER) $(CPPFLAGS) -c $(patsubst src/,build/,$<) -o $@
 
 $(OUTPUT): $(OBJECTS)
-	$(COMPILER) $(CPPFLAGS) $^ -o $@
+	$(COMPILER) $(CPPFLAGS) $^ -o $@ $(LDFLAGS)
 
 clean:
 	rm -rf build/*

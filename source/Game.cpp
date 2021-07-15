@@ -237,7 +237,7 @@ void Game::tick(double delta) {
 
 void Game::loadDefaults() {
 	regions.clear();
-	Region &home = *regions.insert({{0, 0}, std::make_unique<Region>(*this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
+	Region &home = *regions.insert({Region::Position(0, 0), std::make_unique<Region>(*this, NameGen::makeRandomLanguage().makeName(), Region::Position(0, 0), 128)}).first->second;
 	home.greed = 0.25;
 	home.money = 10'000;
 	auto forest = std::make_shared<ForestArea>(&home, 32);
@@ -382,6 +382,7 @@ std::shared_ptr<Game> Game::load() {
 }
 
 void Game::save() {
+#ifdef __SWITCH__
 	Result result = 0;
 	if (!FS::dirExists("/switch")) {
 		if (R_FAILED(result = fsFsCreateDirectory(&fs, "/switch")))
@@ -394,6 +395,9 @@ void Game::save() {
 	}
 
 	FS::writeFile("/switch/TradeGame/save.txt", toString());
+#else
+	FS::writeFile("save.txt", toString());
+#endif
 }
 
 Game & Game::operator+=(std::unique_ptr<Region> &&ptr) {

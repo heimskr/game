@@ -18,7 +18,7 @@ void MainWindow::renderRegion(Region *region) {
 		ImGui::Dummy({6.f, 0.f});
 		ImGui::SameLine();
 		if (ImGui::Button("Rename")) {
-			Keyboard::openForText([&](std::string new_name) {
+			Keyboard::openForText(context, [&](std::string new_name) {
 				if (new_name.empty() || new_name == region->name) {
 					context.showMessage("Name not updated.");
 				} else {
@@ -44,7 +44,7 @@ void MainWindow::renderRegion(Region *region) {
 		}
 
 		ImGui::Dummy({0, 20.f});
-		ImGui::Text("Position: (%ld, %ld)", region->position.first, region->position.second);
+		ImGui::Text("Position: (%lld, %lld)", region->position.first, region->position.second);
 		ImGui::Text("Size: %lu", region->size);
 		ImGui::Dummy({0, 20.f});
 
@@ -53,7 +53,9 @@ void MainWindow::renderRegion(Region *region) {
 			ImGui::SameLine();
 			ImGui::Text("Region has no areas.");
 		} else {
-			for (auto &[name, area]: region->areas) {
+			for (auto &pair: region->areas) {
+				const auto &name = pair.first;
+				auto &area = pair.second;
 				ImGui::SetNextItemOpen(true, ImGuiCond_Once);
 				if (area->playerOwned)
 					ImGui::PushStyleColor(ImGuiCol_Text, {0.f, 1.f, 0.f, 1.f});
@@ -63,7 +65,7 @@ void MainWindow::renderRegion(Region *region) {
 					ImGui::SameLine(1170.f);
 					if (ImGui::Button("M", {40.f, 0.f}))
 						context.pickInventory([this, &area](const std::string &name) {
-							Keyboard::openForDouble([this, name, &area](double chosen) {
+							Keyboard::openForDouble(context, [this, name, &area](double chosen) {
 								insert(area, name, chosen);
 							}, "Resource Amount");
 						});
@@ -72,7 +74,7 @@ void MainWindow::renderRegion(Region *region) {
 					if (area->playerOwned) {
 						ImGui::SameLine();
 						if (ImGui::Button("R", {40.f, 0.f}))
-							Keyboard::openForNumber([this, area](size_t chosen) mutable {
+							Keyboard::openForNumber(context, [this, area](size_t chosen) mutable {
 								context.frameActions.push_back([this, area, chosen]() {
 									if (chosen < area->size) {
 										if (!area->reduceSize(chosen))
@@ -86,12 +88,14 @@ void MainWindow::renderRegion(Region *region) {
 						if (ImGui::IsItemHovered())
 							ImGui::SetTooltip("Resize the area.");
 					}
-					for (const auto &[rname, amount]: area->resources) {
+					for (const auto &pair: area->resources) {
+						const auto &rname = pair.first;
+						const auto &amount = pair.second;
 						ImGui::Dummy(ImVec2(20.f, 0.f));
 						ImGui::SameLine();
 						ImGui::PushID(rname.c_str());
 						if (ImGui::Button("Extract")) {
-							Keyboard::openForDouble([&](double chosen) {
+							Keyboard::openForDouble(context, [&](double chosen) {
 								if (amount < 0)
 									context.showMessage("Invalid amount.");
 								else if (0 < amount && ltna(amount, chosen))

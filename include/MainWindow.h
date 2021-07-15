@@ -4,7 +4,7 @@
 
 class Area;
 class Context;
-class CraftingRecipe;
+struct CraftingRecipe;
 class Region;
 
 class MainWindow {

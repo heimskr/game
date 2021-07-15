@@ -11,7 +11,7 @@ void MainWindow::renderInventory() {
 		if (context->cheatsEnabled) {
 			if (ImGui::Button("+##add_resource", {40.f, 0.f}))
 				context.pickResource([this](const std::string &name) {
-					Keyboard::openForDouble([this, &name](double chosen) {
+					Keyboard::openForDouble(context, [this, &name](double chosen) {
 						if (chosen <= 0.)
 							context.showMessage("Invalid amount.");
 						else
@@ -29,11 +29,13 @@ void MainWindow::renderInventory() {
 			ImGui::TableSetupColumn("Amount", ImGuiTableColumnFlags_WidthAlwaysAutoResize);
 			std::vector<const std::string *> to_erase;
 			to_erase.reserve(context->inventory.size());
-			for (const auto &[name, amount]: context->inventory) {
+			for (const auto &pair: context->inventory) {
+				const std::string &name = pair.first;
+				const double &amount = pair.second;
 				ImGui::TableNextRow();
 				ImGui::TableSetColumnIndex(0);
 				if (ImGui::Button(("-##" + name).c_str(), {40.f, 0.f}))
-					Keyboard::openForDouble([this, &name, &to_erase](double chosen) {
+					Keyboard::openForDouble(context, [this, &name, &to_erase](double chosen) {
 						double &amount = context->inventory[name];
 						if (chosen <= 0)
 							context.showMessage("Error: Invalid amount.");

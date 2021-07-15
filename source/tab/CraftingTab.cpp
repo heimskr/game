@@ -19,7 +19,7 @@ void MainWindow::renderCrafting() {
 		context.pickInventory([this](const std::string &name) {
 			if (context->inventory.count(name) == 0)
 				return;
-			Keyboard::openForDouble([this, &name](double choice) {
+			Keyboard::openForDouble(context, [this, &name](double choice) {
 				if (choice == 0)
 					choice = context->inventory[name];
 				if (choice <= 0 || ltna(context->inventory[name], choice)) {
@@ -50,7 +50,7 @@ void MainWindow::renderCrafting() {
 			ImGui::TableSetColumnIndex(0);
 			if (i < inv_size) {
 				if (ImGui::Selectable((inv_iter->first + "##input").c_str()))
-					Keyboard::openForDouble([this, inv_iter](double chosen) {
+					Keyboard::openForDouble(context, [this, inv_iter](double chosen) {
 						if (chosen == 0)
 							chosen = inv_iter->second;
 						if (chosen <= 0 || ltna(inv_iter->second, chosen)) {

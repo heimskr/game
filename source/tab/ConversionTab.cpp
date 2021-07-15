@@ -45,7 +45,7 @@ void MainWindow::renderConversion() {
 			context.pickInventory([this](const std::string &name) {
 				double amount = context->inventory[name];
 				if (context.rightDown)
-					Keyboard::openForDouble([this, &amount](double chosen) {
+					Keyboard::openForDouble(context, [this, &amount](double chosen) {
 						if (chosen <= 0 || ltna(amount, chosen))
 							context.showMessage("Invalid amount.");
 						else
