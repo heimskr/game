@@ -36,15 +36,25 @@ bool Keyboard::openForText(Context &context, std::function<void(std::string)> f,
 }
 
 bool Keyboard::openForNumber(Context &context, std::function<void(s64)> f, const std::string &headerText, const std::string &subText, int maxStringLength, const std::string &initialText, const std::string &leftButton, const std::string &rightButton, u32 kbdDisableBitmask) {
-	context.pickText([f](const std::string &str) {
-		f(0);
+	context.pickText([f, &context](const std::string &str) {
+		try {
+			long parsed = parseLong(str);
+			f(parsed);
+		} catch (std::invalid_argument &err) {
+			context.showMessage("Invalid number.");
+		}
 	});
 	return false;
 }
 
 bool Keyboard::openForDouble(Context &context, std::function<void(double)> f, const std::string &headerText, const std::string &subText, int maxStringLength, const std::string &initialText, const std::string &leftButton, u32 kbdDisableBitmask) {
-	context.pickText([f](const std::string &str) {
-		f(0.);
+	context.pickText([f, &context](const std::string &str) {
+		try {
+			double parsed = parseDouble(str);
+			f(parsed);
+		} catch (std::invalid_argument &err) {
+			context.showMessage("Invalid number.");
+		}
 	});
 	return false;
 }

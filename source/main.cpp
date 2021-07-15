@@ -276,7 +276,13 @@ int main() {
 			ImGui::OpenPopup("Text Input");
 			bool modal_open = true;
 			if (ImGui::BeginPopupModal("Text Input", &modal_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
-				ImGui::Text("Hello.");
+				static char buffer[2048] = "";
+				if (ImGui::InputText("", buffer, IM_ARRAYSIZE(buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+					context.showTextInput = false;
+					context.onTextInput(buffer);
+					buffer[0] = '\0';
+					ImGui::CloseCurrentPopup();
+				}
 				ImGui::EndPopup();
 			}
 			if (!modal_open)

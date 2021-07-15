@@ -29,3 +29,6 @@ clean:
 
 dbg: $(OUTPUT)
 	lldb ./$(OUTPUT)
+
+test: $(OUTPUT)
+	./$(OUTPUT)
