@@ -1,0 +1,18 @@
+COMPILER ?= clang++
+SOURCES  := $(shell find source -name \*.cpp)
+OBJECTS  := $(SOURCES:.cpp=.o)
+OUTPUT   := trader
+CPPFLAGS := -Wall -Wextra -std=c++20 -Iinclude -Ilibs/imgui -Wno-format-security $(shell pkg-config --cflags sdl2)
+
+.PHONY: all clean
+
+all: $(OUTPUT)
+
+%.o: %.cpp
+	$(COMPILER) $(CPPFLAGS) -c $(patsubst src/,build/,$<) -o $@
+
+$(OUTPUT): $(OBJECTS)
+	$(COMPILER) $(CPPFLAGS) $^ -o $@
+
+clean:
+	rm -rf build/*

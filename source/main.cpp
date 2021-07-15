@@ -1,7 +1,13 @@
+#ifdef __SWITCH__
 #undef __APPLE__
+#endif
 
+#ifdef __SWITCH__
 #include <SDL2/SDL.h>
-#include <switch.h>
+#else
+#include <SDL.h>
+#endif
+#include "platform.h"
 
 #include "imgui.h"
 #include "imgui_impl_sdl.h"
@@ -245,13 +251,27 @@ int main() {
 		if (show_demo)
 			ImGui::ShowDemoWindow(&show_demo);
 
+		if (context.showTextInput) {
+			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 300.f;
+			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Once);
+			ImGui::OpenPopup("Text Input");
+			bool modal_open = true;
+			if (ImGui::BeginPopupModal("Text Input", &modal_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
+				ImGui::Text("Hello.");
+				ImGui::EndPopup();
+			}
+			if (!modal_open)
+				context.showTextInput = false;
+		}
+
 		if (context.showResourcePicker) {
 			constexpr float MODAL_WIDTH = 600.f, MODAL_HEIGHT = 300.f;
 			ImGui::SetNextWindowPos(ImVec2((1280.f - MODAL_WIDTH) / 2.f, (720.f - MODAL_HEIGHT) / 2.f), ImGuiCond_Once);
 			ImGui::SetNextWindowSize(ImVec2(MODAL_WIDTH, MODAL_HEIGHT), ImGuiCond_Once);
 			ImGui::OpenPopup("Resource Selector");
 			bool modal_open = true;
-			if (ImGui::BeginPopupModal("Resource Selector", &modal_open, 0 & (ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove))) {
+			if (ImGui::BeginPopupModal("Resource Selector", &modal_open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove)) {
 				for (const auto &[name, resource]: context->resources)
 					if (ImGui::Selectable(name.c_str())) {
 						context.onResourcePicked(name);
@@ -464,6 +484,11 @@ void Context::pickRefineryMode(std::function<void(RefineryMode)> fn, const std::
 	showRefineryModePicker = true;
 	onRefineryModePicked = fn;
 	refineryModePickerMessage = message_;
+}
+
+void Context::pickText(std::function<void(const std::string &)> fn) {
+	showTextInput = true;
+	onTextInput = fn;
 }
 
 void Context::confirm(const std::string &str, std::function<void(bool)> fn) {

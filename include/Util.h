@@ -4,7 +4,7 @@
 #include <random>
 #include <sstream>
 #include <string>
-#include <switch.h>
+#include "platform.h"
 #include <utility>
 #include <vector>
 
@@ -18,7 +18,9 @@ extern std::mt19937 rng;
 template <typename ...Args>
 void print(Args &&...args) {
 	printf(std::forward<Args>(args)...);
+#ifdef __SWITCH__
 	consoleUpdate(nullptr);
+#endif
 }
 
 template <typename T>

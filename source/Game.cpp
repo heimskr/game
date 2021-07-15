@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
-#include <switch.h>
+#include "platform.h"
 
 #include "FS.h"
 #include "Game.h"

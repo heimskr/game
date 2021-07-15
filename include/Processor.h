@@ -27,6 +27,8 @@ class Processor {
 
 		Processor(Game &);
 
+		virtual ~Processor() {}
+
 		Processor & setInput(const std::map<std::string, double> &);
 		Processor & setOutput(const std::map<std::string, double> &);
 		Processor & setInput(std::map<std::string, double> &&);

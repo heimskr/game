@@ -1,9 +1,11 @@
 #pragma once
 
 #include <string>
-#include <switch.h>
+#include "platform.h"
 
+#ifdef __SWITCH__
 extern FsFileSystem fs;
+#endif
 
 namespace FS {
 	void init();

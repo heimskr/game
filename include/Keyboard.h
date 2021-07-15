@@ -21,13 +21,17 @@
 
 #include <functional>
 #include <string>
+
+#ifdef __SWITCH__
 #include <switch/types.h>
+#endif
 
 class Keyboard {
 	public:
 		static constexpr int MAX_LENGTH = 64;
-		static bool openForText(std::function<void(std::string)> f, const std::string &headerText = "", const std::string &subText = "", int maxStringLength = MAX_LENGTH, const std::string &initialText = "", u32 kbdDisableBitmask = 0);
-		static bool openForNumber(std::function<void(s64)> f, const std::string &headerText = "", const std::string &subText = "", int maxStringLength = MAX_LENGTH, const std::string &initialText = "", const std::string &leftButton = "", const std::string &rightButton = "", u32 kbdDisableBitmask = 0);
-		static bool openForDouble(std::function<void(double)> f, const std::string &headerText = "", const std::string &subText = "", int maxStringLength = MAX_LENGTH, const std::string &initialText = "", const std::string &leftButton = "", u32 kbdDisableBitmask = 0);
+		static bool openForText(Context &, std::function<void(std::string)> f, const std::string &headerText = "", const std::string &subText = "", int maxStringLength = MAX_LENGTH, const std::string &initialText = "", u32 kbdDisableBitmask = 0);
+		static bool openForNumber(Context &, std::function<void(s64)> f, const std::string &headerText = "", const std::string &subText = "", int maxStringLength = MAX_LENGTH, const std::string &initialText = "", const std::string &leftButton = "", const std::string &rightButton = "", u32 kbdDisableBitmask = 0);
+		static bool openForDouble(Context &, std::function<void(double)> f, const std::string &headerText = "", const std::string &subText = "", int maxStringLength = MAX_LENGTH, const std::string &initialText = "", const std::string &leftButton = "", u32 kbdDisableBitmask = 0);
 		// Use SwkbdKeyDisableBitmask_* for kbdDisableBitmask.
 };
+

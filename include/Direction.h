@@ -1,7 +1,7 @@
 #pragma once
 
-#include <switch/types.h>
 #include <utility>
+#include "platform.h"
 
 enum class Direction: int {North = 0, East, South, West};
 const char * toString(Direction);

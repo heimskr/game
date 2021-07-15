@@ -5,13 +5,13 @@
 #include <set>
 #include <stddef.h>
 #include <string>
-#include <switch/types.h>
 #include <unordered_set>
 #include <utility>
 
 #include "Area.h"
 #include "Direction.h"
 #include "Resource.h"
+#include "platform.h"
 
 class HousingArea;
 class Game;

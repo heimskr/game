@@ -23,6 +23,8 @@ class Area {
 		Area() = delete;
 		Area(Region *, size_t = 0);
 
+		virtual ~Area() {}
+
 		Area & setResources(const Resource::Map &);
 		Area & setResources(Resource::Map &&);
 		Area & setSize(size_t);

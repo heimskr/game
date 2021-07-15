@@ -1,4 +1,4 @@
-#include <switch.h>
+#include "platform.h"
 
 #include "UI.h"
 #include "Util.h"
